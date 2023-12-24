@@ -13,12 +13,6 @@ function displayStats(
   core.info(`Starting to display with type: ${displayType}`)
   let dataContent
 
-  //   core.info(`thRank (full object): ${JSON.stringify(thRank)}`)
-  //   core.info(`thBadges (full object): ${JSON.stringify(thBadges)}`)
-  //   core.info(`thSuperBadges (full object): ${JSON.stringify(thSuperBadges)}`)
-  //   core.info(`thCertifs (full object): ${JSON.stringify(thCertifs)}`)
-  //   core.info(`thSkills (full object): ${JSON.stringify(thSkills)}`)
-
   // Prepare dataToFormat
   const trailheadStats = thRank.data.profile.trailheadStats
   const trailheadBadges = thBadges.data.profile

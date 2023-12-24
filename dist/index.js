@@ -32380,12 +32380,6 @@ function displayStats(
   core.info(`Starting to display with type: ${displayType}`)
   let dataContent
 
-  //   core.info(`thRank (full object): ${JSON.stringify(thRank)}`)
-  //   core.info(`thBadges (full object): ${JSON.stringify(thBadges)}`)
-  //   core.info(`thSuperBadges (full object): ${JSON.stringify(thSuperBadges)}`)
-  //   core.info(`thCertifs (full object): ${JSON.stringify(thCertifs)}`)
-  //   core.info(`thSkills (full object): ${JSON.stringify(thSkills)}`)
-
   // Prepare dataToFormat
   const trailheadStats = thRank.data.profile.trailheadStats
   const trailheadBadges = thBadges.data.profile
@@ -32666,21 +32660,11 @@ async function run() {
 
     // Get stats
     const thRank = await fetchTrailblazerRankInfo(trailheadUsername)
-    // core.info(`thRank (full object): ${JSON.stringify(thRank)}`)
-
     const thBadges = await fetchTrailblazerBadgesInfo(trailheadUsername)
-    // core.info(`thBadges (full object): ${JSON.stringify(thBadges)}`)
-
     const thSuperBadges =
       await fetchTrailblazerSuperBadgesInfo(trailheadUsername)
-    // core.info(`thSuperBadges (full object): ${JSON.stringify(thSuperBadges)}`)
-
     const thCertifs = await fetchTrailblazerCertifsInfo(trailheadUsername)
-    // core.info(`thCertifs (full object): ${JSON.stringify(thCertifs)}`)
-
     const thSkills = await fetchTrailblazerSkillsInfo(trailheadUsername)
-    // core.info(`thSkills (full object): ${JSON.stringify(thSkills)}`)
-
     core.info(`All stats received.`)
 
     // Update Readme
