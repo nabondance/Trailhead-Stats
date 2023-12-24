@@ -32402,7 +32402,7 @@ function displayStats(
   const badgeDetails = trailheadBadges.earnedAwards.edges.map(edge => ({
     title: edge.node.award.title,
     iconUrl: edge.node.award.icon,
-    webUrl: edge.node.award.content.webUrl
+    webUrl: edge.node.award.content?.webUrl
   }))
 
   // SuperBadges
@@ -32410,7 +32410,7 @@ function displayStats(
     edge => ({
       title: edge.node.award.title,
       iconUrl: edge.node.award.icon,
-      webUrl: edge.node.award.content.webUrl
+      webUrl: edge.node.award.content?.webUrl
     })
   )
 
@@ -32445,7 +32445,7 @@ function displayStats(
     lastSuperbadge: superbadgeDetails[0]?.title,
     nbCertifs: trailheadCertif?.length,
     certificationsDetails,
-    lastCertif: lastCertification.title,
+    lastCertif: lastCertification?.title,
     skillPointsDetails
   }
 
@@ -32462,14 +32462,14 @@ function displayStatsText(dataToFormat) {
   let dataContent = ''
 
   // Add info to the dataContent
-  dataContent += `Rank: ${dataToFormat.rank}\n`
-  dataContent += `Badges: ${dataToFormat.nbBadges}\n`
-  dataContent += `Points: ${dataToFormat.points}\n`
-  dataContent += `Number of trails completed: ${dataToFormat.trails}\n`
-  dataContent += `Number of superbadge: ${dataToFormat.nbSuperBadges}\n`
-  dataContent += `Last Superbadge earned: ${dataToFormat.lastSuperbadge}\n`
-  dataContent += `Number of Certification: ${dataToFormat.nbCertifs}\n`
-  dataContent += `Last Certification earned: ${dataToFormat.lastCertif}\n`
+  dataContent += `Rank: ${dataToFormat.rank}  \n`
+  dataContent += `Badges: ${dataToFormat.nbBadges}  \n`
+  dataContent += `Points: ${dataToFormat.points}  \n`
+  dataContent += `Number of trails completed: ${dataToFormat.trails}  \n`
+  dataContent += `Number of Superbadge: ${dataToFormat.nbSuperBadges}  \n`
+  dataContent += `Last Superbadge earned: ${dataToFormat.lastSuperbadge}  \n`
+  dataContent += `Number of Certification: ${dataToFormat.nbCertifs}  \n`
+  dataContent += `Last Certification earned: ${dataToFormat.lastCertif}  \n`
 
   return dataContent
 }
@@ -32965,11 +32965,7 @@ function updateStatsOnFile(displayFile, dataContent) {
     }
 
     // Construct the new content to be placed between the tags
-    const newContent = `
-  ${startTag}
-  ${dataContent}
-  ${endTag}
-      `
+    const newContent = `${startTag}\n${dataContent}${endTag}`
 
     // Replace the content between the tags
     fileContent =
