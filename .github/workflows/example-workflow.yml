@@ -1,0 +1,36 @@
+name: Example Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      trailhead-username:
+        description: Username on Trailhead
+        required: true
+        default: 'myUsername'
+        type: string
+      display-type:
+        description: 'Type of display: text|card'
+        required: false
+        type: string
+        default: 'text'
+      display-file:
+        description: File to update to display
+        required: false
+        type: string
+        default: 'README.md'
+
+jobs:
+  trailhead-stats:
+    name: Trailhead Stats
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Get Trailhead stats
+        id: trailhead-stats
+        uses: nabondance/Trailhead-Stats@main
+        with:
+          trailhead-username: ${{ inputs.trailhead-username }}
+          display-type: ${{ inputs.display-type }}
+          display-file: ${{ inputs.display-file }}

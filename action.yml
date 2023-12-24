@@ -1,0 +1,28 @@
+name: Trailhead Stats
+description: Display Trailhead stats based on the username
+author: nabondance
+
+# Define your inputs here.
+inputs:
+  trailhead-username:
+    description: Username on Trailhead
+    required: true
+    default: username
+  display-type:
+    description: 'Type of display: text|card'
+    required: false
+    default: text
+  display-file:
+    description: File to update to display
+    required: false
+    default: README.md
+
+
+# Define your outputs here.
+outputs:
+  time:
+    description: The time it ran
+
+runs:
+  using: node20
+  main: dist/index.js

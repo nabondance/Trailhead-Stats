@@ -1,0 +1,38 @@
+name: Testing Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      trailhead-username:
+        description: Username on Trailhead
+        required: true
+        type: string
+        default: 'nabondance'
+      display-type:
+        description: 'Type of display: text|card'
+        required: false
+        type: string
+        default: 'text'
+      display-file:
+        description: File to update to display
+        required: false
+        type: string
+        default: 'README-example.md'
+
+jobs:
+  trailhead-stats:
+    name: Trailhead Stats
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get Trailhead stats
+        id: trailhead-stats
+        uses: ./
+        with:
+          trailhead-username: ${{ inputs.trailhead-username }}
+          display-type: ${{ inputs.display-type }}
+          display-file: ${{ inputs.display-file }}
