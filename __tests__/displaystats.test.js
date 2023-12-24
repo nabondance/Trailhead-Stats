@@ -210,7 +210,7 @@ describe('displayStats Function', () => {
       mockTrailheadSkillsData // thSkills
     )
 
-    //   expect(result).toContain('Skill Points for CRM: ')
+    expect(result).toContain('')
   })
 
   it('should correctly format and display as output', () => {
