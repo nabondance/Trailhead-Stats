@@ -9,19 +9,23 @@ inputs:
     required: true
     default: username
   display-type:
-    description: 'Type of display: text|card'
+    description: 'Type of display: text|card|output'
     required: false
     default: text
   display-file:
     description: File to update to display
     required: false
     default: README.md
+  output-only:
+    description: Only output, do not modify file
+    required: false
+    type: boolean
+    default: false
 
 
-# Define your outputs here.
 outputs:
-  time:
-    description: The time it ran
+  stats:
+    description: The Trailhead stats
 
 runs:
   using: node20

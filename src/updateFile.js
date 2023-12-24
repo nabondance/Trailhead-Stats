@@ -32,8 +32,8 @@ function updateStatsOnFile(displayFile, dataContent) {
 
     // Write the updated content back to the file
     fs.writeFileSync(filePath, fileContent, 'utf8')
-    console.log('File updated successfully.')
-    console.log(`fileContent : ${fileContent}`)
+    core.info('File updated successfully.')
+    // console.log(`fileContent : ${fileContent}`)
   } catch (error) {
     console.error('Error updating the file:', error)
     core.setFailed(error.message)
@@ -57,6 +57,14 @@ function pushUpdatedFile(displayFile) {
       `git remote set-url origin https://x-access-token:${githubToken}@github.com/${process.env.GITHUB_REPOSITORY}`
     )
     execSync(`git add ${filePath}`)
+
+    // Check if there are any changes
+    const status = execSync('git status --porcelain').toString()
+    if (status === '') {
+      core.info('No changes detected. Skipping commit and push.')
+      return
+    }
+
     execSync(`git commit -m "Update Trailhead Stats in ${displayFile}"`)
     execSync(`git push origin ${branchName}`)
 

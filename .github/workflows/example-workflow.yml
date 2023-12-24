@@ -6,8 +6,8 @@ on:
       trailhead-username:
         description: Username on Trailhead
         required: true
-        default: 'myUsername'
         type: string
+        default: 'myUsername'
       display-type:
         description: 'Type of display: text|card'
         required: false

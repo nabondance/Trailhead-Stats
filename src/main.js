@@ -25,6 +25,9 @@ async function run() {
     const displayType = core.getInput('display-type', {
       required: false
     })
+    const outputOnly = core.getInput('output-only', {
+      required: false
+    })
     core.info(`Getting stats for ${trailheadUsername}`)
 
     // Get stats
@@ -47,11 +50,20 @@ async function run() {
       thSkills
     )
 
-    // Update stats on file
-    updateStatsOnFile(displayFile, dataContent)
+    // Update file if wanted
+    if (outputOnly === 'false') {
+      // Update stats on file
+      updateStatsOnFile(displayFile, dataContent)
 
-    // Update file on branch
-    pushUpdatedFile(displayFile)
+      // Update file on branch
+      pushUpdatedFile(displayFile)
+    }
+
+    //core.setOutput('stats', JSON.stringify(dataContent))
+    const encodedOutput = Buffer.from(JSON.stringify(dataContent)).toString(
+      'base64'
+    )
+    core.setOutput('stats', encodedOutput)
 
     // Output the payload for debugging
     // core.info(

@@ -78,9 +78,9 @@ function displayStats(
 
   if (displayType === 'text') {
     dataContent = displayStatsText(dataToFormat)
+  } else if (displayType === 'output') {
+    dataContent = displayStatsOutput(dataToFormat)
   }
-
-  core.info(`Stats to be displayed:\n${dataContent}`)
 
   return dataContent
 }
@@ -98,7 +98,13 @@ function displayStatsText(dataToFormat) {
   dataContent += `Number of Certification: ${dataToFormat.nbCertifs}  \n`
   dataContent += `Last Certification earned: ${dataToFormat.lastCertif}  \n`
 
+  core.info(`Stats to be displayed:\n${dataContent}`)
   return dataContent
+}
+
+function displayStatsOutput(dataToFormat) {
+  core.info(`Stats to be displayed:\n${JSON.stringify(dataToFormat)}`)
+  return dataToFormat
 }
 
 module.exports = displayStats

@@ -56,7 +56,10 @@ jobs:
         uses: ./
         with:
           trailhead-username: nabondance
+          display-type: 'output'
+          display-file: 'README-example.md'
+          output-only: true
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        run: echo "${{ steps.test-action.outputs.stats }}" | base64 --decode

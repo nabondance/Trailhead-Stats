@@ -32445,9 +32445,9 @@ function displayStats(
 
   if (displayType === 'text') {
     dataContent = displayStatsText(dataToFormat)
+  } else if (displayType === 'output') {
+    dataContent = displayStatsOutput(dataToFormat)
   }
-
-  core.info(`Stats to be displayed:\n${dataContent}`)
 
   return dataContent
 }
@@ -32465,7 +32465,13 @@ function displayStatsText(dataToFormat) {
   dataContent += `Number of Certification: ${dataToFormat.nbCertifs}  \n`
   dataContent += `Last Certification earned: ${dataToFormat.lastCertif}  \n`
 
+  core.info(`Stats to be displayed:\n${dataContent}`)
   return dataContent
+}
+
+function displayStatsOutput(dataToFormat) {
+  core.info(`Stats to be displayed:\n${JSON.stringify(dataToFormat)}`)
+  return dataToFormat
 }
 
 module.exports = displayStats
@@ -32656,6 +32662,9 @@ async function run() {
     const displayType = core.getInput('display-type', {
       required: false
     })
+    const outputOnly = core.getInput('output-only', {
+      required: false
+    })
     core.info(`Getting stats for ${trailheadUsername}`)
 
     // Get stats
@@ -32678,11 +32687,20 @@ async function run() {
       thSkills
     )
 
-    // Update stats on file
-    updateStatsOnFile(displayFile, dataContent)
+    // Update file if wanted
+    if (outputOnly === 'false') {
+      // Update stats on file
+      updateStatsOnFile(displayFile, dataContent)
 
-    // Update file on branch
-    pushUpdatedFile(displayFile)
+      // Update file on branch
+      pushUpdatedFile(displayFile)
+    }
+
+    //core.setOutput('stats', JSON.stringify(dataContent))
+    const encodedOutput = Buffer.from(JSON.stringify(dataContent)).toString(
+      'base64'
+    )
+    core.setOutput('stats', encodedOutput)
 
     // Output the payload for debugging
     // core.info(
@@ -32959,8 +32977,8 @@ function updateStatsOnFile(displayFile, dataContent) {
 
     // Write the updated content back to the file
     fs.writeFileSync(filePath, fileContent, 'utf8')
-    console.log('File updated successfully.')
-    console.log(`fileContent : ${fileContent}`)
+    core.info('File updated successfully.')
+    // console.log(`fileContent : ${fileContent}`)
   } catch (error) {
     console.error('Error updating the file:', error)
     core.setFailed(error.message)
@@ -32984,6 +33002,14 @@ function pushUpdatedFile(displayFile) {
       `git remote set-url origin https://x-access-token:${githubToken}@github.com/${process.env.GITHUB_REPOSITORY}`
     )
     execSync(`git add ${filePath}`)
+
+    // Check if there are any changes
+    const status = execSync('git status --porcelain').toString()
+    if (status === '') {
+      core.info('No changes detected. Skipping commit and push.')
+      return
+    }
+
     execSync(`git commit -m "Update Trailhead Stats in ${displayFile}"`)
     execSync(`git push origin ${branchName}`)
 
