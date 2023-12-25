@@ -29,6 +29,8 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Get Trailhead stats
         id: trailhead-stats
         uses: nabondance/Trailhead-Stats@main

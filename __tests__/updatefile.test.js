@@ -27,14 +27,16 @@ jest.mock('axios')
 describe('Update File Tests', () => {
   const mockDisplayFile = 'readme.md'
   const mockDataContent = 'New stats data'
-  const mockFilePath = path.join(__dirname, '../', mockDisplayFile)
+  let mockFilePath
 
   beforeEach(() => {
     jest.resetAllMocks()
     execSync.mockClear()
+    process.env.GITHUB_WORKSPACE = '/home/runner/work/nabondance/nabondance'
     process.env.GITHUB_REF = 'refs/heads/main'
     process.env.GITHUB_TOKEN = 'fake-token'
     process.env.GITHUB_REPOSITORY = 'user/repo'
+    mockFilePath = path.join(process.env.GITHUB_WORKSPACE, mockDisplayFile)
   })
 
   describe('updateStatsOnFile', () => {
@@ -74,7 +76,7 @@ describe('Update File Tests', () => {
 
       pushUpdatedFile(mockDisplayFile)
 
-      expect(execSync).toHaveBeenCalledWith(expect.stringContaining('git add'))
+      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
       expect(execSync).toHaveBeenCalledWith(
         expect.stringContaining('git commit')
       )
@@ -92,7 +94,7 @@ describe('Update File Tests', () => {
 
       pushUpdatedFile(mockDisplayFile)
 
-      expect(execSync).toHaveBeenCalledWith(expect.stringContaining('git add'))
+      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
       expect(execSync).not.toHaveBeenCalledWith(
         expect.stringContaining('git commit')
       )
