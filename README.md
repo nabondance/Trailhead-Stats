@@ -83,12 +83,12 @@ daily.
 The type of display output. Options: `text`, `html`, `card`, `output`.
 **Default:** `text`
 
-| Display Type | Description                                   | Example                                                 |
-| ------------ | --------------------------------------------- | ------------------------------------------------------- |
-| `text`       | Displays stats in a plain text format.        | ![Text Display Example](images/readme_display_text.png) |
-| `html`       | Displays stats in a html list format.         | ![Html Display Example](images/readme_display_html.png) |
-| `card`       | Displays stats in a more graphical card form. | To Be Developed                                         |
-| `output`     | Outputs stats for further processing.         | Object to use in a GitHub Action                        |
+| Display Type | Example                                                 |
+| ------------ | ------------------------------------------------------- |
+| `text`       | ![Text Display Example](images/readme_display_text.png) |
+| `html`       | ![HTML Display Example](images/readme_display_html.png) |
+| `card`       | To Be Developed                                         |
+| `output`     | Object to use in a GitHub Action                        |
 
 ### `display-file`
 
