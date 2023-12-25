@@ -14,11 +14,11 @@ function displayStats(
   let dataContent
 
   // Prepare dataToFormat
-  const trailheadStats = thRank.data.profile.trailheadStats
-  const trailheadBadges = thBadges.data.profile
-  const trailheadSuperBadges = thSuperBadges.data.profile
-  const trailheadCertif = thCertifs.data.profile.credential.certifications
-  const trailheadSkills = thSkills.data.profile.earnedSkills
+  const trailheadStats = thRank?.data.profile.trailheadStats
+  const trailheadBadges = thBadges?.data.profile
+  const trailheadSuperBadges = thSuperBadges?.data.profile
+  const trailheadCertif = thCertifs?.data.profile.credential.certifications
+  const trailheadSkills = thSkills?.data.profile.earnedSkills
 
   if (trailheadStats === undefined) {
     core.setFailed(trailheadStats)
@@ -78,8 +78,12 @@ function displayStats(
 
   if (displayType === 'text') {
     dataContent = displayStatsText(dataToFormat)
+  } else if (displayType === 'html') {
+    dataContent = displayStatsHtml(dataToFormat)
   } else if (displayType === 'output') {
     dataContent = displayStatsOutput(dataToFormat)
+  } else {
+    core.setFailed(`${displayType} is not an accepted type`)
   }
 
   return dataContent
@@ -97,6 +101,25 @@ function displayStatsText(dataToFormat) {
   dataContent += `Last Superbadge earned: ${dataToFormat.lastSuperbadge}  \n`
   dataContent += `Number of Certification: ${dataToFormat.nbCertifs}  \n`
   dataContent += `Last Certification earned: ${dataToFormat.lastCertif}  \n`
+
+  core.info(`Stats to be displayed:\n${dataContent}`)
+  return dataContent
+}
+
+function displayStatsHtml(dataToFormat) {
+  let dataContent = `<ul>`
+
+  // Add info to the dataContent
+  dataContent += `<li>Rank: ${dataToFormat.rank}</li>\n`
+  dataContent += `<li>Badges: ${dataToFormat.nbBadges}</li>\n`
+  dataContent += `<li>Points: ${dataToFormat.points}</li>\n`
+  dataContent += `<li>Number of trails completed: ${dataToFormat.trails}</li>\n`
+  dataContent += `<li>Number of Superbadge: ${dataToFormat.nbSuperBadges}</li>\n`
+  dataContent += `<li>Last Superbadge earned: ${dataToFormat.lastSuperbadge}</li>\n`
+  dataContent += `<li>Number of Certification: ${dataToFormat.nbCertifs}</li>\n`
+  dataContent += `<li>Last Certification earned: ${dataToFormat.lastCertif}</li>\n`
+
+  dataContent += `</ul>`
 
   core.info(`Stats to be displayed:\n${dataContent}`)
   return dataContent
