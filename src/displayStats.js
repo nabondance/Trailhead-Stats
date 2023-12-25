@@ -62,6 +62,7 @@ function displayStats(
   // Data ready to be used
   const dataToFormat = {
     rank: trailheadStats?.rank.title,
+    rankIcon: trailheadStats?.rank.imageUrl,
     nbBadges: trailheadStats?.earnedBadgesCount,
     badgeDetails,
     lastBadge: badgeDetails[0]?.title,
