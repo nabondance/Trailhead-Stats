@@ -90,7 +90,6 @@ The type of display output. Options: `text`, `html`, `card`, `output`.
 | `card`       | Displays stats in a more graphical card form. | To Be Developed                                         |
 | `output`     | Outputs stats for further processing.         | Object to use in a GitHub Action                        |
 
-
 ### `display-file`
 
 The file to update for displaying the Trailhead stats. **Default:** `README.md`
