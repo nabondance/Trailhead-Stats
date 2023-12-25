@@ -1,15 +1,17 @@
-name: Example Workflow
+name: Update Trailhead Stats
 
 on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily
   workflow_dispatch:
     inputs:
       trailhead-username:
         description: Username on Trailhead
         required: true
         type: string
-        default: 'myUsername'
+        default: 'your_trailhead_username'
       display-type:
-        description: 'Type of display: text|card'
+        description: 'Type of display: text|card|output'
         required: false
         type: string
         default: 'text'
