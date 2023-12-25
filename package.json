@@ -27,7 +27,7 @@
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",
-    "ci-test": "jest",
+    "ci-test": "jest --coverage",
     "format:write": "prettier --write **/*.{js,md,yml}",
     "format:check": "prettier --check **/*.{js,md,yml}",
     "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
