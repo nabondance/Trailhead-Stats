@@ -28,8 +28,8 @@
   "scripts": {
     "bundle": "npm run format:write && npm run package",
     "ci-test": "jest",
-    "format:write": "prettier --write **/*.{js,md,yaml,yml}",
-    "format:check": "prettier --check **/*.{js,md,yaml,yml}",
+    "format:write": "prettier --write **/*.{js,md,yml}",
+    "format:check": "prettier --check **/*.{js,md,yml}",
     "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
     "package": "ncc build src/index.js --license licenses.txt",
     "package:watch": "npm run package -- --watch",
