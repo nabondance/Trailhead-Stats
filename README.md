@@ -11,32 +11,6 @@ showcase your Trailhead achievements, such as badges, points, ranks, and
 certifications, directly in your GitHub repository's README or other Markdown
 files.
 
-## Inputs
-
-### `trailhead-username`
-
-**Required** The username on Trailhead. **Default:** `username`
-
-### `display-type`
-
-The type of display output. Options: `text`, `card`, `output`. **Default:**
-`text`
-
-### `display-file`
-
-The file to update for displaying the Trailhead stats. **Default:** `README.md`
-
-### `output-only`
-
-Set to true to only output the stats without modifying the file. **Default:**
-`false`
-
-## Outputs
-
-### `stats`
-
-The fetched Trailhead stats.
-
 ## Usage
 
 To use this action in your workflow, add the following step:
@@ -97,6 +71,39 @@ jobs:
 
 This workflow will update your Trailhead stats in your repository's README.md
 daily.
+
+## Inputs
+
+### `trailhead-username`
+
+**Required** The username on Trailhead. **Default:** `username`
+
+### `display-type`
+
+The type of display output. Options: `text`, `html`, `card`, `output`.
+**Default:** `text`
+
+| Display Type | Example                                                 |
+| ------------ | ------------------------------------------------------- |
+| `text`       | ![Text Display Example](images/readme_display_text.png) |
+| `html`       | ![HTML Display Example](images/readme_display_html.png) |
+| `card`       | To Be Developed                                         |
+| `output`     | Object to use in a GitHub Action                        |
+
+### `display-file`
+
+The file to update for displaying the Trailhead stats. **Default:** `README.md`
+
+### `output-only`
+
+Set to true to only output the stats without modifying the file. **Default:**
+`false`
+
+## Outputs
+
+### `stats`
+
+The fetched Trailhead stats.
 
 ## Troubleshooting
 

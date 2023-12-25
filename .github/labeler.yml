@@ -1,0 +1,20 @@
+ci:
+  - '.github/workflows/*'
+
+config:
+  - 'config/*'
+
+dependencies:
+  - 'package.json'
+  - 'package-lock.json'
+
+documentation:
+  - 'CONTRIBUTING.md'
+  - '**/README.md'
+  - 'docs/*'
+
+source:
+  - 'src/**/*'
+
+images:
+  - 'images/**/*'

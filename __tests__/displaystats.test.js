@@ -2,6 +2,7 @@ const displayStats = require('./../src/displayStats')
 const core = require('@actions/core')
 
 jest.mock('@actions/core')
+const setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
 
 describe('displayStats Function', () => {
   afterEach(() => {
@@ -135,6 +136,42 @@ describe('displayStats Function', () => {
     }
   }
 
+  it('should fail if there is no rank', () => {
+    // Mock other data as empty or minimal for this test
+    const mockEmptyData = { data: { profile: {} } }
+
+    const result = displayStats(
+      'dummyFile.txt', // displayFile
+      'text', // displayType
+      undefined, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData // thSkills
+    )
+
+    expect(setFailedMock).toHaveBeenCalledWith(undefined)
+  })
+
+  it('should fail if the display type is not allowed', () => {
+    // Mock other data as empty or minimal for this test
+    const mockEmptyData = { data: { profile: {} } }
+
+    const result = displayStats(
+      'dummyFile.txt', // displayFile
+      'badType', // displayType
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData // thSkills
+    )
+
+    expect(setFailedMock).toHaveBeenCalledWith(
+      'badType is not an accepted type'
+    )
+  })
+
   it('should correctly format and display rank stats', () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
@@ -225,5 +262,19 @@ describe('displayStats Function', () => {
     )
 
     expect(result.nbBadges).toBe(480)
+  })
+
+  it('should correctly format and display as html', () => {
+    const result = displayStats(
+      'dummyFile.txt', // displayFile
+      'html', // displayType
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData // thSkills
+    )
+
+    expect(result).toContain('480</li>')
   })
 })

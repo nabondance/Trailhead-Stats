@@ -1,7 +1,7 @@
 {
   "name": "Trailhead-Stats",
   "description": "This action put your specified Trailhead profile stats in your profile readme",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": "nabondance",
   "private": false,
   "homepage": "https://github.com/nabondance/Trailhead-Stats#readme",
@@ -27,7 +27,7 @@
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",
-    "ci-test": "jest",
+    "ci-test": "jest --coverage",
     "format:write": "prettier --write **/*.{js,md,yml}",
     "format:check": "prettier --check **/*.{js,md,yml}",
     "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
