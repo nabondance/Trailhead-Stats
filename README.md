@@ -88,6 +88,8 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - uses: nabondance/trailhead-stats@main
         with:
           trailhead-username: 'your_trailhead_username'
