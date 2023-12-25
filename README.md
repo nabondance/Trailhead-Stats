@@ -85,8 +85,8 @@ The type of display output. Options: `text`, `html`, `card`, `output`.
 
 | Display Type | Example                                                 |
 | ------------ | ------------------------------------------------------- |
-| `text`       | ![Text Display Example](images/readme_display_text.png) |
-| `html`       | ![HTML Display Example](images/readme_display_html.png) |
+| `text`       | ![Text Display Example](images/readme/display_text.png) |
+| `html`       | ![HTML Display Example](images/readme/display_html.png) |
 | `card`       | To Be Developed                                         |
 | `output`     | Object to use in a GitHub Action                        |
 
