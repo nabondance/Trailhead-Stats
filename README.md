@@ -8,7 +8,7 @@
 **Trailhead Stats** is a GitHub Action created to dynamically display Trailhead
 statistics based on a specified Trailhead username. This action can be used to
 showcase your Trailhead achievements, such as badges, points, ranks, and
-certifications, directly in your GitHub repository's README or other markdown
+certifications, directly in your GitHub repository's README or other Markdown
 files.
 
 ## Inputs
@@ -172,7 +172,7 @@ Feel free to create a PR to add your personal example
 Ideas I have in mind, in no particular order:
 
 - select the language
-- more styling (html and card)
+- more styling (HTML and card)
 - more data
 - add more options to select what to display
 - display rank icon

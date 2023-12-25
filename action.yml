@@ -22,7 +22,6 @@ inputs:
     type: boolean
     default: false
 
-
 outputs:
   stats:
     description: The Trailhead stats
