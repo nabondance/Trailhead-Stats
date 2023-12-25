@@ -32949,7 +32949,7 @@ const fs = __nccwpck_require__(7147)
 const path = __nccwpck_require__(1017)
 
 function updateStatsOnFile(displayFile, dataContent) {
-  const filePath = path.join(__dirname, '../', displayFile)
+  const filePath = path.join(process.env.GITHUB_WORKSPACE, displayFile)
   try {
     // Read the existing content of the file
     let fileContent = fs.readFileSync(filePath, 'utf8')
@@ -32986,7 +32986,7 @@ function updateStatsOnFile(displayFile, dataContent) {
 }
 
 function pushUpdatedFile(displayFile) {
-  const filePath = path.join(__dirname, '../', displayFile)
+  const filePath = path.join(process.env.GITHUB_WORKSPACE, displayFile)
   const branchRef = process.env.GITHUB_REF
   const branchName = branchRef.replace('refs/heads/', '')
   const githubToken = process.env.GITHUB_TOKEN
