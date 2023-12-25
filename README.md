@@ -115,6 +115,7 @@ problems and their solutions:
 #### 1. **Stats Not Updating**
 
 **Problem:** The Trailhead stats in the README file are not updating.
+
 **Solution:** Ensure that the `<!--TH_Stats:start-->` and `<!--TH_Stats:end-->`
 tags are correctly placed in your `display-file`. The action updates the content
 between these tags.
@@ -123,22 +124,27 @@ between these tags.
 
 #### 2. **Git Command Fails**
 
-**Problem:** The Git commands fails during execution. **Solution:** Check that
-you granted the content:write permission for the job in your workflow.
+**Problem:** The Git commands fails during execution.
+
+**Solution:** Check that you granted the content:write permission for the job in
+your workflow.
 
 ---
 
 #### 3. **GitHub Action Fails**
 
-**Problem:** The GitHub Action fails during execution. **Solution:** Check the
-action logs in your repository's "Actions" tab for specific error messages.
-Common issues include incorrect input parameters or network issues.
+**Problem:** The GitHub Action fails during execution.
+
+**Solution:** Check the action logs in your repository's "Actions" tab for
+specific error messages. Common issues include incorrect input parameters or
+network issues.
 
 ---
 
 #### 4. **Incorrect Trailhead Username**
 
 **Problem:** The stats displayed do not match your Trailhead profile.
+
 **Solution:** Verify that the `trailhead-username` input is correctly set to
 your Trailhead username. The username should match exactly with your Trailhead
 profile.
@@ -180,8 +186,10 @@ Feel free to create a PR to add your personal example
 Ideas I have in mind, in no particular order:
 
 - select the language
-- more styling (HTML and card)
+- more styling (card)
 - more data
+- stats evolution through time
+- stats of the year/week
 - add more options to select what to display
 - display rank icon
 - better versioning and releases
