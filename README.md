@@ -181,16 +181,19 @@ Feel free to create a PR to add your personal example
 
 - [nabondance README.md](https://github.com/nabondance/nabondance/blob/master/README.md)
 
-## Future features
+## Future Features
 
 Ideas I have in mind, in no particular order:
 
 - select the language
 - more styling (card)
 - more data
-- stats evolution through time
-- stats of the year/week
 - add more options to select what to display
 - display rank icon
-- better versioning and releases
 - find a way to remove the required permission
+
+## Abandoned Features
+
+**Feature:** Any stat depending of the earning date of a badge.
+
+**Reason:** Earned Date not available without login.
