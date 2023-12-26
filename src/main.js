@@ -7,7 +7,8 @@ const {
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,
   fetchTrailblazerCertifsInfo,
-  fetchTrailblazerSkillsInfo
+  fetchTrailblazerSkillsInfo,
+  fetchTrailblazerEarnedStampsInfo
 } = require('./getStats')
 
 /**
@@ -37,6 +38,8 @@ async function run() {
       await fetchTrailblazerSuperBadgesInfo(trailheadUsername)
     const thCertifs = await fetchTrailblazerCertifsInfo(trailheadUsername)
     const thSkills = await fetchTrailblazerSkillsInfo(trailheadUsername)
+    const thEarnedStamps =
+      await fetchTrailblazerEarnedStampsInfo(trailheadUsername)
     core.info(`All stats received.`)
 
     // Update Readme
@@ -47,7 +50,8 @@ async function run() {
       thBadges,
       thSuperBadges,
       thCertifs,
-      thSkills
+      thSkills,
+      thEarnedStamps
     )
 
     // Update file if wanted

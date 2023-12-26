@@ -7,7 +7,8 @@ function displayStats(
   thBadges,
   thSuperBadges,
   thCertifs,
-  thSkills
+  thSkills,
+  thEarnedStamps
 ) {
   core.info(`Will update the file: ${displayFile}`)
   core.info(`Starting to display with type: ${displayType}`)
@@ -19,6 +20,7 @@ function displayStats(
   const trailheadSuperBadges = thSuperBadges?.data.profile
   const trailheadCertif = thCertifs?.data.profile.credential.certifications
   const trailheadSkills = thSkills?.data.profile.earnedSkills
+  const trailheadEarnedStamps = thEarnedStamps?.data.earnedStamps
 
   if (trailheadStats === undefined) {
     core.setFailed(trailheadStats)
@@ -74,7 +76,8 @@ function displayStats(
     nbCertifs: trailheadCertif?.length,
     certificationsDetails,
     lastCertif: lastCertification?.title,
-    skillPointsDetails
+    skillPointsDetails,
+    nbEarnedStamps: trailheadEarnedStamps?.count
   }
 
   if (displayType === 'text') {
@@ -102,6 +105,7 @@ function displayStatsText(dataToFormat) {
   dataContent += `Last Superbadge earned: ${dataToFormat.lastSuperbadge}  \n`
   dataContent += `Number of Certification: ${dataToFormat.nbCertifs}  \n`
   dataContent += `Last Certification earned: ${dataToFormat.lastCertif}  \n`
+  dataContent += `Number of Stamps Earned: ${dataToFormat.nbEarnedStamps}  \n`
 
   core.info(`Stats to be displayed:\n${dataContent}`)
   return dataContent
@@ -119,6 +123,7 @@ function displayStatsHtml(dataToFormat) {
   dataContent += `<li>Last Superbadge earned: ${dataToFormat.lastSuperbadge}</li>\n`
   dataContent += `<li>Number of Certification: ${dataToFormat.nbCertifs}</li>\n`
   dataContent += `<li>Last Certification earned: ${dataToFormat.lastCertif}</li>\n`
+  dataContent += `<li>Number of Stamps Earned: ${dataToFormat.nbEarnedStamps}</li>\n`
 
   dataContent += `</ul>`
 

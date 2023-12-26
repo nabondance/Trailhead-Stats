@@ -5,7 +5,8 @@ const {
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,
   fetchTrailblazerCertifsInfo,
-  fetchTrailblazerSkillsInfo
+  fetchTrailblazerSkillsInfo,
+  fetchTrailblazerEarnedStampsInfo
 } = require('./../src/getStats')
 
 describe('fetchTrailblazerRankInfo', () => {
@@ -149,6 +150,32 @@ describe('fetchTrailblazerRankInfo', () => {
     expect(response).toEqual(mockData.data)
   })
 
+  it('fetches successfully data from the API: EarnedStamps', async () => {
+    const mockData = {
+      data: {
+        /* mock response data */
+      }
+    }
+    axios.post.mockResolvedValue(mockData)
+
+    const response = await fetchTrailblazerEarnedStampsInfo('testUsername')
+
+    expect(axios.post).toHaveBeenCalledWith(
+      'https://mobile.api.trailhead.com/graphql',
+      {
+        query: expect.any(String),
+        variables: {
+          first: 10,
+          slug: 'testUsername'
+        }
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+    expect(response).toEqual(mockData.data)
+  })
+
   it('handles API error : TrailblazerRank', async () => {
     const errorMessage = 'Network Error'
     axios.post.mockRejectedValue(new Error(errorMessage))
@@ -276,6 +303,33 @@ describe('fetchTrailblazerRankInfo', () => {
         query: expect.any(String),
         variables: {
           hasSlug: true,
+          slug: 'testUsername'
+        }
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+    expect(response).toBeNull()
+    expect(console.error).toHaveBeenCalledWith(
+      'Error fetching data: ',
+      expect.any(Error)
+    )
+  })
+
+  it('handles API error : TrailblazerEarnedStamps', async () => {
+    const errorMessage = 'Network Error'
+    axios.post.mockRejectedValue(new Error(errorMessage))
+    console.error = jest.fn()
+
+    const response = await fetchTrailblazerEarnedStampsInfo('testUsername')
+
+    expect(axios.post).toHaveBeenCalledWith(
+      'https://mobile.api.trailhead.com/graphql',
+      {
+        query: expect.any(String),
+        variables: {
+          first: 10,
           slug: 'testUsername'
         }
       },

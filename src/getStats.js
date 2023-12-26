@@ -3,7 +3,8 @@ const {
   GET_TRAILBLAZER_RANK,
   GET_TRAILBLAZER_BADGES,
   GET_TRAILBLAZER_CERTIFS,
-  GET_TRAILBLAZER_SKILLS
+  GET_TRAILBLAZER_SKILLS,
+  GET_TRAILBLAZER_EARNED_STAMPS
 } = require('./queries')
 
 async function fetchTrailblazerRankInfo(trailheadUsername) {
@@ -137,10 +138,36 @@ async function fetchTrailblazerSkillsInfo(trailheadUsername) {
   }
 }
 
+async function fetchTrailblazerEarnedStampsInfo(trailheadUsername) {
+  const endpoint = 'https://mobile.api.trailhead.com/graphql'
+
+  const graphqlQuery = {
+    query: GET_TRAILBLAZER_EARNED_STAMPS,
+    variables: {
+      slug: trailheadUsername,
+      first: 10
+    }
+  }
+
+  try {
+    const response = await axios.post(endpoint, graphqlQuery, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.error('Error fetching data: ', error)
+    return null
+  }
+}
+
 module.exports = {
   fetchTrailblazerRankInfo,
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,
   fetchTrailblazerCertifsInfo,
-  fetchTrailblazerSkillsInfo
+  fetchTrailblazerSkillsInfo,
+  fetchTrailblazerEarnedStampsInfo
 }
