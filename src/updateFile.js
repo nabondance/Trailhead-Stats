@@ -33,7 +33,6 @@ function updateStatsOnFile(displayFile, dataContent) {
     // Write the updated content back to the file
     fs.writeFileSync(filePath, fileContent, 'utf8')
     core.info('File updated successfully.')
-    // console.log(`fileContent : ${fileContent}`)
   } catch (error) {
     console.error('Error updating the file:', error)
     core.setFailed(error.message)
@@ -45,8 +44,6 @@ function pushUpdatedFile(displayFile) {
   const branchRef = process.env.GITHUB_REF
   const branchName = branchRef.replace('refs/heads/', '')
   const githubToken = process.env.GITHUB_TOKEN
-
-  console.log('Current branch name:', branchName)
 
   try {
     execSync(`git config --global user.name "Trailhead-Stats"`)
@@ -68,7 +65,7 @@ function pushUpdatedFile(displayFile) {
     execSync(`git commit -m "Update Trailhead Stats in ${displayFile}"`)
     execSync(`git push origin ${branchName}`)
 
-    console.log('Changes pushed to branch: ', branchName)
+    core.info('Changes pushed to branch: ', branchName)
   } catch (error) {
     console.error('Error pushing changes: ', error)
     core.setFailed(error.message)

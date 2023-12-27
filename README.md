@@ -1,7 +1,6 @@
 # Trailhead Stats GitHub Action
 
-[![GitHub Super-Linter](https://github.com/nabondance/Trailhead-Stats/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/nabondance/Trailhead-Stats/actions/workflows/ci.yml/badge.svg)
+[![GitHub Super-Linter](https://github.com/nabondance/Trailhead-Stats/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)![CI](https://github.com/nabondance/Trailhead-Stats/actions/workflows/ci.yml/badge.svg)[![codecov](https://codecov.io/gh/nabondance/Trailhead-Stats/branch/main/graph/badge.svg)](https://codecov.io/gh/nabondance/Trailhead-Stats)
 
 ## Description
 
@@ -16,7 +15,7 @@ files.
 To use this action in your workflow, add the following step:
 
 ```yaml
-- uses: nabondance/trailhead-stats@main
+- uses: nabondance/trailhead-stats@v0.3.0
   permissions:
     contents: write
   with:
@@ -64,7 +63,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: nabondance/trailhead-stats@main
+      - uses: nabondance/trailhead-stats@v0.3.0
         with:
           trailhead-username: 'your_trailhead_username'
 ```
@@ -85,8 +84,8 @@ The type of display output. Options: `text`, `html`, `card`, `output`.
 
 | Display Type | Example                                                 |
 | ------------ | ------------------------------------------------------- |
-| `text`       | ![Text Display Example](images/readme_display_text.png) |
-| `html`       | ![HTML Display Example](images/readme_display_html.png) |
+| `text`       | ![Text Display Example](images/readme/display_text.png) |
+| `html`       | ![HTML Display Example](images/readme/display_html.png) |
 | `card`       | To Be Developed                                         |
 | `output`     | Object to use in a GitHub Action                        |
 
@@ -115,6 +114,7 @@ problems and their solutions:
 #### 1. **Stats Not Updating**
 
 **Problem:** The Trailhead stats in the README file are not updating.
+
 **Solution:** Ensure that the `<!--TH_Stats:start-->` and `<!--TH_Stats:end-->`
 tags are correctly placed in your `display-file`. The action updates the content
 between these tags.
@@ -123,22 +123,27 @@ between these tags.
 
 #### 2. **Git Command Fails**
 
-**Problem:** The Git commands fails during execution. **Solution:** Check that
-you granted the content:write permission for the job in your workflow.
+**Problem:** The Git commands fails during execution.
+
+**Solution:** Check that you granted the content:write permission for the job in
+your workflow.
 
 ---
 
 #### 3. **GitHub Action Fails**
 
-**Problem:** The GitHub Action fails during execution. **Solution:** Check the
-action logs in your repository's "Actions" tab for specific error messages.
-Common issues include incorrect input parameters or network issues.
+**Problem:** The GitHub Action fails during execution.
+
+**Solution:** Check the action logs in your repository's "Actions" tab for
+specific error messages. Common issues include incorrect input parameters or
+network issues.
 
 ---
 
 #### 4. **Incorrect Trailhead Username**
 
 **Problem:** The stats displayed do not match your Trailhead profile.
+
 **Solution:** Verify that the `trailhead-username` input is correctly set to
 your Trailhead username. The username should match exactly with your Trailhead
 profile.
@@ -173,16 +178,22 @@ to fork the repository, make changes, and create a pull request.
 ## Real world uses
 
 Feel free to create a PR to add your personal example
-[nabondance README.md](https://github.com/nabondance/nabondance/blob/master/README.md)
 
-## Future features
+- [nabondance README.md](https://github.com/nabondance/nabondance/blob/master/README.md)
+
+## Future Features
 
 Ideas I have in mind, in no particular order:
 
 - select the language
-- more styling (HTML and card)
+- more styling (card)
 - more data
 - add more options to select what to display
 - display rank icon
-- better versioning and releases
 - find a way to remove the required permission
+
+## Abandoned Features
+
+**Feature:** Any stat depending of the earning date of a badge.
+
+**Reason:** Earned Date not available without login.

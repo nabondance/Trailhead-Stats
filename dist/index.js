@@ -32374,7 +32374,8 @@ function displayStats(
   thBadges,
   thSuperBadges,
   thCertifs,
-  thSkills
+  thSkills,
+  thEarnedStamps
 ) {
   core.info(`Will update the file: ${displayFile}`)
   core.info(`Starting to display with type: ${displayType}`)
@@ -32386,6 +32387,7 @@ function displayStats(
   const trailheadSuperBadges = thSuperBadges?.data.profile
   const trailheadCertif = thCertifs?.data.profile.credential.certifications
   const trailheadSkills = thSkills?.data.profile.earnedSkills
+  const trailheadEarnedStamps = thEarnedStamps?.data.earnedStamps
 
   if (trailheadStats === undefined) {
     core.setFailed(trailheadStats)
@@ -32429,6 +32431,7 @@ function displayStats(
   // Data ready to be used
   const dataToFormat = {
     rank: trailheadStats?.rank.title,
+    rankIcon: trailheadStats?.rank.imageUrl,
     nbBadges: trailheadStats?.earnedBadgesCount,
     badgeDetails,
     lastBadge: badgeDetails[0]?.title,
@@ -32440,7 +32443,8 @@ function displayStats(
     nbCertifs: trailheadCertif?.length,
     certificationsDetails,
     lastCertif: lastCertification?.title,
-    skillPointsDetails
+    skillPointsDetails,
+    nbEarnedStamps: trailheadEarnedStamps?.count
   }
 
   if (displayType === 'text') {
@@ -32468,6 +32472,7 @@ function displayStatsText(dataToFormat) {
   dataContent += `Last Superbadge earned: ${dataToFormat.lastSuperbadge}  \n`
   dataContent += `Number of Certification: ${dataToFormat.nbCertifs}  \n`
   dataContent += `Last Certification earned: ${dataToFormat.lastCertif}  \n`
+  dataContent += `Number of Stamps Earned: ${dataToFormat.nbEarnedStamps}  \n`
 
   core.info(`Stats to be displayed:\n${dataContent}`)
   return dataContent
@@ -32485,6 +32490,7 @@ function displayStatsHtml(dataToFormat) {
   dataContent += `<li>Last Superbadge earned: ${dataToFormat.lastSuperbadge}</li>\n`
   dataContent += `<li>Number of Certification: ${dataToFormat.nbCertifs}</li>\n`
   dataContent += `<li>Last Certification earned: ${dataToFormat.lastCertif}</li>\n`
+  dataContent += `<li>Number of Stamps Earned: ${dataToFormat.nbEarnedStamps}</li>\n`
 
   dataContent += `</ul>`
 
@@ -32510,7 +32516,8 @@ const {
   GET_TRAILBLAZER_RANK,
   GET_TRAILBLAZER_BADGES,
   GET_TRAILBLAZER_CERTIFS,
-  GET_TRAILBLAZER_SKILLS
+  GET_TRAILBLAZER_SKILLS,
+  GET_TRAILBLAZER_EARNED_STAMPS
 } = __nccwpck_require__(6604)
 
 async function fetchTrailblazerRankInfo(trailheadUsername) {
@@ -32644,12 +32651,38 @@ async function fetchTrailblazerSkillsInfo(trailheadUsername) {
   }
 }
 
+async function fetchTrailblazerEarnedStampsInfo(trailheadUsername) {
+  const endpoint = 'https://mobile.api.trailhead.com/graphql'
+
+  const graphqlQuery = {
+    query: GET_TRAILBLAZER_EARNED_STAMPS,
+    variables: {
+      slug: trailheadUsername,
+      first: 10
+    }
+  }
+
+  try {
+    const response = await axios.post(endpoint, graphqlQuery, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.error('Error fetching data: ', error)
+    return null
+  }
+}
+
 module.exports = {
   fetchTrailblazerRankInfo,
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,
   fetchTrailblazerCertifsInfo,
-  fetchTrailblazerSkillsInfo
+  fetchTrailblazerSkillsInfo,
+  fetchTrailblazerEarnedStampsInfo
 }
 
 
@@ -32667,7 +32700,8 @@ const {
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,
   fetchTrailblazerCertifsInfo,
-  fetchTrailblazerSkillsInfo
+  fetchTrailblazerSkillsInfo,
+  fetchTrailblazerEarnedStampsInfo
 } = __nccwpck_require__(1229)
 
 /**
@@ -32697,6 +32731,8 @@ async function run() {
       await fetchTrailblazerSuperBadgesInfo(trailheadUsername)
     const thCertifs = await fetchTrailblazerCertifsInfo(trailheadUsername)
     const thSkills = await fetchTrailblazerSkillsInfo(trailheadUsername)
+    const thEarnedStamps =
+      await fetchTrailblazerEarnedStampsInfo(trailheadUsername)
     core.info(`All stats received.`)
 
     // Update Readme
@@ -32707,7 +32743,8 @@ async function run() {
       thBadges,
       thSuperBadges,
       thCertifs,
-      thSkills
+      thSkills,
+      thEarnedStamps
     )
 
     // Update file if wanted
@@ -32952,12 +32989,58 @@ const GET_TRAILBLAZER_SKILLS = `
     }
   }
 `
+const GET_TRAILBLAZER_EARNED_STAMPS = `
+query EarnedStamps($trailblazerId: TrailblazerId, $slug: String, $first: Int, $after: String) {
+    earnedStamps(
+      slug: $slug
+      trailblazerId: $trailblazerId
+      first: $first
+      after: $after
+    ) {
+      ...EarnedStamps
+      __typename
+    }
+  }
+
+  fragment EarnedStamps on StampEarnedConnection {
+    __typename
+    count
+    totalCount
+    edges {
+      __typename
+      cursor
+      node {
+        ...EarnedStamp
+        __typename
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      __typename
+    }
+  }
+
+  fragment EarnedStamp on StampEarned {
+    __typename
+    rewardId
+    kind
+    apiName
+    name
+    description
+    eventDate
+    eventLocation
+    iconUrl
+    linkUrl
+  }
+`
 
 module.exports = {
   GET_TRAILBLAZER_RANK,
   GET_TRAILBLAZER_BADGES,
   GET_TRAILBLAZER_CERTIFS,
-  GET_TRAILBLAZER_SKILLS
+  GET_TRAILBLAZER_SKILLS,
+  GET_TRAILBLAZER_EARNED_STAMPS
 }
 
 
@@ -33001,7 +33084,6 @@ function updateStatsOnFile(displayFile, dataContent) {
     // Write the updated content back to the file
     fs.writeFileSync(filePath, fileContent, 'utf8')
     core.info('File updated successfully.')
-    // console.log(`fileContent : ${fileContent}`)
   } catch (error) {
     console.error('Error updating the file:', error)
     core.setFailed(error.message)
@@ -33013,8 +33095,6 @@ function pushUpdatedFile(displayFile) {
   const branchRef = process.env.GITHUB_REF
   const branchName = branchRef.replace('refs/heads/', '')
   const githubToken = process.env.GITHUB_TOKEN
-
-  console.log('Current branch name:', branchName)
 
   try {
     execSync(`git config --global user.name "Trailhead-Stats"`)
@@ -33036,7 +33116,7 @@ function pushUpdatedFile(displayFile) {
     execSync(`git commit -m "Update Trailhead Stats in ${displayFile}"`)
     execSync(`git push origin ${branchName}`)
 
-    console.log('Changes pushed to branch: ', branchName)
+    core.info('Changes pushed to branch: ', branchName)
   } catch (error) {
     console.error('Error pushing changes: ', error)
     core.setFailed(error.message)
