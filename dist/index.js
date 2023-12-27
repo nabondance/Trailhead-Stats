@@ -32694,6 +32694,7 @@ module.exports = {
 const core = __nccwpck_require__(2186)
 const github = __nccwpck_require__(5438)
 const displayStats = __nccwpck_require__(2755)
+const validateAllInputs = __nccwpck_require__(2741)
 const { updateStatsOnFile, pushUpdatedFile } = __nccwpck_require__(5635)
 const {
   fetchTrailblazerRankInfo,
@@ -32722,6 +32723,7 @@ async function run() {
     const outputOnly = core.getInput('output-only', {
       required: false
     })
+    validateAllInputs(trailheadUsername, displayFile, displayType, outputOnly)
     core.info(`Getting stats for ${trailheadUsername}`)
 
     // Get stats
@@ -33124,6 +33126,84 @@ function pushUpdatedFile(displayFile) {
 }
 
 module.exports = { updateStatsOnFile, pushUpdatedFile }
+
+
+/***/ }),
+
+/***/ 2741:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186)
+
+function validateAllInputs(
+  trailheadUsername,
+  displayType,
+  displayFile,
+  outputOnly
+) {
+  try {
+    // Validate inputs
+    validateTrailheadUsername(trailheadUsername)
+    validateDisplayType(displayType)
+    validateDisplayFile(displayFile)
+    validateOutputOnly(outputOnly)
+  } catch (error) {
+    console.error(`Error during inputs validation: ${error.message}`)
+    core.setFailed(`Error during inputs validation: ${error.message}`)
+  }
+}
+
+function validateTrailheadUsername(trailheadUsername) {
+  if (!trailheadUsername) {
+    throw new Error('trailhead-username is required.')
+  }
+
+  if (typeof trailheadUsername !== 'string') {
+    throw new Error('trailhead-username must be a string.')
+  }
+}
+
+function validateDisplayType(displayType) {
+  const allowedTypes = ['text', 'card', 'output', 'html']
+
+  if (!displayType) {
+    throw new Error('display-type is required.')
+  }
+
+  if (typeof displayType !== 'string') {
+    throw new Error('display-type must be a string.')
+  }
+
+  if (!allowedTypes.includes(displayType)) {
+    throw new Error(
+      `Invalid display-type. Allowed types are: ${allowedTypes.join(', ')}.`
+    )
+  }
+}
+
+function validateDisplayFile(displayFile) {
+  if (!displayFile) {
+    throw new Error('display-file is required.')
+  }
+
+  if (typeof displayFile !== 'string') {
+    throw new Error('display-file must be a string.')
+  }
+}
+
+function validateOutputOnly(outputOnly) {
+  if (outputOnly !== undefined && typeof outputOnly !== 'boolean') {
+    throw new Error('output-only must be a boolean.')
+  }
+}
+
+module.exports = {
+  validateAllInputs,
+  validateTrailheadUsername,
+  validateDisplayType,
+  validateDisplayFile,
+  validateOutputOnly
+}
 
 
 /***/ }),

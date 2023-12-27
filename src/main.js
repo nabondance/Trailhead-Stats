@@ -1,6 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const displayStats = require('./displayStats')
+const validateAllInputs = require('./validateInputs')
 const { updateStatsOnFile, pushUpdatedFile } = require('./updateFile')
 const {
   fetchTrailblazerRankInfo,
@@ -29,6 +30,7 @@ async function run() {
     const outputOnly = core.getInput('output-only', {
       required: false
     })
+    validateAllInputs(trailheadUsername, displayFile, displayType, outputOnly)
     core.info(`Getting stats for ${trailheadUsername}`)
 
     // Get stats
