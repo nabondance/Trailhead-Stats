@@ -1,20 +1,26 @@
 ci:
-  - '.github/workflows/*'
+  - changed-files:
+      - any-glob-to-any-file: '.github/workflows/*'
 
 config:
-  - 'config/*'
+  - changed-files:
+      - any-glob-to-any-file: 'config/*'
 
 dependencies:
-  - 'package.json'
-  - 'package-lock.json'
+  - changed-files:
+      - any-glob-to-any-file: 'package.json'
+      - any-glob-to-any-file: 'package-lock.json'
 
 documentation:
-  - 'CONTRIBUTING.md'
-  - '**/README.md'
-  - 'docs/*'
+  - changed-files:
+      - any-glob-to-any-file: 'CONTRIBUTING.md'
+      - any-glob-to-any-file: '**/README.md'
+      - any-glob-to-any-file: 'docs/*'
 
 source:
-  - 'src/**/*'
+  - changed-files:
+      - any-glob-to-any-file: 'src/**/*'
 
 images:
-  - 'images/**/*'
+  - changed-files:
+      - any-glob-to-any-file: 'images/**/*'
