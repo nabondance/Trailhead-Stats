@@ -73,14 +73,20 @@ daily.
 
 ## Inputs
 
-### `trailhead-username`
+| Input Name           | Kind       | Description                                                            | Default     |
+| -------------------- | ---------- | ---------------------------------------------------------------------- | ----------- |
+| `trailhead-username` | Required   | The username on Trailhead.                                             | `username`  |
+| `display-file`       | Config     | The file to update for displaying the Trailhead stats.                 | `README.md` |
+| `display-type`       | Preference | The type of display output. Options: `text`, `html`, `card`, `output`. | `text`      |
+| `output-only`        | Config     | Set to true to only output the stats without modifying the file.       | `false`     |
 
-**Required** The username on Trailhead. **Default:** `username`
+## Outputs
 
-### `display-type`
+### `stats`
 
-The type of display output. Options: `text`, `html`, `card`, `output`.
-**Default:** `text`
+The fetched Trailhead stats.
+
+### Visual display in your file
 
 | Display Type | Example                                                 |
 | ------------ | ------------------------------------------------------- |
@@ -88,21 +94,6 @@ The type of display output. Options: `text`, `html`, `card`, `output`.
 | `html`       | ![HTML Display Example](images/readme/display_html.png) |
 | `card`       | To Be Developed                                         |
 | `output`     | Object to use in a GitHub Action                        |
-
-### `display-file`
-
-The file to update for displaying the Trailhead stats. **Default:** `README.md`
-
-### `output-only`
-
-Set to true to only output the stats without modifying the file. **Default:**
-`false`
-
-## Outputs
-
-### `stats`
-
-The fetched Trailhead stats.
 
 ## Troubleshooting
 
@@ -179,7 +170,7 @@ to fork the repository, make changes, and create a pull request.
 
 Feel free to create a PR to add your personal example
 
-- [nabondance README.md](https://github.com/nabondance/nabondance/blob/master/README.md)
+- [nabondance README.md](https://github.com/nabondance/nabondance/blob/master/README.md#--my-trailhead-stats)
 
 ## Future Features
 

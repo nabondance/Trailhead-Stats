@@ -1,6 +1,9 @@
 name: Trailhead Stats
 description: Display Trailhead stats based on the username
 author: nabondance
+branding:
+  color: green
+  icon: trophy
 
 # Define your inputs here.
 inputs:
