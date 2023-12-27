@@ -179,7 +179,7 @@ to fork the repository, make changes, and create a pull request.
 
 Feel free to create a PR to add your personal example
 
-- [nabondance README.md](https://github.com/nabondance/nabondance/blob/master/README.md)
+- [nabondance README.md](https://github.com/nabondance/nabondance/blob/master/README.md#--my-trailhead-stats)
 
 ## Future Features
 
