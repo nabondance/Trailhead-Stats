@@ -3,7 +3,7 @@ description: Display Trailhead stats based on the username
 author: nabondance
 branding:
   color: green
-  icon: trophy
+  icon: bar-chart-2
 
 # Define your inputs here.
 inputs:
