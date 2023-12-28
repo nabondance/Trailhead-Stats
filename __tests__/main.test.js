@@ -22,6 +22,12 @@ describe('action', () => {
       switch (name) {
         case 'trailhead-username':
           return 'thUsername'
+        case 'display-file':
+          return 'README.md'
+        case 'display-type':
+          return 'text'
+        case 'output-only':
+          return 'false'
         default:
           return ''
       }
