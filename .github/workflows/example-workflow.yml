@@ -3,38 +3,15 @@ name: Update Trailhead Stats
 on:
   schedule:
     - cron: '0 0 * * *' # Runs daily
-  workflow_dispatch:
-    inputs:
-      trailhead-username:
-        description: Username on Trailhead
-        required: true
-        type: string
-        default: 'your_trailhead_username'
-      display-type:
-        description: 'Type of display: text|card|output'
-        required: false
-        type: string
-        default: 'text'
-      display-file:
-        description: File to update to display
-        required: false
-        type: string
-        default: 'README.md'
 
 jobs:
-  trailhead-stats:
-    name: Trailhead Stats
+  update-stats:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Get Trailhead stats
-        id: trailhead-stats
-        uses: nabondance/Trailhead-Stats@main
+      - uses: nabondance/trailhead-stats@v0.3.0
         with:
-          trailhead-username: ${{ inputs.trailhead-username }}
-          display-type: ${{ inputs.display-type }}
-          display-file: ${{ inputs.display-file }}
+          trailhead-username: 'your_trailhead_username'

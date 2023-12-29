@@ -11,6 +11,9 @@ const setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
 // Mock the action's main function
 const runMock = jest.spyOn(main, 'run')
 
+// Do not care about console.error()
+jest.spyOn(console, 'error').mockImplementation(() => {})
+
 describe('action', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -22,6 +25,34 @@ describe('action', () => {
       switch (name) {
         case 'trailhead-username':
           return 'thUsername'
+        case 'display-file':
+          return 'README.md'
+        case 'display-type':
+          return 'text'
+        case 'output-only':
+          return 'false'
+        default:
+          return ''
+      }
+    })
+
+    await main.run()
+
+    expect(runMock).toHaveReturned()
+  })
+
+  it('run the main code with output only', async () => {
+    // Mock the action's inputs
+    getInputMock.mockImplementation(name => {
+      switch (name) {
+        case 'trailhead-username':
+          return 'thUsername'
+        case 'display-file':
+          return 'README.md'
+        case 'display-type':
+          return 'output'
+        case 'output-only':
+          return 'true'
         default:
           return ''
       }

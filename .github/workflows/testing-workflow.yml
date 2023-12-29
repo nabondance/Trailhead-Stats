@@ -9,10 +9,15 @@ on:
         type: string
         default: 'nabondance'
       display-type:
-        description: 'Type of display: text|card|output'
+        description: 'Type of display:'
         required: false
-        type: string
-        default: 'text'
+        type: choice
+        options:
+          - text
+          - html
+          - card
+          - output
+        default: text
       display-file:
         description: File to update to display
         required: false

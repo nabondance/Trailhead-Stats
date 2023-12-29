@@ -32694,6 +32694,7 @@ module.exports = {
 const core = __nccwpck_require__(2186)
 const github = __nccwpck_require__(5438)
 const displayStats = __nccwpck_require__(2755)
+const { validateAllInputs } = __nccwpck_require__(2741)
 const { updateStatsOnFile, pushUpdatedFile } = __nccwpck_require__(5635)
 const {
   fetchTrailblazerRankInfo,
@@ -32722,6 +32723,7 @@ async function run() {
     const outputOnly = core.getInput('output-only', {
       required: false
     })
+    validateAllInputs(trailheadUsername, displayFile, displayType, outputOnly)
     core.info(`Getting stats for ${trailheadUsername}`)
 
     // Get stats
@@ -32748,6 +32750,8 @@ async function run() {
     )
 
     // Update file if wanted
+    console.log(outputOnly)
+    console.log(typeof outputOnly)
     if (outputOnly === 'false') {
       // Update stats on file
       updateStatsOnFile(displayFile, dataContent)
@@ -33124,6 +33128,115 @@ function pushUpdatedFile(displayFile) {
 }
 
 module.exports = { updateStatsOnFile, pushUpdatedFile }
+
+
+/***/ }),
+
+/***/ 2741:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186)
+const {
+  validateRequiredField,
+  validateStringField,
+  validateBooleanField
+} = __nccwpck_require__(2144)
+
+function validateAllInputs(
+  trailheadUsername,
+  displayFile,
+  displayType,
+  outputOnly
+) {
+  try {
+    // Validate inputs
+    validateTrailheadUsername(trailheadUsername)
+    validateDisplayFile(displayFile)
+    validateDisplayType(displayType)
+    validateOutputOnly(outputOnly)
+  } catch (error) {
+    console.error(`Error during inputs validation: ${error.message}`)
+    core.setFailed(`Error during inputs validation: ${error.message}`)
+  }
+}
+
+function validateTrailheadUsername(trailheadUsername) {
+  validateRequiredField(trailheadUsername, 'trailhead-username')
+  validateStringField(trailheadUsername, 'trailhead-username')
+}
+
+function validateDisplayType(displayType) {
+  validateRequiredField(displayType, 'display-type')
+  validateStringField(displayType, 'display-type')
+
+  const allowedTypes = ['text', 'card', 'output', 'html']
+  if (!allowedTypes.includes(displayType)) {
+    throw new Error(
+      `Invalid display-type '${displayType}'. Allowed types are: ${allowedTypes.join(
+        ', '
+      )}`
+    )
+  }
+}
+
+function validateDisplayFile(displayFile) {
+  validateRequiredField(displayFile, 'display-file')
+  validateStringField(displayFile, 'display-file')
+}
+
+function validateOutputOnly(outputOnly) {
+  validateBooleanField(outputOnly, 'output-only')
+}
+
+module.exports = {
+  validateAllInputs,
+  validateTrailheadUsername,
+  validateDisplayType,
+  validateDisplayFile,
+  validateOutputOnly
+}
+
+
+/***/ }),
+
+/***/ 2144:
+/***/ ((module) => {
+
+function validateRequiredField(field, fieldName) {
+  if (field === undefined || field === null || field === '') {
+    throw new Error(`${fieldName} is required.`)
+  }
+}
+
+function validateStringField(field, fieldName) {
+  if (typeof field !== 'string') {
+    throw new Error(
+      `${fieldName} must be a string, got ${typeof field}: ${field}`
+    )
+  }
+}
+
+function validateBooleanField(field, fieldName) {
+  if (field === 'true') {
+    field = true
+  } else if (field === 'false') {
+    field = false
+  }
+
+  if (typeof field !== 'boolean') {
+    throw new Error(
+      `${fieldName} must be a boolean, got ${typeof field}: ${field}`
+    )
+  }
+
+  return field
+}
+
+module.exports = {
+  validateRequiredField,
+  validateStringField,
+  validateBooleanField
+}
 
 
 /***/ }),
