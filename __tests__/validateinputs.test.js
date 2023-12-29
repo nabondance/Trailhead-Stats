@@ -7,7 +7,10 @@ const {
   validateDisplayType,
   validateDisplayFile,
   validateOutputOnly
-} = require('./../src/validateInputs') // Adjust the import path as needed
+} = require('./../src/validateInputs')
+
+// Do not care about console.error()
+jest.spyOn(console, 'error').mockImplementation(() => {})
 
 describe('Input Validation Tests', () => {
   // Tests for validateTrailheadUsername

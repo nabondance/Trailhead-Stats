@@ -32750,6 +32750,8 @@ async function run() {
     )
 
     // Update file if wanted
+    console.log(outputOnly)
+    console.log(typeof outputOnly)
     if (outputOnly === 'false') {
       // Update stats on file
       updateStatsOnFile(displayFile, dataContent)

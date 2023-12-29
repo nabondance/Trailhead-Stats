@@ -11,6 +11,9 @@ const setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
 // Mock the action's main function
 const runMock = jest.spyOn(main, 'run')
 
+// Do not care about console.error()
+jest.spyOn(console, 'error').mockImplementation(() => {})
+
 describe('action', () => {
   beforeEach(() => {
     jest.clearAllMocks()
