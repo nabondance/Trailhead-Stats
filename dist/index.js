@@ -33142,15 +33142,15 @@ const {
 
 function validateAllInputs(
   trailheadUsername,
-  displayType,
   displayFile,
+  displayType,
   outputOnly
 ) {
   try {
     // Validate inputs
     validateTrailheadUsername(trailheadUsername)
-    validateDisplayType(displayType)
     validateDisplayFile(displayFile)
+    validateDisplayType(displayType)
     validateOutputOnly(outputOnly)
   } catch (error) {
     console.error(`Error during inputs validation: ${error.message}`)
@@ -33215,14 +33215,11 @@ function validateStringField(field, fieldName) {
 }
 
 function validateBooleanField(field, fieldName) {
-  console.log(field)
   if (field === 'true') {
     field = true
   } else if (field === 'false') {
     field = false
   }
-  console.log(field)
-  console.log(typeof field)
 
   if (typeof field !== 'boolean') {
     throw new Error(

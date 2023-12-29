@@ -13,14 +13,11 @@ function validateStringField(field, fieldName) {
 }
 
 function validateBooleanField(field, fieldName) {
-  console.log(field)
   if (field === 'true') {
     field = true
   } else if (field === 'false') {
     field = false
   }
-  console.log(field)
-  console.log(typeof field)
 
   if (typeof field !== 'boolean') {
     throw new Error(

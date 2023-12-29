@@ -38,6 +38,28 @@ describe('action', () => {
     expect(runMock).toHaveReturned()
   })
 
+  it('run the main code with output only', async () => {
+    // Mock the action's inputs
+    getInputMock.mockImplementation(name => {
+      switch (name) {
+        case 'trailhead-username':
+          return 'thUsername'
+        case 'display-file':
+          return 'README.md'
+        case 'display-type':
+          return 'output'
+        case 'output-only':
+          return 'true'
+        default:
+          return ''
+      }
+    })
+
+    await main.run()
+
+    expect(runMock).toHaveReturned()
+  })
+
   it('sets a failed status', async () => {
     // Mock the action's inputs
     getInputMock.mockImplementation(name => {

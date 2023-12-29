@@ -7,15 +7,15 @@ const {
 
 function validateAllInputs(
   trailheadUsername,
-  displayType,
   displayFile,
+  displayType,
   outputOnly
 ) {
   try {
     // Validate inputs
     validateTrailheadUsername(trailheadUsername)
-    validateDisplayType(displayType)
     validateDisplayFile(displayFile)
+    validateDisplayType(displayType)
     validateOutputOnly(outputOnly)
   } catch (error) {
     console.error(`Error during inputs validation: ${error.message}`)
