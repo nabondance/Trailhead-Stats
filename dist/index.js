@@ -33134,6 +33134,11 @@ module.exports = { updateStatsOnFile, pushUpdatedFile }
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186)
+const {
+  validateRequiredField,
+  validateStringField,
+  validateBooleanField
+} = __nccwpck_require__(2144)
 
 function validateAllInputs(
   trailheadUsername,
@@ -33154,47 +33159,31 @@ function validateAllInputs(
 }
 
 function validateTrailheadUsername(trailheadUsername) {
-  if (!trailheadUsername) {
-    throw new Error('trailhead-username is required.')
-  }
-
-  if (typeof trailheadUsername !== 'string') {
-    throw new Error('trailhead-username must be a string.')
-  }
+  validateRequiredField(trailheadUsername, 'trailhead-username')
+  validateStringField(trailheadUsername, 'trailhead-username')
 }
 
 function validateDisplayType(displayType) {
+  validateRequiredField(displayType, 'display-type')
+  validateStringField(displayType, 'display-type')
+
   const allowedTypes = ['text', 'card', 'output', 'html']
-
-  if (!displayType) {
-    throw new Error('display-type is required.')
-  }
-
-  if (typeof displayType !== 'string') {
-    throw new Error('display-type must be a string.')
-  }
-
   if (!allowedTypes.includes(displayType)) {
     throw new Error(
-      `Invalid display-type. Allowed types are: ${allowedTypes.join(', ')}.`
+      `Invalid display-type '${displayType}'. Allowed types are: ${allowedTypes.join(
+        ', '
+      )}`
     )
   }
 }
 
 function validateDisplayFile(displayFile) {
-  if (!displayFile) {
-    throw new Error('display-file is required.')
-  }
-
-  if (typeof displayFile !== 'string') {
-    throw new Error('display-file must be a string.')
-  }
+  validateRequiredField(displayFile, 'display-file')
+  validateStringField(displayFile, 'display-file')
 }
 
 function validateOutputOnly(outputOnly) {
-  if (outputOnly !== undefined && typeof outputOnly !== 'boolean') {
-    throw new Error('output-only must be a boolean.')
-  }
+  validateBooleanField(outputOnly, 'output-only')
 }
 
 module.exports = {
@@ -33203,6 +33192,51 @@ module.exports = {
   validateDisplayType,
   validateDisplayFile,
   validateOutputOnly
+}
+
+
+/***/ }),
+
+/***/ 2144:
+/***/ ((module) => {
+
+function validateRequiredField(field, fieldName) {
+  if (field === undefined || field === null || field === '') {
+    throw new Error(`${fieldName} is required.`)
+  }
+}
+
+function validateStringField(field, fieldName) {
+  if (typeof field !== 'string') {
+    throw new Error(
+      `${fieldName} must be a string, got ${typeof field}: ${field}`
+    )
+  }
+}
+
+function validateBooleanField(field, fieldName) {
+  console.log(field)
+  if (field === 'true') {
+    field = true
+  } else if (field === 'false') {
+    field = false
+  }
+  console.log(field)
+  console.log(typeof field)
+
+  if (typeof field !== 'boolean') {
+    throw new Error(
+      `${fieldName} must be a boolean, got ${typeof field}: ${field}`
+    )
+  }
+
+  return field
+}
+
+module.exports = {
+  validateRequiredField,
+  validateStringField,
+  validateBooleanField
 }
 
 

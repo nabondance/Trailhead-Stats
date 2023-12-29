@@ -21,7 +21,7 @@ describe('Input Validation Tests', () => {
     it('should throw an error if username is not a string', () => {
       expect(() => {
         validateTrailheadUsername(123)
-      }).toThrow('trailhead-username must be a string.')
+      }).toThrow('trailhead-username must be a string, got number: 123')
     })
 
     it('should not throw an error for a valid username', () => {
@@ -42,14 +42,14 @@ describe('Input Validation Tests', () => {
     it('should throw an error if displayType is not a string', () => {
       expect(() => {
         validateDisplayType(123)
-      }).toThrow('display-type must be a string.')
+      }).toThrow('display-type must be a string, got number: 123')
     })
 
     it('should throw an error if displayType is invalid', () => {
       expect(() => {
         validateDisplayType('invalidType')
       }).toThrow(
-        'Invalid display-type. Allowed types are: text, card, output, html.'
+        "Invalid display-type 'invalidType'. Allowed types are: text, card, output, html"
       )
     })
 
@@ -71,7 +71,7 @@ describe('Input Validation Tests', () => {
     it('should throw an error if displayFile is not a string', () => {
       expect(() => {
         validateDisplayFile(123)
-      }).toThrow('display-file must be a string.')
+      }).toThrow('display-file must be a string, got number: 123')
     })
 
     it('should not throw an error for a valid displayFile', () => {
@@ -86,7 +86,7 @@ describe('Input Validation Tests', () => {
     it('should throw an error if outputOnly is not a boolean', () => {
       expect(() => {
         validateOutputOnly('notABoolean')
-      }).toThrow('output-only must be a boolean.')
+      }).toThrow('output-only must be a boolean, got string: notABoolean')
     })
 
     it('should not throw an error for a valid outputOnly', () => {
@@ -116,21 +116,21 @@ describe('Input Validation Tests', () => {
     it('should call setFailed for invalid displayType', () => {
       validateAllInputs('validUsername', 'invalidType', 'README.md', false)
       expect(core.setFailed).toHaveBeenCalledWith(
-        'Error during inputs validation: Invalid display-type. Allowed types are: text, card, output, html.'
+        "Error during inputs validation: Invalid display-type 'invalidType'. Allowed types are: text, card, output, html"
       )
     })
 
     it('should call setFailed for invalid displayFile', () => {
       validateAllInputs('validUsername', 'text', 123, false)
       expect(core.setFailed).toHaveBeenCalledWith(
-        'Error during inputs validation: display-file must be a string.'
+        'Error during inputs validation: display-file must be a string, got number: 123'
       )
     })
 
     it('should call setFailed for invalid outputOnly', () => {
       validateAllInputs('validUsername', 'text', 'README.md', 'notABoolean')
       expect(core.setFailed).toHaveBeenCalledWith(
-        'Error during inputs validation: output-only must be a boolean.'
+        'Error during inputs validation: output-only must be a boolean, got string: notABoolean'
       )
     })
   })

@@ -1,4 +1,9 @@
 const core = require('@actions/core')
+const {
+  validateRequiredField,
+  validateStringField,
+  validateBooleanField
+} = require('./validators')
 
 function validateAllInputs(
   trailheadUsername,
@@ -19,47 +24,31 @@ function validateAllInputs(
 }
 
 function validateTrailheadUsername(trailheadUsername) {
-  if (!trailheadUsername) {
-    throw new Error('trailhead-username is required.')
-  }
-
-  if (typeof trailheadUsername !== 'string') {
-    throw new Error('trailhead-username must be a string.')
-  }
+  validateRequiredField(trailheadUsername, 'trailhead-username')
+  validateStringField(trailheadUsername, 'trailhead-username')
 }
 
 function validateDisplayType(displayType) {
+  validateRequiredField(displayType, 'display-type')
+  validateStringField(displayType, 'display-type')
+
   const allowedTypes = ['text', 'card', 'output', 'html']
-
-  if (!displayType) {
-    throw new Error('display-type is required.')
-  }
-
-  if (typeof displayType !== 'string') {
-    throw new Error('display-type must be a string.')
-  }
-
   if (!allowedTypes.includes(displayType)) {
     throw new Error(
-      `Invalid display-type. Allowed types are: ${allowedTypes.join(', ')}.`
+      `Invalid display-type '${displayType}'. Allowed types are: ${allowedTypes.join(
+        ', '
+      )}`
     )
   }
 }
 
 function validateDisplayFile(displayFile) {
-  if (!displayFile) {
-    throw new Error('display-file is required.')
-  }
-
-  if (typeof displayFile !== 'string') {
-    throw new Error('display-file must be a string.')
-  }
+  validateRequiredField(displayFile, 'display-file')
+  validateStringField(displayFile, 'display-file')
 }
 
 function validateOutputOnly(outputOnly) {
-  if (outputOnly !== undefined && typeof outputOnly !== 'boolean') {
-    throw new Error('output-only must be a boolean.')
-  }
+  validateBooleanField(outputOnly, 'output-only')
 }
 
 module.exports = {
