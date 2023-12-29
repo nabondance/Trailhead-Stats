@@ -32694,7 +32694,7 @@ module.exports = {
 const core = __nccwpck_require__(2186)
 const github = __nccwpck_require__(5438)
 const displayStats = __nccwpck_require__(2755)
-const validateAllInputs = __nccwpck_require__(2741)
+const { validateAllInputs } = __nccwpck_require__(2741)
 const { updateStatsOnFile, pushUpdatedFile } = __nccwpck_require__(5635)
 const {
   fetchTrailblazerRankInfo,

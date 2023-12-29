@@ -1,7 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const displayStats = require('./displayStats')
-const validateAllInputs = require('./validateInputs')
+const { validateAllInputs } = require('./validateInputs')
 const { updateStatsOnFile, pushUpdatedFile } = require('./updateFile')
 const {
   fetchTrailblazerRankInfo,
