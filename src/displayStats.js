@@ -1,6 +1,7 @@
 const core = require('@actions/core')
-const sharp = require('sharp')
+const Jimp = require('jimp')
 const path = require('path')
+const { createCanvas, loadImage } = require('canvas')
 
 function displayStats(
   displayFile,
@@ -141,11 +142,22 @@ function displayStatsOutput(dataToFormat) {
 
 async function displayStatsCard(dataToFormat, cardPath) {
   try {
-    const cardFullPath = path.join(cardPath, 'Trailhead-Stats.svg')
     const svgContent = createSvgContent(dataToFormat)
     const svgBuffer = Buffer.from(svgContent)
+    const canvas = createCanvas(600, 400)
+    const ctx = canvas.getContext('2d')
 
-    await sharp(svgBuffer).toFile(cardFullPath)
+    // Load SVG buffer onto canvas
+    const image = await loadImage(svgBuffer)
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
+
+    // Convert canvas to buffer and then to Jimp image
+    const buffer = canvas.toBuffer('image/png')
+    const jimpImage = await Jimp.read(buffer)
+
+    // Save the image
+    const cardFullPath = path.join(cardPath, 'Trailhead-Stats.png')
+    await jimpImage.writeAsync(cardFullPath)
     core.info(`Card image saved at ${cardFullPath}`)
   } catch (err) {
     core.setFailed(`Error creating card image: ${err}`)

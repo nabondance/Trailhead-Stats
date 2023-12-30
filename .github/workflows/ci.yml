@@ -55,11 +55,20 @@ jobs:
 
     steps:
       - name: Checkout
-        id: checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Rebuild native Node.js modules
+        run: npm rebuild
+
       - name: Test Local Action
-        id: test-action
         uses: ./
         with:
           trailhead-username: nabondance
@@ -68,5 +77,4 @@ jobs:
           output-only: true
 
       - name: Print Output
-        id: output
         run: echo "${{ steps.test-action.outputs.stats }}" | base64 --decode
