@@ -1,4 +1,6 @@
 const core = require('@actions/core')
+const sharp = require('sharp')
+const path = require('path')
 
 function displayStats(
   displayFile,
@@ -86,6 +88,8 @@ function displayStats(
     dataContent = displayStatsHtml(dataToFormat)
   } else if (displayType === 'output') {
     dataContent = displayStatsOutput(dataToFormat)
+  } else if (displayType === 'card') {
+    dataContent = displayStatsCard(dataToFormat)
   } else {
     core.setFailed(`${displayType} is not an accepted type`)
   }
@@ -124,7 +128,6 @@ function displayStatsHtml(dataToFormat) {
   dataContent += `<li>Number of Certification: ${dataToFormat.nbCertifs}</li>\n`
   dataContent += `<li>Last Certification earned: ${dataToFormat.lastCertif}</li>\n`
   dataContent += `<li>Number of Stamps Earned: ${dataToFormat.nbEarnedStamps}</li>\n`
-
   dataContent += `</ul>`
 
   core.info(`Stats to be displayed:\n${dataContent}`)
@@ -134,6 +137,30 @@ function displayStatsHtml(dataToFormat) {
 function displayStatsOutput(dataToFormat) {
   core.info(`Stats to be displayed:\n${JSON.stringify(dataToFormat)}`)
   return dataToFormat
+}
+
+async function displayStatsCard(dataToFormat, cardPath) {
+  try {
+    const cardFullPath = path.join(cardPath, 'Trailhead-Stats.svg')
+    const svgContent = createSvgContent(dataToFormat)
+    const svgBuffer = Buffer.from(svgContent)
+
+    await sharp(svgBuffer).toFile(cardFullPath)
+    core.info(`Card image saved at ${cardFullPath}`)
+  } catch (err) {
+    core.setFailed(`Error creating card image: ${err}`)
+  }
+}
+
+function createSvgContent(data) {
+  return `
+      <svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="580" height="380" fill="lightblue" />
+        <text x="20" y="40" font-family="Arial" font-size="20" fill="black">Rank: ${data.rank}</text>
+        <text x="20" y="70" font-family="Arial" font-size="20" fill="black">Badges: ${data.nbBadges}</text>
+        <!-- Add more SVG elements here based on dataToFormat -->
+      </svg>
+    `
 }
 
 module.exports = displayStats

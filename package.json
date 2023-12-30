@@ -26,15 +26,16 @@
     "node": ">=20"
   },
   "scripts": {
+    "all": "npm run format:write && npm run lint && npm run test && npm run package",
     "bundle": "npm run format:write && npm run package",
     "ci-test": "jest --coverage",
-    "format:write": "prettier --write **/*.{js,md,yml}",
     "format:check": "prettier --check **/*.{js,md,yml}",
+    "format:write": "prettier --write **/*.{js,md,yml}",
     "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
-    "package": "ncc build src/index.js --license licenses.txt",
     "package:watch": "npm run package -- --watch",
-    "test": "(jest && make-coverage-badge --output-path ./badges/coverage.svg) || make-coverage-badge --output-path ./badges/coverage.svg",
-    "all": "npm run format:write && npm run lint && npm run test && npm run package"
+    "package": "ncc build src/index.js --license licenses.txt",
+    "postinstall": "npm install --platform=linux --arch=x64 sharp",
+    "test": "(jest && make-coverage-badge --output-path ./badges/coverage.svg) || make-coverage-badge --output-path ./badges/coverage.svg"
   },
   "lint-staged": {
     "(**/*.{js,md,yaml,yml})": [
@@ -75,7 +76,8 @@
     "axios": "^1.6.2",
     "child_process": "^1.0.2",
     "fs": "^0.0.1-security",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "sharp": "^0.33.1"
   },
   "devDependencies": {
     "@babel/core": "^7.23.6",
