@@ -39,8 +39,9 @@ function updateStatsOnFile(displayFile, dataContent) {
   }
 }
 
-function pushUpdatedFile(displayFile) {
-  const filePath = path.join(process.env.GITHUB_WORKSPACE, displayFile)
+function pushUpdatedFile(displayFile, cardPath) {
+  const filePathWs = path.join(process.env.GITHUB_WORKSPACE, displayFile)
+  const cardPathWs = path.join(process.env.GITHUB_WORKSPACE, cardPath)
   const branchRef = process.env.GITHUB_REF
   const branchName = branchRef.replace('refs/heads/', '')
   const githubToken = process.env.GITHUB_TOKEN
@@ -53,7 +54,7 @@ function pushUpdatedFile(displayFile) {
     execSync(
       `git remote set-url origin https://x-access-token:${githubToken}@github.com/${process.env.GITHUB_REPOSITORY}`
     )
-    execSync(`git add ${filePath}`)
+    execSync(`git add ${filePathWs} ${cardPathWs}/*`)
 
     // Check if there are any changes
     const status = execSync('git status --porcelain').toString()

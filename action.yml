@@ -19,6 +19,10 @@ inputs:
     description: File to update to display
     required: false
     default: README.md
+  card-path:
+    description: Folder path to save the card
+    required: false
+    default: 'images'
   output-only:
     description: Only output, do not modify file
     required: false

@@ -1,11 +1,11 @@
 const core = require('@actions/core')
-const Jimp = require('jimp')
 const path = require('path')
-const { createCanvas, loadImage } = require('canvas')
+const { generateCard } = require('./cardGenerator')
 
-function displayStats(
+async function displayStats(
   displayFile,
   displayType,
+  cardPath,
   thRank,
   thBadges,
   thSuperBadges,
@@ -15,8 +15,40 @@ function displayStats(
 ) {
   core.info(`Will update the file: ${displayFile}`)
   core.info(`Starting to display with type: ${displayType}`)
-  let dataContent
 
+  const dataToFormat = prepareData(
+    thRank,
+    thBadges,
+    thSuperBadges,
+    thCertifs,
+    thSkills,
+    thEarnedStamps
+  )
+
+  let dataContent
+  if (displayType === 'text') {
+    dataContent = displayStatsText(dataToFormat)
+  } else if (displayType === 'html') {
+    dataContent = displayStatsHtml(dataToFormat)
+  } else if (displayType === 'output') {
+    dataContent = displayStatsOutput(dataToFormat)
+  } else if (displayType === 'card') {
+    dataContent = await displayStatsCard(dataToFormat, cardPath)
+  } else {
+    core.setFailed(`${displayType} is not an accepted type`)
+  }
+
+  return dataContent
+}
+
+function prepareData(
+  thRank,
+  thBadges,
+  thSuperBadges,
+  thCertifs,
+  thSkills,
+  thEarnedStamps
+) {
   // Prepare dataToFormat
   const trailheadStats = thRank?.data.profile.trailheadStats
   const trailheadBadges = thBadges?.data.profile
@@ -50,7 +82,8 @@ function displayStats(
   const certificationsDetails = trailheadCertif.map(cert => ({
     title: cert.title,
     dateCompleted: cert.dateCompleted,
-    status: cert.status.title
+    status: cert.status.title,
+    logoUrl: cert.logoUrl
   }))
   const sortedCertifications = certificationsDetails
     .filter(cert => new Date(cert.dateCompleted) !== 'Invalid Date')
@@ -83,19 +116,7 @@ function displayStats(
     nbEarnedStamps: trailheadEarnedStamps?.count
   }
 
-  if (displayType === 'text') {
-    dataContent = displayStatsText(dataToFormat)
-  } else if (displayType === 'html') {
-    dataContent = displayStatsHtml(dataToFormat)
-  } else if (displayType === 'output') {
-    dataContent = displayStatsOutput(dataToFormat)
-  } else if (displayType === 'card') {
-    dataContent = displayStatsCard(dataToFormat)
-  } else {
-    core.setFailed(`${displayType} is not an accepted type`)
-  }
-
-  return dataContent
+  return dataToFormat
 }
 
 function displayStatsText(dataToFormat) {
@@ -142,37 +163,17 @@ function displayStatsOutput(dataToFormat) {
 
 async function displayStatsCard(dataToFormat, cardPath) {
   try {
-    const svgContent = createSvgContent(dataToFormat)
-    const svgBuffer = Buffer.from(svgContent)
-    const canvas = createCanvas(600, 400)
-    const ctx = canvas.getContext('2d')
+    // Await the generation of the card and get the full path
+    const fullPath = await generateCard(dataToFormat, cardPath)
+    console.log(`Card image saved at ${fullPath}`)
 
-    // Load SVG buffer onto canvas
-    const image = await loadImage(svgBuffer)
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
-
-    // Convert canvas to buffer and then to Jimp image
-    const buffer = canvas.toBuffer('image/png')
-    const jimpImage = await Jimp.read(buffer)
-
-    // Save the image
-    const cardFullPath = path.join(cardPath, 'Trailhead-Stats.png')
-    await jimpImage.writeAsync(cardFullPath)
-    core.info(`Card image saved at ${cardFullPath}`)
+    // Construct the markdown image syntax with the full path
+    const dataContent = `![Trailhead-Stats](${fullPath})`
+    return dataContent
   } catch (err) {
-    core.setFailed(`Error creating card image: ${err}`)
+    console.error(`Error generating the card: ${err}`)
+    core.setFailed(`Error generating the card: ${err}`)
   }
-}
-
-function createSvgContent(data) {
-  return `
-      <svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
-        <rect x="10" y="10" width="580" height="380" fill="lightblue" />
-        <text x="20" y="40" font-family="Arial" font-size="20" fill="black">Rank: ${data.rank}</text>
-        <text x="20" y="70" font-family="Arial" font-size="20" fill="black">Badges: ${data.nbBadges}</text>
-        <!-- Add more SVG elements here based on dataToFormat -->
-      </svg>
-    `
 }
 
 module.exports = displayStats
