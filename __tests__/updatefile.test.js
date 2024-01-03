@@ -75,11 +75,9 @@ describe('Update File Tests', () => {
         return ''
       })
 
-      pushUpdatedFile(mockDisplayFile, mockCardFile)
+      pushUpdatedFile(mockDisplayFile, undefined)
 
-      expect(execSync).toHaveBeenCalledWith(
-        `git add ${mockFilePath} ${mockCardFile}`
-      )
+      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
       expect(execSync).toHaveBeenCalledWith(
         expect.stringContaining('git commit')
       )
@@ -95,11 +93,9 @@ describe('Update File Tests', () => {
         return ''
       })
 
-      pushUpdatedFile(mockDisplayFile, mockCardFile)
+      pushUpdatedFile(mockDisplayFile, undefined)
 
-      expect(execSync).toHaveBeenCalledWith(
-        `git add ${mockFilePath} ${mockCardFile}`
-      )
+      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
       expect(execSync).not.toHaveBeenCalledWith(
         expect.stringContaining('git commit')
       )

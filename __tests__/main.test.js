@@ -63,6 +63,30 @@ describe('action', () => {
     expect(runMock).toHaveReturned()
   })
 
+  it('run the main code with card only', async () => {
+    // Mock the action's inputs
+    getInputMock.mockImplementation(name => {
+      switch (name) {
+        case 'trailhead-username':
+          return 'thUsername'
+        case 'display-file':
+          return 'README.md'
+        case 'display-type':
+          return 'card'
+        case 'output-only':
+          return 'true'
+        case 'card-path':
+          return 'images/'
+        default:
+          return ''
+      }
+    })
+
+    await main.run()
+
+    expect(runMock).toHaveReturned()
+  })
+
   it('sets a failed status', async () => {
     // Mock the action's inputs
     getInputMock.mockImplementation(name => {

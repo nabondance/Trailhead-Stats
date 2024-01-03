@@ -27,13 +27,22 @@ async function run() {
     const displayType = core.getInput('display-type', {
       required: false
     })
-    const cardPath = core.getInput('card-path', {
+    let cardPath = core.getInput('card-path', {
       required: false
     })
     const outputOnly = core.getInput('output-only', {
       required: false
     })
-    validateAllInputs(trailheadUsername, displayFile, displayType, outputOnly)
+    validateAllInputs(
+      trailheadUsername,
+      displayFile,
+      displayType,
+      outputOnly,
+      cardPath
+    )
+    if (displayType === 'card') {
+      cardPath = undefined
+    }
     core.info(`Getting stats for ${trailheadUsername}`)
 
     // Get stats
