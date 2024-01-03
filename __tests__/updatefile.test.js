@@ -26,6 +26,7 @@ jest.mock('axios')
 
 describe('Update File Tests', () => {
   const mockDisplayFile = 'readme.md'
+  const mockCardFile = 'images/TS.png'
   const mockDataContent = 'New stats data'
   let mockFilePath
 
@@ -74,9 +75,11 @@ describe('Update File Tests', () => {
         return ''
       })
 
-      pushUpdatedFile(mockDisplayFile)
+      pushUpdatedFile(mockDisplayFile, mockCardFile)
 
-      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
+      expect(execSync).toHaveBeenCalledWith(
+        `git add ${mockFilePath} ${mockCardFile}`
+      )
       expect(execSync).toHaveBeenCalledWith(
         expect.stringContaining('git commit')
       )
@@ -92,9 +95,11 @@ describe('Update File Tests', () => {
         return ''
       })
 
-      pushUpdatedFile(mockDisplayFile)
+      pushUpdatedFile(mockDisplayFile, mockCardFile)
 
-      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
+      expect(execSync).toHaveBeenCalledWith(
+        `git add ${mockFilePath} ${mockCardFile}`
+      )
       expect(execSync).not.toHaveBeenCalledWith(
         expect.stringContaining('git commit')
       )
@@ -108,7 +113,7 @@ describe('Update File Tests', () => {
         throw new Error('Git command failed')
       })
 
-      pushUpdatedFile(mockDisplayFile)
+      pushUpdatedFile(mockDisplayFile, mockCardFile)
 
       expect(core.setFailed).toHaveBeenCalledWith('Git command failed')
     })
