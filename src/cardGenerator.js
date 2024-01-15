@@ -45,31 +45,34 @@ function generateHtmlContent(data) {
   const style = getStyle('white')
   const numberTopSkills = 5
 
-  // Sort skills by points and normalize
-  const maxSkillPoints = Math.max(
-    ...data.skillPointsDetails.map(skill => skill.points)
-  )
-  // Sort skills by points
-  const sortedSkills = data.skillPointsDetails.sort(
-    (a, b) => b.points - a.points
-  )
-
-  // Slice the array to only include the top n skills
-  const topSkills = sortedSkills.slice(0, numberTopSkills)
-
   // Generate the skills bar chart HTML
-  const skillsBarChartHtml = topSkills
-    .map(skill => {
-      const barWidth = (skill.points / maxSkillPoints) * 100 // Normalize to 100%
-      return `
+  let skillsBarChartHtml
+  if (data.skillPointsDetails) {
+    // Sort skills by points and normalize
+    const maxSkillPoints = Math.max(
+      ...data.skillPointsDetails.map(skill => skill.points)
+    )
+    // Sort skills by points
+    const sortedSkills = data.skillPointsDetails.sort(
+      (a, b) => b.points - a.points
+    )
+
+    // Slice the array to only include the top n skills
+    const topSkills = sortedSkills.slice(0, numberTopSkills)
+
+    skillsBarChartHtml = topSkills
+      .map(skill => {
+        const barWidth = (skill.points / maxSkillPoints) * 100 // Normalize to 100%
+        return `
         <div class="skill-bar-container">
           <div class="skill-name">${skill.name}</div>
           <div class="skill-bar" style="width: ${barWidth}%;">
             <div class="skill-points">${skill.points}</div>
           </div>
         </div>`
-    })
-    .join('')
+      })
+      .join('')
+  }
 
   // Generate the certifications HTML
   let certificationsHtml = ''
@@ -227,4 +230,9 @@ function hashHtml(htmlContent) {
   return crypto.createHash('sha256').update(htmlContent).digest('hex')
 }
 
-module.exports = { generateCard }
+module.exports = {
+  generateCard,
+  generateHtmlContent,
+  getStyle,
+  hashHtml
+}

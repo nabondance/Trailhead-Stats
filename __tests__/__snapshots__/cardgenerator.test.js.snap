@@ -1,0 +1,146 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
+"
+        <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Trailhead Stats Card</title>
+                
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+        width: 600px;
+    }
+    .card-header {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+    .rank-logo {
+        max-width: 100px;
+        max-height: 100px;
+        margin-right: 10px;
+    }
+    .card-content {
+        line-height: 1.6;
+    }
+    .card-content h2 {
+        margin: 5px 0;
+        color: #333;
+    }
+    .card-content p {
+        margin: 5px 0;
+        color: #666;
+    }
+    .badge, .certification, .skill {
+        background-color: #eee;
+        padding: 5px;
+        border-radius: 5px;
+        margin: 5px 0;
+    }
+    .skills-bar-chart {
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+    .skill-bar-container {
+        position: relative; /* Add position relative here */
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+        background-color: #ddd; /* Optional: to make the bar background visible */
+    }
+    .skill-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 20%;
+        padding-right: 5px;
+        text-align: right;
+    }
+    .skill-bar {
+        height: 10px;
+        background-color: #4caf50;
+        border-radius: 5px;
+    }
+    .skill-points {
+        position: absolute;
+        right: 5px;
+        color: green;
+        font-weight: bold;
+    }
+    .certification {
+        display: flex;
+        align-items: center; /* This will vertically align the logo with the text */
+        margin-bottom: 10px; /* Add some space between certification entries */
+    }
+    .cert-logo {
+        max-width: 100px;
+        max-height: 100px;
+        margin-right: 10px;
+        object-fit: contain; /* this ensures the image is scaled correctly while maintaining its aspect ratio */
+        vertical-align: middle; /* This aligns the image nicely with the text */
+    }
+    </style>
+    
+            </head>
+            <body>
+                <div class="card">
+                    <div class="card-header">
+                        <img src="https://res.cloudinary.com/trailhead/image/upload/public-trailhead/assets/images/ranks/triple-star-ranger.png" alt="Rank Logo" class="rank-logo">
+                        <div>
+                            <h2>Triple Star Ranger</h2>
+                            <p>481 Badges, 185400 Points</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h2>Latest Achievements:</h2>
+                        <p>Last Badge: Quest For Data Literacy</p>
+                        <p>Last Superbadge: Access Governance Superbadge Unit</p>
+                        <p>Last Certification: Salesforce Certified Associate</p>
+
+                        <h2>Top 5 Skills:</h2>
+                        <div class="skills-bar-chart">
+                        
+        <div class="skill-bar-container">
+          <div class="skill-name">CRM</div>
+          <div class="skill-bar" style="width: 100%;">
+            <div class="skill-points">30325</div>
+          </div>
+        </div>
+        <div class="skill-bar-container">
+          <div class="skill-name">Chatter</div>
+          <div class="skill-bar" style="width: 4.122011541632316%;">
+            <div class="skill-points">1250</div>
+          </div>
+        </div>
+                        </div>
+                        <h2>Certifications:</h2>
+                        
+      <div class="certification">
+        <img src="https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000" alt="Salesforce Certified Platform App Builder" class="cert-logo">
+        Salesforce Certified Platform App Builder - Active
+      </div>
+                    </div>
+                </div>
+            </body>
+        </html>
+    "
+`;
