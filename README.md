@@ -15,7 +15,7 @@ files.
 To use this action in your workflow, add the following step:
 
 ```yaml
-- uses: nabondance/trailhead-stats@v0.3.0
+- uses: nabondance/trailhead-stats@v0.4.0
   permissions:
     contents: write
   with:
@@ -63,7 +63,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: nabondance/trailhead-stats@v0.3.0
+      - uses: nabondance/trailhead-stats@v0.4.0
         with:
           trailhead-username: 'your_trailhead_username'
 ```

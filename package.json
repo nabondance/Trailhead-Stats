@@ -1,7 +1,7 @@
 {
   "name": "Trailhead-Stats",
   "description": "This action put your specified Trailhead profile stats in your profile readme",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "nabondance",
   "private": false,
   "homepage": "https://github.com/nabondance/Trailhead-Stats#readme",
