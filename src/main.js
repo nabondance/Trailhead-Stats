@@ -40,7 +40,7 @@ async function run() {
       outputOnly,
       cardPath
     )
-    if (displayType === 'card') {
+    if (displayType !== 'card') {
       cardPath = undefined
     }
     core.info(`Getting stats for ${trailheadUsername}`)
