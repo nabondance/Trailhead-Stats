@@ -23,6 +23,10 @@ on:
         required: false
         type: string
         default: 'README-example.md'
+      card-path:
+        description: Folder path to save the card
+        required: false
+        default: 'images'
       output-only:
         description: Only output, do not modify file
         required: false
@@ -39,6 +43,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Check Chromium Version
+        run: chromium-browser --version || echo "Chromium is not installed"
+      - name: Find Chromium Path
+        run: which chromium-browser || echo "Chromium is not installed"
       - name: Get Trailhead stats
         id: trailhead-stats
         uses: ./
@@ -46,4 +54,5 @@ jobs:
           trailhead-username: ${{ inputs.trailhead-username }}
           display-type: ${{ inputs.display-type }}
           display-file: ${{ inputs.display-file }}
+          card-path: ${{ inputs.card-path }}
           output-only: ${{ inputs.output-only }}

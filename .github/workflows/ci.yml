@@ -13,6 +13,7 @@ jobs:
   test-javascript:
     name: JavaScript Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -37,6 +38,7 @@ jobs:
       - name: Lint
         id: npm-lint
         run: npm run lint
+        timeout-minutes: 3
 
       - name: Test
         id: npm-ci-test
@@ -52,6 +54,7 @@ jobs:
   test-action:
     name: GitHub Actions Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout

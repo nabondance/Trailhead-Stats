@@ -1,8 +1,11 @@
 const core = require('@actions/core')
+const path = require('path')
+const { generateCard } = require('./cardGenerator')
 
-function displayStats(
+async function displayStats(
   displayFile,
   displayType,
+  cardPath,
   thRank,
   thBadges,
   thSuperBadges,
@@ -12,15 +15,47 @@ function displayStats(
 ) {
   core.info(`Will update the file: ${displayFile}`)
   core.info(`Starting to display with type: ${displayType}`)
-  let dataContent
 
+  const dataToFormat = prepareData(
+    thRank,
+    thBadges,
+    thSuperBadges,
+    thCertifs,
+    thSkills,
+    thEarnedStamps
+  )
+
+  let dataContent
+  if (displayType === 'text') {
+    dataContent = displayStatsText(dataToFormat)
+  } else if (displayType === 'html') {
+    dataContent = displayStatsHtml(dataToFormat)
+  } else if (displayType === 'output') {
+    dataContent = displayStatsOutput(dataToFormat)
+  } else if (displayType === 'card') {
+    dataContent = await displayStatsCard(dataToFormat, cardPath)
+  } else {
+    core.setFailed(`${displayType} is not an accepted type`)
+  }
+
+  return dataContent
+}
+
+function prepareData(
+  thRank,
+  thBadges,
+  thSuperBadges,
+  thCertifs,
+  thSkills,
+  thEarnedStamps
+) {
   // Prepare dataToFormat
-  const trailheadStats = thRank?.data.profile.trailheadStats
-  const trailheadBadges = thBadges?.data.profile
-  const trailheadSuperBadges = thSuperBadges?.data.profile
-  const trailheadCertif = thCertifs?.data.profile.credential.certifications
-  const trailheadSkills = thSkills?.data.profile.earnedSkills
-  const trailheadEarnedStamps = thEarnedStamps?.data.earnedStamps
+  const trailheadStats = thRank?.data?.profile.trailheadStats
+  const trailheadBadges = thBadges?.data?.profile
+  const trailheadSuperBadges = thSuperBadges?.data?.profile
+  const trailheadCertif = thCertifs?.data?.profile.credential.certifications
+  const trailheadSkills = thSkills?.data?.profile.earnedSkills
+  const trailheadEarnedStamps = thEarnedStamps?.data?.earnedStamps
 
   if (trailheadStats === undefined) {
     core.setFailed(trailheadStats)
@@ -47,7 +82,8 @@ function displayStats(
   const certificationsDetails = trailheadCertif.map(cert => ({
     title: cert.title,
     dateCompleted: cert.dateCompleted,
-    status: cert.status.title
+    status: cert.status.title,
+    logoUrl: cert.logoUrl
   }))
   const sortedCertifications = certificationsDetails
     .filter(cert => new Date(cert.dateCompleted) !== 'Invalid Date')
@@ -80,17 +116,7 @@ function displayStats(
     nbEarnedStamps: trailheadEarnedStamps?.count
   }
 
-  if (displayType === 'text') {
-    dataContent = displayStatsText(dataToFormat)
-  } else if (displayType === 'html') {
-    dataContent = displayStatsHtml(dataToFormat)
-  } else if (displayType === 'output') {
-    dataContent = displayStatsOutput(dataToFormat)
-  } else {
-    core.setFailed(`${displayType} is not an accepted type`)
-  }
-
-  return dataContent
+  return dataToFormat
 }
 
 function displayStatsText(dataToFormat) {
@@ -124,7 +150,6 @@ function displayStatsHtml(dataToFormat) {
   dataContent += `<li>Number of Certification: ${dataToFormat.nbCertifs}</li>\n`
   dataContent += `<li>Last Certification earned: ${dataToFormat.lastCertif}</li>\n`
   dataContent += `<li>Number of Stamps Earned: ${dataToFormat.nbEarnedStamps}</li>\n`
-
   dataContent += `</ul>`
 
   core.info(`Stats to be displayed:\n${dataContent}`)
@@ -134,6 +159,21 @@ function displayStatsHtml(dataToFormat) {
 function displayStatsOutput(dataToFormat) {
   core.info(`Stats to be displayed:\n${JSON.stringify(dataToFormat)}`)
   return dataToFormat
+}
+
+async function displayStatsCard(dataToFormat, cardPath) {
+  try {
+    // Await the generation of the card and get the full path
+    const fullPath = await generateCard(dataToFormat, cardPath)
+    console.log(`Card image saved at ${fullPath}`)
+
+    // Construct the markdown image syntax with the full path
+    const dataContent = `![Trailhead-Stats](${fullPath})`
+    return dataContent
+  } catch (err) {
+    console.error(`Error generating the card: ${err}`)
+    core.setFailed(`Error generating the card: ${err}`)
+  }
 }
 
 module.exports = displayStats

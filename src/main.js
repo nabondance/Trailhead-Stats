@@ -27,10 +27,22 @@ async function run() {
     const displayType = core.getInput('display-type', {
       required: false
     })
+    let cardPath = core.getInput('card-path', {
+      required: false
+    })
     const outputOnly = core.getInput('output-only', {
       required: false
     })
-    validateAllInputs(trailheadUsername, displayFile, displayType, outputOnly)
+    validateAllInputs(
+      trailheadUsername,
+      displayFile,
+      displayType,
+      outputOnly,
+      cardPath
+    )
+    if (displayType === 'card') {
+      cardPath = undefined
+    }
     core.info(`Getting stats for ${trailheadUsername}`)
 
     // Get stats
@@ -45,9 +57,10 @@ async function run() {
     core.info(`All stats received.`)
 
     // Update Readme
-    const dataContent = displayStats(
+    const dataContent = await displayStats(
       displayFile,
       displayType,
+      cardPath,
       thRank,
       thBadges,
       thSuperBadges,
@@ -64,7 +77,7 @@ async function run() {
       updateStatsOnFile(displayFile, dataContent)
 
       // Update file on branch
-      pushUpdatedFile(displayFile)
+      pushUpdatedFile(displayFile, cardPath)
     }
 
     //core.setOutput('stats', JSON.stringify(dataContent))

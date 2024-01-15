@@ -9,7 +9,7 @@ globals:
   SharedArrayBuffer: readonly
 
 ignorePatterns:
-  - '!.*'
+  - '.*'
   - '**/node_modules/.*'
   - '**/dist/.*'
   - '**/coverage/.*'
