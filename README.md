@@ -92,7 +92,7 @@ The fetched Trailhead stats.
 | ------------ | ------------------------------------------------------- |
 | `text`       | ![Text Display Example](images/readme/display_text.png) |
 | `html`       | ![HTML Display Example](images/readme/display_html.png) |
-| `card`       | To Be Developed                                         |
+| `card`       | ![HTML Display Example](images/readme/display_card.png) |
 | `output`     | Object to use in a GitHub Action                        |
 
 ## Troubleshooting
@@ -177,10 +177,8 @@ Feel free to create a PR to add your personal example
 Ideas I have in mind, in no particular order:
 
 - select the language
-- more styling (card)
 - more data
 - add more options to select what to display
-- display rank icon
 - find a way to remove the required permission
 
 ## Abandoned Features
