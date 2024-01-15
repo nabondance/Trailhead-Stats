@@ -1,8 +1,15 @@
 const displayStats = require('./../src/displayStats')
+const cardGenerator = require('.././src/cardGenerator')
 const core = require('@actions/core')
 
 jest.mock('@actions/core')
 const setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
+
+// Mock generateCard function
+jest.mock('../src/cardGenerator', () => ({
+  ...jest.requireActual('../src/cardGenerator'),
+  generateCard: jest.fn()
+}))
 
 describe('displayStats Function', () => {
   afterEach(() => {
@@ -77,7 +84,6 @@ describe('displayStats Function', () => {
                 }
               }
             }
-            // ... more badges
           ]
         }
       }
@@ -285,5 +291,28 @@ describe('displayStats Function', () => {
     )
 
     expect(result).toContain('480</li>')
+  })
+
+  it('should correctly format and display as card', async () => {
+    // Setup the mock to return a specific value
+    cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
+
+    const result = await displayStats(
+      'dummyFile.txt', // displayFile
+      'card', // displayType
+      'images', // cardPath
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData // thSkills
+    )
+
+    // Check if the result contains the path returned by the mocked generateCard function
+    expect(result).toContain('![Trailhead-Stats](path/to/generated/card.png)')
+    expect(cardGenerator.generateCard).toHaveBeenCalledWith(
+      expect.anything(), // The data object passed to generateCard
+      'images' // The cardPath argument passed to displayStats
+    )
   })
 })
