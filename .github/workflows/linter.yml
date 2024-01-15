@@ -15,6 +15,7 @@ jobs:
   lint:
     name: Lint Codebase
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
