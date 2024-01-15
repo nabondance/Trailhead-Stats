@@ -50,12 +50,12 @@ function prepareData(
   thEarnedStamps
 ) {
   // Prepare dataToFormat
-  const trailheadStats = thRank?.data.profile.trailheadStats
-  const trailheadBadges = thBadges?.data.profile
-  const trailheadSuperBadges = thSuperBadges?.data.profile
-  const trailheadCertif = thCertifs?.data.profile.credential.certifications
-  const trailheadSkills = thSkills?.data.profile.earnedSkills
-  const trailheadEarnedStamps = thEarnedStamps?.data.earnedStamps
+  const trailheadStats = thRank?.data?.profile.trailheadStats
+  const trailheadBadges = thBadges?.data?.profile
+  const trailheadSuperBadges = thSuperBadges?.data?.profile
+  const trailheadCertif = thCertifs?.data?.profile.credential.certifications
+  const trailheadSkills = thSkills?.data?.profile.earnedSkills
+  const trailheadEarnedStamps = thEarnedStamps?.data?.earnedStamps
 
   if (trailheadStats === undefined) {
     core.setFailed(trailheadStats)
