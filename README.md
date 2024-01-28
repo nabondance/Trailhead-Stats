@@ -77,6 +77,7 @@ daily.
 | -------------------- | ---------- | ---------------------------------------------------------------------- | ----------- |
 | `trailhead-username` | Required   | The username on Trailhead.                                             | `username`  |
 | `display-file`       | Config     | The file to update for displaying the Trailhead stats.                 | `README.md` |
+| `file-format`        | Config     | Format of the file: `md`,`html`                                        | `md`        |
 | `display-type`       | Preference | The type of display output. Options: `text`, `html`, `card`, `output`. | `text`      |
 | `output-only`        | Config     | Set to true to only output the stats without modifying the file.       | `false`     |
 
@@ -91,7 +92,6 @@ The fetched Trailhead stats.
 | Display Type | Example                                                 |
 | ------------ | ------------------------------------------------------- |
 | `text`       | ![Text Display Example](images/readme/display_text.png) |
-| `html`       | ![HTML Display Example](images/readme/display_html.png) |
 | `card`       | ![HTML Display Example](images/readme/display_card.png) |
 | `output`     | Object to use in a GitHub Action                        |
 

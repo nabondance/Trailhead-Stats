@@ -24,6 +24,9 @@ async function run() {
     const displayFile = core.getInput('display-file', {
       required: false
     })
+    const fileFormat = core.getInput('file-format', {
+      required: false
+    })
     const displayType = core.getInput('display-type', {
       required: false
     })

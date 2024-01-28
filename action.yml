@@ -15,6 +15,10 @@ inputs:
     description: 'Type of display: text|card|output'
     required: false
     default: text
+  file-format:
+    description: 'Format of the file: md|html'
+    required: false
+    default: md
   display-file:
     description: File to update to display
     required: false
