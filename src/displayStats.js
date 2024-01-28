@@ -3,9 +3,7 @@ const path = require('path')
 const { generateCard } = require('./cardGenerator')
 
 async function displayStats(
-  displayFile,
-  displayType,
-  cardPath,
+  inputs,
   thRank,
   thBadges,
   thSuperBadges,
@@ -13,8 +11,8 @@ async function displayStats(
   thSkills,
   thEarnedStamps
 ) {
-  core.info(`Will update the file: ${displayFile}`)
-  core.info(`Starting to display with type: ${displayType}`)
+  core.info(`Will update the file: ${inputs.displayFile}`)
+  core.info(`Starting to display with type: ${inputs.displayType}`)
 
   const dataToFormat = prepareData(
     thRank,
@@ -26,16 +24,16 @@ async function displayStats(
   )
 
   let dataContent
-  if (displayType === 'text') {
+  if (inputs.displayType === 'text') {
     dataContent = displayStatsText(dataToFormat)
-  } else if (displayType === 'html') {
+  } else if (inputs.displayType === 'html') {
     dataContent = displayStatsHtml(dataToFormat)
-  } else if (displayType === 'output') {
+  } else if (inputs.displayType === 'output') {
     dataContent = displayStatsOutput(dataToFormat)
-  } else if (displayType === 'card') {
-    dataContent = await displayStatsCard(dataToFormat, cardPath)
+  } else if (inputs.displayType === 'card') {
+    dataContent = await displayStatsCard(dataToFormat, inputs.cardPath)
   } else {
-    core.setFailed(`${displayType} is not an accepted type`)
+    core.setFailed(`${inputs.displayType} is not an accepted type`)
   }
 
   return dataContent

@@ -146,10 +146,16 @@ describe('displayStats Function', () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'text',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       undefined, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -164,10 +170,16 @@ describe('displayStats Function', () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'badType',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'badType', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -184,10 +196,16 @@ describe('displayStats Function', () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'text',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -203,10 +221,16 @@ describe('displayStats Function', () => {
   })
 
   it('should correctly format and display badge stats', async () => {
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'text',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -218,10 +242,16 @@ describe('displayStats Function', () => {
   })
 
   it('should correctly format and display superbadge stats', async () => {
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'text',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -233,10 +263,16 @@ describe('displayStats Function', () => {
   })
 
   it('should correctly format and display certification stats', async () => {
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'text',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -249,10 +285,16 @@ describe('displayStats Function', () => {
   })
 
   it('should correctly format and display skill stats', async () => {
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'text',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -264,10 +306,16 @@ describe('displayStats Function', () => {
   })
 
   it('should correctly format and display as output', async () => {
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'output',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'output', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -279,10 +327,16 @@ describe('displayStats Function', () => {
   })
 
   it('should correctly format and display as html', async () => {
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'text',
+      fileFormat: 'html',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'html', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -296,11 +350,16 @@ describe('displayStats Function', () => {
   it('should correctly format and display as card', async () => {
     // Setup the mock to return a specific value
     cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
+    const inputs = {
+      displayFile: 'dummyFile.txt',
+      displayType: 'card',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
 
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'card', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
