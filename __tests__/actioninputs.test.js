@@ -15,6 +15,7 @@ describe('Input Validation Tests', () => {
     inputs.displayType = 'text'
     inputs.fileFormat = 'md'
     inputs.outputOnly = false
+    inputs.noCommit = false
   })
 
   // Tests for validateTrailheadUsername
@@ -164,6 +165,25 @@ describe('Input Validation Tests', () => {
     })
   })
 
+  // Tests for validateNoCommit
+  describe('validateNoCommit', () => {
+    it('should throw an error if noCommit is not a boolean', () => {
+      inputs.noCommit = 'notABoolean'
+
+      expect(() => {
+        inputs.validateNoCommit()
+      }).toThrow('no-commit must be a boolean, got string: notABoolean')
+    })
+
+    it('should not throw an error for a valid no-commit', () => {
+      inputs.noCommit = true
+
+      expect(() => {
+        inputs.validateNoCommit()
+      }).not.toThrow()
+    })
+  })
+
   // Test for validateAllInputs with valid inputs
   describe('validateAllInputs with valid inputs', () => {
     it('should not throw an error for valid inputs', () => {
@@ -216,6 +236,15 @@ describe('Input Validation Tests', () => {
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
         'Error during inputs validation: output-only must be a boolean, got string: notABoolean'
+      )
+    })
+
+    it('should call setFailed for invalid noCommit', () => {
+      inputs.noCommit = 'notABoolean'
+
+      inputs.validateInputs()
+      expect(core.setFailed).toHaveBeenCalledWith(
+        'Error during inputs validation: no-commit must be a boolean, got string: notABoolean'
       )
     })
   })

@@ -15,9 +15,9 @@ class ActionInputs {
     this.displayType = core.getInput('display-type', { required: false })
     this.cardPath = core.getInput('card-path', { required: false })
     this.outputOnly = core.getInput('output-only', { required: false })
+    this.noCommit = core.getInput('no-commit', { required: false })
 
     this.validateInputs()
-    this.inputsFixup()
   }
 
   validateInputs() {
@@ -28,6 +28,7 @@ class ActionInputs {
       this.validateDisplayType()
       this.validateFileFormat()
       this.validateOutputOnly()
+      this.validateNoCommit()
     } catch (error) {
       console.error(`Error during inputs validation: ${error.message}`)
       core.setFailed(`Error during inputs validation: ${error.message}`)
@@ -76,10 +77,8 @@ class ActionInputs {
     validateBooleanField(this.outputOnly, 'output-only')
   }
 
-  inputsFixup() {
-    if (this.displayType === 'card') {
-      this.cardPath = undefined
-    }
+  validateNoCommit() {
+    validateBooleanField(this.noCommit, 'no-commit')
   }
 }
 

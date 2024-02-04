@@ -81,6 +81,7 @@ daily.
 | `file-format`        | Config     | Format of the file: `md`,`html`                                        | `md`        |
 | `display-type`       | Preference | The type of display output. Options: `text`, `html`, `card`, `output`. | `text`      |
 | `output-only`        | Config     | Set to true to only output the stats without modifying the file.       | `false`     |
+| `no-commit`          | Debug      | Set to true to not commit the modification.                            | `false`     |
 
 ## Outputs
 

@@ -32,6 +32,11 @@ inputs:
     required: false
     type: boolean
     default: false
+  no-commit:
+    description: Do not commit any modification, for debugging purpose
+    required: false
+    type: boolean
+    default: false
 
 outputs:
   stats:
