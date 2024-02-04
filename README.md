@@ -98,7 +98,8 @@ The fetched Trailhead stats.
 
 ## Versions
 
-Consider using a [released version](https://github.com/nabondance/Trailhead-Stats/releases).
+Consider using a
+[released version](https://github.com/nabondance/Trailhead-Stats/releases).
 
 ## Troubleshooting
 

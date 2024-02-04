@@ -48,8 +48,6 @@ async function run() {
     )
 
     // Update file if wanted
-    console.log(inputs.outputOnly)
-    console.log(typeof outputOnly)
     if (inputs.outputOnly === 'false') {
       // Update stats on file
       updateStatsOnFile(inputs.displayFile, dataContent)

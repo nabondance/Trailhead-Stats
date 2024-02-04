@@ -212,7 +212,6 @@ describe('Input Validation Tests', () => {
 
     it('should call setFailed for invalid outputOnly', () => {
       inputs.outputOnly = 'notABoolean'
-      console.log(inputs)
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
