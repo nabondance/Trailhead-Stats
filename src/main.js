@@ -52,8 +52,11 @@ async function run() {
       // Update stats on file
       updateStatsOnFile(inputs.displayFile, dataContent)
 
-      // Update file on branch
-      pushUpdatedFile(inputs.displayFile, inputs.cardPath)
+      // Commit file if wanted
+      if (inputs.noCommit === 'false') {
+        // Update file on branch
+        pushUpdatedFile(inputs.displayFile, inputs.cardPath)
+      }
     }
 
     //core.setOutput('stats', JSON.stringify(dataContent))

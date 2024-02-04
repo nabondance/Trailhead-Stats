@@ -32,6 +32,11 @@ on:
         required: false
         type: boolean
         default: false
+      no-commit:
+        description: Do not commit modified file
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   trailhead-stats:
@@ -56,3 +61,4 @@ jobs:
           display-file: ${{ inputs.display-file }}
           card-path: ${{ inputs.card-path }}
           output-only: ${{ inputs.output-only }}
+          no-commit: ${{ inputs.no-commit }}
