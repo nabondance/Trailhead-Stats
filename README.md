@@ -96,6 +96,10 @@ The fetched Trailhead stats.
 | `card`       | ![HTML Display Example](images/readme/display_card.png) |
 | `output`     | Object to use in a GitHub Action                        |
 
+## Versions
+
+Consider using a [released version](https://github.com/nabondance/Trailhead-Stats/releases).
+
 ## Troubleshooting
 
 Having issues with the Trailhead Stats GitHub Action? Here are some common
