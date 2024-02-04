@@ -7,10 +7,19 @@ const { ActionInputs } = require('../src/actionInputs')
 jest.spyOn(console, 'error').mockImplementation(() => {})
 
 describe('Input Validation Tests', () => {
+  let inputs
+  beforeEach(() => {
+    inputs = new ActionInputs()
+    inputs.trailheadUsername = 'validUsername'
+    inputs.displayFile = 'README.md'
+    inputs.displayType = 'text'
+    inputs.fileFormat = 'md'
+    inputs.outputOnly = false
+  })
+
   // Tests for validateTrailheadUsername
   describe('validateTrailheadUsername', () => {
     it('should throw an error if username is empty', () => {
-      const inputs = new ActionInputs()
       inputs.trailheadUsername = ''
 
       expect(() => {
@@ -19,7 +28,6 @@ describe('Input Validation Tests', () => {
     })
 
     it('should throw an error if username is not a string', () => {
-      const inputs = new ActionInputs()
       inputs.trailheadUsername = 123
 
       expect(() => {
@@ -28,7 +36,6 @@ describe('Input Validation Tests', () => {
     })
 
     it('should not throw an error for a valid username', () => {
-      const inputs = new ActionInputs()
       inputs.trailheadUsername = 'validUsername'
 
       expect(() => {
@@ -40,7 +47,6 @@ describe('Input Validation Tests', () => {
   // Tests for validateDisplayType
   describe('validateDisplayType', () => {
     it('should throw an error if displayType is empty', () => {
-      const inputs = new ActionInputs()
       inputs.displayType = ''
 
       expect(() => {
@@ -49,7 +55,6 @@ describe('Input Validation Tests', () => {
     })
 
     it('should throw an error if displayType is not a string', () => {
-      const inputs = new ActionInputs()
       inputs.displayType = 123
 
       expect(() => {
@@ -58,18 +63,16 @@ describe('Input Validation Tests', () => {
     })
 
     it('should throw an error if displayType is invalid', () => {
-      const inputs = new ActionInputs()
       inputs.displayType = 'invalidType'
 
       expect(() => {
         inputs.validateDisplayType()
       }).toThrow(
-        "Invalid display-type 'invalidType'. Allowed types are: text, card, output, html"
+        "Invalid display-type 'invalidType'. Allowed types are: text, card, output"
       )
     })
 
     it('should not throw an error for a valid displayType', () => {
-      const inputs = new ActionInputs()
       inputs.displayType = 'text'
 
       expect(() => {
@@ -81,7 +84,6 @@ describe('Input Validation Tests', () => {
   // Tests for validateDisplayFile
   describe('validateDisplayFile', () => {
     it('should throw an error if displayFile is empty', () => {
-      const inputs = new ActionInputs()
       inputs.displayFile = ''
 
       expect(() => {
@@ -90,7 +92,6 @@ describe('Input Validation Tests', () => {
     })
 
     it('should throw an error if displayFile is not a string', () => {
-      const inputs = new ActionInputs()
       inputs.displayFile = 123
 
       expect(() => {
@@ -99,7 +100,6 @@ describe('Input Validation Tests', () => {
     })
 
     it('should not throw an error for a valid displayFile', () => {
-      const inputs = new ActionInputs()
       inputs.displayFile = 'README.md'
 
       expect(() => {
@@ -108,10 +108,46 @@ describe('Input Validation Tests', () => {
     })
   })
 
+  // Tests for validateFileFormat
+  describe('validateFileFormat', () => {
+    it('should throw an error if fileFormat is empty', () => {
+      inputs.fileFormat = ''
+
+      expect(() => {
+        inputs.validateFileFormat()
+      }).toThrow('file-format is required.')
+    })
+
+    it('should throw an error if fileFormat is not a string', () => {
+      inputs.fileFormat = 123
+
+      expect(() => {
+        inputs.validateFileFormat()
+      }).toThrow('file-format must be a string, got number: 123')
+    })
+
+    it('should throw an error if fileFormat is invalid', () => {
+      inputs.fileFormat = 'invalidFormat'
+
+      expect(() => {
+        inputs.validateFileFormat()
+      }).toThrow(
+        "Invalid file-format 'invalidFormat'. Allowed types are: md, html"
+      )
+    })
+
+    it('should not throw an error for a valid fileFormat', () => {
+      inputs.fileFormat = 'md'
+
+      expect(() => {
+        inputs.validateFileFormat()
+      }).not.toThrow()
+    })
+  })
+
   // Tests for validateOutputOnly
   describe('validateOutputOnly', () => {
     it('should throw an error if outputOnly is not a boolean', () => {
-      const inputs = new ActionInputs()
       inputs.outputOnly = 'notABoolean'
 
       expect(() => {
@@ -120,7 +156,6 @@ describe('Input Validation Tests', () => {
     })
 
     it('should not throw an error for a valid outputOnly', () => {
-      const inputs = new ActionInputs()
       inputs.outputOnly = true
 
       expect(() => {
@@ -132,12 +167,6 @@ describe('Input Validation Tests', () => {
   // Test for validateAllInputs with valid inputs
   describe('validateAllInputs with valid inputs', () => {
     it('should not throw an error for valid inputs', () => {
-      const inputs = new ActionInputs()
-      inputs.trailheadUsername = 'validUsername'
-      inputs.displayFile = 'README.md'
-      inputs.displayType = 'text'
-      inputs.outputOnly = false
-
       expect(() => {
         inputs.validateInputs()
       }).not.toThrow()
@@ -146,11 +175,7 @@ describe('Input Validation Tests', () => {
   // Test for validateAllInputs with invalid inputs
   describe('validateAllInputs error handling', () => {
     it('should call setFailed for invalid username', () => {
-      const inputs = new ActionInputs()
       inputs.trailheadUsername = ''
-      inputs.displayFile = 'README.md'
-      inputs.displayType = 'text'
-      inputs.outputOnly = false
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
@@ -159,24 +184,16 @@ describe('Input Validation Tests', () => {
     })
 
     it('should call setFailed for invalid displayType', () => {
-      const inputs = new ActionInputs()
-      inputs.trailheadUsername = 'validUsername'
-      inputs.displayFile = 'README.md'
       inputs.displayType = 'invalidType'
-      inputs.outputOnly = false
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
-        "Error during inputs validation: Invalid display-type 'invalidType'. Allowed types are: text, card, output, html"
+        "Error during inputs validation: Invalid display-type 'invalidType'. Allowed types are: text, card, output"
       )
     })
 
     it('should call setFailed for invalid displayFile', () => {
-      const inputs = new ActionInputs()
-      inputs.trailheadUsername = 'validUsername'
       inputs.displayFile = 123
-      inputs.displayType = 'invalidType'
-      inputs.outputOnly = false
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
@@ -184,12 +201,18 @@ describe('Input Validation Tests', () => {
       )
     })
 
+    it('should call setFailed for invalid fileFormat', () => {
+      inputs.fileFormat = 'invalidFormat'
+
+      inputs.validateInputs()
+      expect(core.setFailed).toHaveBeenCalledWith(
+        "Error during inputs validation: Invalid file-format 'invalidFormat'. Allowed types are: md, html"
+      )
+    })
+
     it('should call setFailed for invalid outputOnly', () => {
-      const inputs = new ActionInputs()
-      inputs.trailheadUsername = 'validUsername'
-      inputs.displayFile = 'README.md'
-      inputs.displayType = 'invalidType'
       inputs.outputOnly = 'notABoolean'
+      console.log(inputs)
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(

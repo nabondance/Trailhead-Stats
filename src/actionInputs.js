@@ -26,6 +26,7 @@ class ActionInputs {
       this.validateTrailheadUsername()
       this.validateDisplayFile()
       this.validateDisplayType()
+      this.validateFileFormat()
       this.validateOutputOnly()
     } catch (error) {
       console.error(`Error during inputs validation: ${error.message}`)
@@ -42,7 +43,7 @@ class ActionInputs {
     validateRequiredField(this.displayType, 'display-type')
     validateStringField(this.displayType, 'display-type')
 
-    const allowedTypes = ['text', 'card', 'output', 'html']
+    const allowedTypes = ['text', 'card', 'output']
     if (!allowedTypes.includes(this.displayType)) {
       throw new Error(
         `Invalid display-type '${
@@ -55,6 +56,20 @@ class ActionInputs {
   validateDisplayFile() {
     validateRequiredField(this.displayFile, 'display-file')
     validateStringField(this.displayFile, 'display-file')
+  }
+
+  validateFileFormat() {
+    validateRequiredField(this.fileFormat, 'file-format')
+    validateStringField(this.fileFormat, 'file-format')
+
+    const allowedFormats = ['md', 'html']
+    if (!allowedFormats.includes(this.fileFormat)) {
+      throw new Error(
+        `Invalid file-format '${
+          this.fileFormat
+        }'. Allowed types are: ${allowedFormats.join(', ')}`
+      )
+    }
   }
 
   validateOutputOnly() {
