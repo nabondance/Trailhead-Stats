@@ -97,18 +97,33 @@ function generateHtmlContent(data) {
             <body>
                 <div class="card">
                     <div class="card-header">
-                        <img src="${data.rankIcon}" alt="Rank Logo" class="rank-logo">
+                        <img src="${
+                          data.rankIcon
+                        }" alt="Rank Logo" class="rank-logo">
                         <div>
                             <h2>${data.rank}</h2>
-                            <p>${data.nbBadges} Badges, ${data.points} Points</p>
+                            <p>${data.nbBadges} Badges, ${
+                              data.points
+                            } Points</p>
                         </div>
                     </div>
                     <div class="card-content">
                         <h2>Latest Achievements:</h2>
-                        <p>Last Badge: ${data.lastBadge}</p>
-                        <p>Last Superbadge: ${data.lastSuperbadge}</p>
-                        <p>Last Certification: ${data.lastCertif}</p>
-
+                        ${
+                          data.lastBadge
+                            ? `<p>Last Badge: ${data.lastBadge}</p>`
+                            : ''
+                        }
+                        ${
+                          data.lastSuperbadge
+                            ? `<p>Last Superbadge: ${data.lastSuperbadge}</p>`
+                            : ''
+                        }
+                        ${
+                          data.lastCertif
+                            ? `<p>Last Certification: ${data.lastCertif}</p>`
+                            : ''
+                        }
                         <h2>Top ${numberTopSkills} Skills:</h2>
                         <div class="skills-bar-chart">
                         ${skillsBarChartHtml}
