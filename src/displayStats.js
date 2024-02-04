@@ -25,13 +25,11 @@ async function displayStats(
 
   let dataContent
   if (inputs.displayType === 'text') {
-    dataContent = displayStatsText(dataToFormat)
-  } else if (inputs.displayType === 'html') {
-    dataContent = displayStatsHtml(dataToFormat)
+    dataContent = displayStatsText(inputs, dataToFormat)
   } else if (inputs.displayType === 'output') {
     dataContent = displayStatsOutput(dataToFormat)
   } else if (inputs.displayType === 'card') {
-    dataContent = await displayStatsCard(dataToFormat, inputs.cardPath)
+    dataContent = await displayStatsCard(inputs, dataToFormat)
   } else {
     core.setFailed(`${inputs.displayType} is not an accepted type`)
   }
@@ -117,7 +115,16 @@ function prepareData(
   return dataToFormat
 }
 
-function displayStatsText(dataToFormat) {
+function displayStatsText(inputs, dataToFormat) {
+  switch (inputs.fileFormat) {
+    case 'md':
+      return displayStatsTextMd(dataToFormat)
+    case 'html':
+      return displayStatsTextHtml(dataToFormat)
+  }
+}
+
+function displayStatsTextMd(dataToFormat) {
   let dataContent = ''
 
   // Add info to the dataContent
@@ -132,10 +139,11 @@ function displayStatsText(dataToFormat) {
   dataContent += `Number of Stamps Earned: ${dataToFormat.nbEarnedStamps}  \n`
 
   core.info(`Stats to be displayed:\n${dataContent}`)
+
   return dataContent
 }
 
-function displayStatsHtml(dataToFormat) {
+function displayStatsTextHtml(dataToFormat) {
   let dataContent = `<ul>`
 
   // Add info to the dataContent
@@ -159,14 +167,22 @@ function displayStatsOutput(dataToFormat) {
   return dataToFormat
 }
 
-async function displayStatsCard(dataToFormat, cardPath) {
+async function displayStatsCard(inputs, dataToFormat) {
   try {
     // Await the generation of the card and get the full path
-    const fullPath = await generateCard(dataToFormat, cardPath)
+    const fullPath = await generateCard(dataToFormat, inputs.cardPath)
     console.log(`Card image saved at ${fullPath}`)
 
-    // Construct the markdown image syntax with the full path
-    const dataContent = `![Trailhead-Stats](${fullPath})`
+    // Construct the image display depending on the file format
+    let dataContent = ''
+    switch (inputs.fileFormat) {
+      case 'md':
+        dataContent = `![Trailhead-Stats](${fullPath})`
+        break
+      case 'html':
+        dataContent = `<a href="https://www.salesforce.com/trailblazer/${inputs.trailheadUsername}"><img src="${fullPath}"></a>`
+        break
+    }
     return dataContent
   } catch (err) {
     console.error(`Error generating the card: ${err}`)
