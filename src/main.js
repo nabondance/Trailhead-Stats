@@ -1,7 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const displayStats = require('./displayStats')
-const { validateAllInputs } = require('./validateInputs')
+const { ActionInputs } = require('./actionInputs')
 const { updateStatsOnFile, pushUpdatedFile } = require('./updateFile')
 const {
   fetchTrailblazerRankInfo,
@@ -18,49 +18,27 @@ const {
  */
 async function run() {
   try {
-    const trailheadUsername = core.getInput('trailhead-username', {
-      required: true
-    })
-    const displayFile = core.getInput('display-file', {
-      required: false
-    })
-    const displayType = core.getInput('display-type', {
-      required: false
-    })
-    let cardPath = core.getInput('card-path', {
-      required: false
-    })
-    const outputOnly = core.getInput('output-only', {
-      required: false
-    })
-    validateAllInputs(
-      trailheadUsername,
-      displayFile,
-      displayType,
-      outputOnly,
-      cardPath
-    )
-    if (displayType !== 'card') {
-      cardPath = undefined
-    }
-    core.info(`Getting stats for ${trailheadUsername}`)
+    const inputs = new ActionInputs()
+    core.info(`Getting stats for ${inputs.trailheadUsername}`)
 
     // Get stats
-    const thRank = await fetchTrailblazerRankInfo(trailheadUsername)
-    const thBadges = await fetchTrailblazerBadgesInfo(trailheadUsername)
-    const thSuperBadges =
-      await fetchTrailblazerSuperBadgesInfo(trailheadUsername)
-    const thCertifs = await fetchTrailblazerCertifsInfo(trailheadUsername)
-    const thSkills = await fetchTrailblazerSkillsInfo(trailheadUsername)
-    const thEarnedStamps =
-      await fetchTrailblazerEarnedStampsInfo(trailheadUsername)
+    const thRank = await fetchTrailblazerRankInfo(inputs.trailheadUsername)
+    const thBadges = await fetchTrailblazerBadgesInfo(inputs.trailheadUsername)
+    const thSuperBadges = await fetchTrailblazerSuperBadgesInfo(
+      inputs.trailheadUsername
+    )
+    const thCertifs = await fetchTrailblazerCertifsInfo(
+      inputs.trailheadUsername
+    )
+    const thSkills = await fetchTrailblazerSkillsInfo(inputs.trailheadUsername)
+    const thEarnedStamps = await fetchTrailblazerEarnedStampsInfo(
+      inputs.trailheadUsername
+    )
     core.info(`All stats received.`)
 
     // Update Readme
     const dataContent = await displayStats(
-      displayFile,
-      displayType,
-      cardPath,
+      inputs,
       thRank,
       thBadges,
       thSuperBadges,
@@ -70,14 +48,12 @@ async function run() {
     )
 
     // Update file if wanted
-    console.log(outputOnly)
-    console.log(typeof outputOnly)
-    if (outputOnly === 'false') {
+    if (inputs.outputOnly === 'false') {
       // Update stats on file
-      updateStatsOnFile(displayFile, dataContent)
+      updateStatsOnFile(inputs.displayFile, dataContent)
 
       // Update file on branch
-      pushUpdatedFile(displayFile, cardPath)
+      pushUpdatedFile(inputs.displayFile, inputs.cardPath)
     }
 
     //core.setOutput('stats', JSON.stringify(dataContent))

@@ -39,8 +39,6 @@ async function createCardAsPng(htmlContent, outputPath) {
 }
 
 function generateHtmlContent(data) {
-  console.log('in generateHtmlContent')
-
   // Define the HTML structure with inline CSS for styling
   const style = getStyle('white')
   const numberTopSkills = 5

@@ -22,6 +22,7 @@ To use this action in your workflow, add the following step:
     trailhead-username: 'your_trailhead_username'
     display-type: 'text' # Optional
     display-file: 'README.md' # Optional
+    file-format: 'md' # Optional
     output-only: false # Optional
 ```
 
@@ -77,6 +78,7 @@ daily.
 | -------------------- | ---------- | ---------------------------------------------------------------------- | ----------- |
 | `trailhead-username` | Required   | The username on Trailhead.                                             | `username`  |
 | `display-file`       | Config     | The file to update for displaying the Trailhead stats.                 | `README.md` |
+| `file-format`        | Config     | Format of the file: `md`,`html`                                        | `md`        |
 | `display-type`       | Preference | The type of display output. Options: `text`, `html`, `card`, `output`. | `text`      |
 | `output-only`        | Config     | Set to true to only output the stats without modifying the file.       | `false`     |
 
@@ -91,9 +93,13 @@ The fetched Trailhead stats.
 | Display Type | Example                                                 |
 | ------------ | ------------------------------------------------------- |
 | `text`       | ![Text Display Example](images/readme/display_text.png) |
-| `html`       | ![HTML Display Example](images/readme/display_html.png) |
 | `card`       | ![HTML Display Example](images/readme/display_card.png) |
 | `output`     | Object to use in a GitHub Action                        |
+
+## Versions
+
+Consider using a
+[released version](https://github.com/nabondance/Trailhead-Stats/releases).
 
 ## Troubleshooting
 

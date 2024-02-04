@@ -142,19 +142,43 @@ describe('displayStats Function', () => {
     }
   }
 
+  const mockTrailheadEarnedStampsData = {
+    data: {
+      earnedStamps: [
+        {
+          stamps: {
+            name: 'DX'
+          }
+        }
+        // ... more stamps
+      ]
+    }
+  }
+
+  let inputs
+  beforeEach(() => {
+    inputs = {
+      trailheadUsername: 'username',
+      displayFile: 'dummyFile.txt',
+      displayType: 'text',
+      fileFormat: 'md',
+      cardPath: 'images',
+      outputOnly: 'false'
+    }
+  })
+
   it('should fail if there is no rank', async () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       undefined, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     expect(setFailedMock).toHaveBeenCalledWith(undefined)
@@ -164,15 +188,16 @@ describe('displayStats Function', () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
+    inputs.displayType = 'badType'
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'badType', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     expect(setFailedMock).toHaveBeenCalledWith(
@@ -185,14 +210,13 @@ describe('displayStats Function', () => {
     const mockEmptyData = { data: { profile: {} } }
 
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     expect(core.info).toHaveBeenCalledWith(expect.any(String))
@@ -204,14 +228,13 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display badge stats', async () => {
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     expect(result).toContain('Badges: 480')
@@ -219,14 +242,13 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display superbadge stats', async () => {
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     expect(result).toContain('Number of Superbadge: 3')
@@ -234,14 +256,13 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display certification stats', async () => {
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     expect(core.info).toHaveBeenCalledWith(expect.any(String))
@@ -250,66 +271,110 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display skill stats', async () => {
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'text', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     expect(result).toContain('')
   })
 
   it('should correctly format and display as output', async () => {
+    inputs.displayType = 'output'
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'output', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     expect(result.nbBadges).toBe(480)
   })
 
-  it('should correctly format and display as html', async () => {
+  it('should correctly format and display as text md', async () => {
+    inputs.fileFormat = 'md'
+
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'html', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
+    )
+
+    expect(result).toContain('Badges: 480')
+  })
+
+  it('should correctly format and display as text html', async () => {
+    inputs.fileFormat = 'html'
+
+    const result = await displayStats(
+      inputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     expect(result).toContain('480</li>')
   })
 
-  it('should correctly format and display as card', async () => {
+  it('should correctly format and display as card md', async () => {
     // Setup the mock to return a specific value
     cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
+    inputs.displayType = 'card'
+    inputs.fileFormat = 'md'
 
     const result = await displayStats(
-      'dummyFile.txt', // displayFile
-      'card', // displayType
-      'images', // cardPath
+      inputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
       mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData // thSkills
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
     // Check if the result contains the path returned by the mocked generateCard function
     expect(result).toContain('![Trailhead-Stats](path/to/generated/card.png)')
+    expect(cardGenerator.generateCard).toHaveBeenCalledWith(
+      expect.anything(), // The data object passed to generateCard
+      'images' // The cardPath argument passed to displayStats
+    )
+  })
+
+  it('should correctly format and display as card html', async () => {
+    // Setup the mock to return a specific value
+    cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
+    inputs.displayType = 'card'
+    inputs.fileFormat = 'html'
+
+    const result = await displayStats(
+      inputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
+    )
+
+    // Check if the result contains the path returned by the mocked generateCard function
+    expect(result).toContain(
+      '<a href="https://www.salesforce.com/trailblazer/username"><img src="path/to/generated/card.png"></a>'
+    )
     expect(cardGenerator.generateCard).toHaveBeenCalledWith(
       expect.anything(), // The data object passed to generateCard
       'images' // The cardPath argument passed to displayStats
