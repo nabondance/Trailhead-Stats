@@ -17,7 +17,6 @@ class ActionInputs {
     this.outputOnly = core.getInput('output-only', { required: false })
 
     this.validateInputs()
-    this.inputsFixup()
   }
 
   validateInputs() {
@@ -74,12 +73,6 @@ class ActionInputs {
 
   validateOutputOnly() {
     validateBooleanField(this.outputOnly, 'output-only')
-  }
-
-  inputsFixup() {
-    if (this.displayType === 'card') {
-      this.cardPath = undefined
-    }
   }
 }
 
