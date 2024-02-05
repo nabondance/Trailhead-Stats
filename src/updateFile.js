@@ -22,7 +22,7 @@ function updateStatsOnFile(displayFile, dataContent) {
     }
 
     // Construct the new content to be placed between the tags
-    const newContent = `${startTag}\n${dataContent}${endTag}`
+    const newContent = `${startTag}\n${dataContent}\n${endTag}`
 
     // Replace the content between the tags
     fileContent =
