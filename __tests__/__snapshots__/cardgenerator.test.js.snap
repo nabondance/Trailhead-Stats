@@ -115,7 +115,6 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <p>Last Badge: Quest For Data Literacy</p>
                         <p>Last Superbadge: Access Governance Superbadge Unit</p>
                         <p>Last Certification: Salesforce Certified Associate</p>
-
                         <h2>Top 5 Skills:</h2>
                         <div class="skills-bar-chart">
                         
