@@ -14,6 +14,7 @@ describe('Input Validation Tests', () => {
     inputs.displayFile = 'README.md'
     inputs.displayType = 'text'
     inputs.fileFormat = 'md'
+    inputs.cardPath = './images'
     inputs.outputOnly = false
     inputs.noCommit = false
   })
@@ -146,6 +147,33 @@ describe('Input Validation Tests', () => {
     })
   })
 
+  // Tests for validateCardPath
+  describe('validateCardPath', () => {
+    it('should throw an error if cardPath is empty', () => {
+      inputs.cardPath = ''
+
+      expect(() => {
+        inputs.validateCardPath()
+      }).toThrow('card-path is required.')
+    })
+
+    it('should throw an error if cardPath is not a string', () => {
+      inputs.cardPath = 123
+
+      expect(() => {
+        inputs.validateCardPath()
+      }).toThrow('card-path must be a string, got number: 123')
+    })
+
+    it('should not throw an error for a valid cardPath', () => {
+      inputs.cardPath = './images'
+
+      expect(() => {
+        inputs.validateFileFormat()
+      }).not.toThrow()
+    })
+  })
+
   // Tests for validateOutputOnly
   describe('validateOutputOnly', () => {
     it('should throw an error if outputOnly is not a boolean', () => {
@@ -227,6 +255,15 @@ describe('Input Validation Tests', () => {
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
         "Error during inputs validation: Invalid file-format 'invalidFormat'. Allowed types are: md, html"
+      )
+    })
+
+    it('should call setFailed for invalid cardPath', () => {
+      inputs.cardPath = 123
+
+      inputs.validateInputs()
+      expect(core.setFailed).toHaveBeenCalledWith(
+        'Error during inputs validation: card-path must be a string, got number: 123'
       )
     })
 

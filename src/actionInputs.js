@@ -11,8 +11,8 @@ class ActionInputs {
       required: true
     })
     this.displayFile = core.getInput('display-file', { required: false })
-    this.fileFormat = core.getInput('file-format', { required: false })
     this.displayType = core.getInput('display-type', { required: false })
+    this.fileFormat = core.getInput('file-format', { required: false })
     this.cardPath = core.getInput('card-path', { required: false })
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
@@ -27,6 +27,7 @@ class ActionInputs {
       this.validateDisplayFile()
       this.validateDisplayType()
       this.validateFileFormat()
+      this.validateCardPath()
       this.validateOutputOnly()
       this.validateNoCommit()
     } catch (error) {
@@ -71,6 +72,11 @@ class ActionInputs {
         }'. Allowed types are: ${allowedFormats.join(', ')}`
       )
     }
+  }
+
+  validateCardPath() {
+    validateRequiredField(this.cardPath, 'card-path')
+    validateStringField(this.cardPath, 'card-path')
   }
 
   validateOutputOnly() {
