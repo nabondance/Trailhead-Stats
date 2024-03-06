@@ -115,9 +115,9 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <p>Last Badge: Quest For Data Literacy</p>
                         <p>Last Superbadge: Access Governance Superbadge Unit</p>
                         <p>Last Certification: Salesforce Certified Associate</p>
-                        <h2>Top 5 Skills:</h2>
-                        <div class="skills-bar-chart">
-                        
+                        <p>Last Stamp: Salesforce stamp</p>
+
+                        <h2>Top 5 Skills:</h2><div class="skills-bar-chart">
         <div class="skill-bar-container">
           <div class="skill-name">CRM</div>
           <div class="skill-bar" style="width: 100%;">
@@ -130,13 +130,17 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
             <div class="skill-points">1250</div>
           </div>
         </div>
-                        </div>
+</div>
                         <h2>Certifications:</h2>
-                        
       <div class="certification">
         <img src="https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000" alt="Salesforce Certified Platform App Builder" class="cert-logo">
         Salesforce Certified Platform App Builder - Active
       </div>
+                        <h2>Stamps:</h2>
+        <div class="certification">
+          <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png" alt="Salesforce stamp" class="cert-logo">
+          Salesforce stamp
+        </div>
                     </div>
                 </div>
             </body>
