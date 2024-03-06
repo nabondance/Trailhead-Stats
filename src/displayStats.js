@@ -93,23 +93,38 @@ function prepareData(
     points: skill.earnedPointsSum
   }))
 
+  // Stamps
+  const earnedStampsDetails = trailheadEarnedStamps?.edges.map(edge => ({
+    name: edge.node.name,
+    eventDate: edge.node.eventDate,
+    kind: edge.node.kind,
+    iconUrl: edge.node.iconUrl
+  }))
+  const sortedEarnedStamps = earnedStampsDetails
+    .filter(stamp => new Date(stamp.eventDate) !== 'Invalid Date')
+    .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate))
+  const lastEarnedStamps =
+    sortedEarnedStamps.length > 0 ? sortedEarnedStamps[0] : null
+
   // Data ready to be used
   const dataToFormat = {
     rank: trailheadStats?.rank.title,
     rankIcon: trailheadStats?.rank.imageUrl,
-    nbBadges: trailheadStats?.earnedBadgesCount,
-    badgeDetails,
-    lastBadge: badgeDetails[0]?.title,
     points: trailheadStats?.earnedPointsSum,
     trails: trailheadStats?.completedTrailCount,
-    nbSuperBadges: trailheadSuperBadges?.trailheadStats.superbadgeCount,
+    badgeDetails,
+    nbBadges: trailheadStats?.earnedBadgesCount,
+    lastBadge: badgeDetails[0]?.title,
     superbadgeDetails,
+    nbSuperBadges: trailheadSuperBadges?.trailheadStats.superbadgeCount,
     lastSuperbadge: superbadgeDetails[0]?.title,
-    nbCertifs: trailheadCertif?.length,
     certificationsDetails,
+    nbCertifs: trailheadCertif?.length,
     lastCertif: lastCertification?.title,
     skillPointsDetails,
-    nbEarnedStamps: trailheadEarnedStamps?.count
+    nbEarnedStamps: trailheadEarnedStamps?.count,
+    lastEarnedStamps: lastEarnedStamps?.name,
+    earnedStampsDetails
   }
 
   return dataToFormat
@@ -128,15 +143,17 @@ function displayStatsTextMd(dataToFormat) {
   let dataContent = ''
 
   // Add info to the dataContent
-  dataContent += `Rank: ${dataToFormat.rank}  \n`
-  dataContent += `Badges: ${dataToFormat.nbBadges}  \n`
-  dataContent += `Points: ${dataToFormat.points}  \n`
-  dataContent += `Number of trails completed: ${dataToFormat.trails}  \n`
-  dataContent += `Number of Superbadge: ${dataToFormat.nbSuperBadges}  \n`
-  dataContent += `Last Superbadge earned: ${dataToFormat.lastSuperbadge}  \n`
-  dataContent += `Number of Certification: ${dataToFormat.nbCertifs}  \n`
-  dataContent += `Last Certification earned: ${dataToFormat.lastCertif}  \n`
-  dataContent += `Number of Stamps Earned: ${dataToFormat.nbEarnedStamps}  \n`
+  dataContent += appDC('Rank', dataToFormat.rank)
+  dataContent += appDC('Badges', dataToFormat.nbBadges)
+  dataContent += appDC('Points', dataToFormat.points)
+  dataContent += appDC('Number of trails completed', dataToFormat.trails)
+  dataContent += appDC('Number of Superbadge', dataToFormat.nbSuperBadges)
+  dataContent += appDC('Last Superbadge earned', dataToFormat.lastSuperbadge)
+  dataContent += appDC('Number of Certification', dataToFormat.nbCertifs)
+  dataContent += appDC('Last Certification earned', dataToFormat.lastCertif)
+  dataContent += appDC('Main skill', dataToFormat.skillPointsDetails[0]?.name)
+  dataContent += appDC('Number of Stamps Earned', dataToFormat.nbEarnedStamps)
+  dataContent += appDC('Last Stamp earned', dataToFormat.lastEarnedStamps)
 
   core.info(`Stats to be displayed:\n${dataContent}`)
 
@@ -147,16 +164,27 @@ function displayStatsTextHtml(dataToFormat) {
   let dataContent = `<ul>`
 
   // Add info to the dataContent
-  dataContent += `<li>Rank: ${dataToFormat.rank}</li>\n`
-  dataContent += `<li>Badges: ${dataToFormat.nbBadges}</li>\n`
-  dataContent += `<li>Points: ${dataToFormat.points}</li>\n`
-  dataContent += `<li>Number of trails completed: ${dataToFormat.trails}</li>\n`
-  dataContent += `<li>Number of Superbadge: ${dataToFormat.nbSuperBadges}</li>\n`
-  dataContent += `<li>Last Superbadge earned: ${dataToFormat.lastSuperbadge}</li>\n`
-  dataContent += `<li>Number of Certification: ${dataToFormat.nbCertifs}</li>\n`
-  dataContent += `<li>Last Certification earned: ${dataToFormat.lastCertif}</li>\n`
-  dataContent += `<li>Number of Stamps Earned: ${dataToFormat.nbEarnedStamps}</li>\n`
-  dataContent += `</ul>`
+  dataContent += appDChtml('Rank', dataToFormat.rank)
+  dataContent += appDChtml('Badges', dataToFormat.nbBadges)
+  dataContent += appDChtml('Points', dataToFormat.points)
+  dataContent += appDChtml('Number of trails completed', dataToFormat.trails)
+  dataContent += appDChtml('Number of Superbadge', dataToFormat.nbSuperBadges)
+  dataContent += appDChtml(
+    'Last Superbadge earned',
+    dataToFormat.lastSuperbadge
+  )
+  dataContent += appDChtml('Number of Certification', dataToFormat.nbCertifs)
+  dataContent += appDChtml('Last Certification earned', dataToFormat.lastCertif)
+  dataContent += appDChtml(
+    'Main skill',
+    dataToFormat.skillPointsDetails[0]?.name
+  )
+  dataContent += appDChtml(
+    'Number of Stamps Earned',
+    dataToFormat.nbEarnedStamps
+  )
+  dataContent += appDChtml('Last Stamp earned', dataToFormat.lastEarnedStamps)
+  dataContent += '</ul>'
 
   core.info(`Stats to be displayed:\n${dataContent}`)
   return dataContent
@@ -188,6 +216,20 @@ async function displayStatsCard(inputs, dataToFormat) {
     console.error(`Error generating the card: ${err}`)
     core.setFailed(`Error generating the card: ${err}`)
   }
+}
+
+function appDC(propertyLabel, propertyValue) {
+  if (propertyValue !== undefined && propertyValue !== null) {
+    return ` ${propertyLabel}: ${propertyValue}\n`
+  }
+  return ''
+}
+
+function appDChtml(propertyLabel, propertyValue) {
+  if (propertyValue !== undefined && propertyValue !== null) {
+    return `<li>${propertyLabel}: ${propertyValue}</li>\n`
+  }
+  return ''
 }
 
 module.exports = displayStats

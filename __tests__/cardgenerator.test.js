@@ -65,7 +65,17 @@ describe('cardGenerator Tests', () => {
       { name: 'CRM', points: 30325 },
       { name: 'Chatter', points: 1250 }
     ],
-    nbEarnedStamps: 0
+    nbEarnedStamps: 1,
+    lastEarnedStamps: 'Salesforce stamp',
+    earnedStampsDetails: [
+      {
+        name: 'Salesforce stamp',
+        kind: 'EVENT_IN_PERSON',
+        iconUrl:
+          'https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png',
+        eventDate: '2023-09-12T07:00:00.000+0000'
+      }
+    ]
   }
   const mockPath = './path/to/'
   describe('generateCard function', () => {

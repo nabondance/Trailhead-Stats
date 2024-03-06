@@ -58,7 +58,9 @@ function generateHtmlContent(data) {
     // Slice the array to only include the top n skills
     const topSkills = sortedSkills.slice(0, numberTopSkills)
 
-    skillsBarChartHtml = topSkills
+    skillsBarChartHtml = `<h2>Top ${numberTopSkills} Skills:</h2>`
+    skillsBarChartHtml += '<div class="skills-bar-chart">'
+    skillsBarChartHtml += topSkills
       .map(skill => {
         const barWidth = (skill.points / maxSkillPoints) * 100 // Normalize to 100%
         return `
@@ -70,18 +72,35 @@ function generateHtmlContent(data) {
         </div>`
       })
       .join('')
+    skillsBarChartHtml += '\n</div>'
   }
 
   // Generate the certifications HTML
   let certificationsHtml = ''
   if (data.certificationsDetails) {
-    certificationsHtml = data.certificationsDetails
+    certificationsHtml = '<h2>Certifications:</h2>'
+    certificationsHtml += data.certificationsDetails
       .map(
         cert => `
       <div class="certification">
         <img src="${cert.logoUrl}" alt="${cert.title}" class="cert-logo">
         ${cert.title} - ${cert.status}
       </div>`
+      )
+      .join('')
+  }
+
+  // Generate the earned stamps HTML
+  let earnedStampsHtml = ''
+  if (data.earnedStampsDetails) {
+    earnedStampsHtml = '<h2>Stamps:</h2>'
+    earnedStampsHtml += data.earnedStampsDetails
+      .map(
+        stamp => `
+        <div class="certification">
+          <img src="${stamp.iconUrl}" alt="${stamp.name}" class="cert-logo">
+          ${stamp.name}
+        </div>`
       )
       .join('')
   }
@@ -109,27 +128,14 @@ function generateHtmlContent(data) {
                     </div>
                     <div class="card-content">
                         <h2>Latest Achievements:</h2>
-                        ${
-                          data.lastBadge
-                            ? `<p>Last Badge: ${data.lastBadge}</p>`
-                            : ''
-                        }
-                        ${
-                          data.lastSuperbadge
-                            ? `<p>Last Superbadge: ${data.lastSuperbadge}</p>`
-                            : ''
-                        }
-                        ${
-                          data.lastCertif
-                            ? `<p>Last Certification: ${data.lastCertif}</p>`
-                            : ''
-                        }
-                        <h2>Top ${numberTopSkills} Skills:</h2>
-                        <div class="skills-bar-chart">
+                        ${appendDCcard('Last Badge', data.lastBadge)}
+                        ${appendDCcard('Last Superbadge', data.lastSuperbadge)}
+                        ${appendDCcard('Last Certification', data.lastCertif)}
+                        ${appendDCcard('Last Stamp', data.lastEarnedStamps)}
+
                         ${skillsBarChartHtml}
-                        </div>
-                        <h2>Certifications:</h2>
                         ${certificationsHtml}
+                        ${earnedStampsHtml}
                     </div>
                 </div>
             </body>
@@ -241,6 +247,13 @@ function getStyle(styleMode) {
 
 function hashHtml(htmlContent) {
   return crypto.createHash('sha256').update(htmlContent).digest('hex')
+}
+
+function appendDCcard(propertyLabel, propertyValue) {
+  if (propertyValue !== null && propertyValue !== undefined) {
+    return `<p>${propertyLabel}: ${propertyValue}</p>`
+  }
+  return ''
 }
 
 module.exports = {

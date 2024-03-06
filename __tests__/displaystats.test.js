@@ -126,13 +126,13 @@ describe('displayStats Function', () => {
         earnedSkills: [
           {
             skill: {
-              name: 'CRM'
+              name: 'Chatter'
             },
             earnedPointsSum: 30325
           },
           {
             skill: {
-              name: 'Chatter'
+              name: 'CRM'
             },
             earnedPointsSum: 1250
           }
@@ -144,14 +144,44 @@ describe('displayStats Function', () => {
 
   const mockTrailheadEarnedStampsData = {
     data: {
-      earnedStamps: [
-        {
-          stamps: {
-            name: 'DX'
+      earnedStamps: {
+        count: 1,
+        totalCount: 1,
+        edges: [
+          {
+            node: {
+              __typename: 'StampEarned',
+              rewardId: 'a2S7y000000ApbGEAS',
+              kind: 'EVENT_IN_PERSON',
+              apiName: 'dreamforce-in-person-san-francisco-2023',
+              name: "Dreamforce '23",
+              description:
+                'The largest AI event in the world has one of the most legendary bands in the world. Rock out to support a great cause. Proceeds benefit UCSF Benioff Children’s Hospitals.',
+              eventDate: '2023-09-12T07:00:00.000+0000',
+              eventLocation: 'San Francisco, CA',
+              iconUrl:
+                'https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png',
+              linkUrl: null
+            }
+          },
+          {
+            node: {
+              __typename: 'StampEarned',
+              rewardId: 'a2S7y000000ApbGEAS',
+              kind: 'EVENT_IN_PERSON',
+              apiName: 'dreamforce-in-person-san-francisco-2024',
+              name: "Dreamforce '24",
+              description:
+                'The largest AI event in the world has one of the most legendary bands in the world. Rock out to support a great cause. Proceeds benefit UCSF Benioff Children’s Hospitals.',
+              eventDate: '2024-09-12T07:00:00.000+0000',
+              eventLocation: 'San Francisco, CA',
+              iconUrl:
+                'https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2024.png',
+              linkUrl: null
+            }
           }
-        }
-        // ... more stamps
-      ]
+        ]
+      }
     }
   }
 
@@ -167,9 +197,28 @@ describe('displayStats Function', () => {
     }
   })
 
-  it('should fail if there is no rank', async () => {
+  it('should fail if there is no rank in md', async () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
+
+    const result = await displayStats(
+      inputs,
+      undefined, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
+    )
+
+    expect(setFailedMock).toHaveBeenCalledWith(undefined)
+  })
+
+  it('should fail if there is no rank in html', async () => {
+    // Mock other data as empty or minimal for this test
+    const mockEmptyData = { data: { profile: {} } }
+
+    inputs.fileFormat = 'html'
 
     const result = await displayStats(
       inputs,
@@ -280,7 +329,21 @@ describe('displayStats Function', () => {
       mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
-    expect(result).toContain('')
+    expect(result).toContain('Chatter')
+  })
+
+  it('should correctly format and display earned stamps stats', async () => {
+    const result = await displayStats(
+      inputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
+    )
+
+    expect(result).toContain(`Dreamforce '24`)
   })
 
   it('should correctly format and display as output', async () => {
