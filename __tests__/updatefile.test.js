@@ -75,7 +75,7 @@ describe('Update File Tests', () => {
         return ''
       })
 
-      pushUpdatedFile(mockDisplayFile, undefined)
+      pushUpdatedFile(mockDisplayFile, './')
 
       expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
       expect(execSync).toHaveBeenCalledWith(
