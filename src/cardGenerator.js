@@ -77,7 +77,7 @@ function generateHtmlContent(data) {
 
   // Generate the certifications HTML
   let certificationsHtml = ''
-  if (data.certificationsDetails) {
+  if (data.certificationsDetails?.length > 0) {
     certificationsHtml = '<h2>Certifications:</h2>'
     certificationsHtml += data.certificationsDetails
       .map(
@@ -92,7 +92,7 @@ function generateHtmlContent(data) {
 
   // Generate the earned stamps HTML
   let earnedStampsHtml = ''
-  if (data.earnedStampsDetails) {
+  if (data.earnedStampsDetails?.length > 0) {
     earnedStampsHtml = '<h2>Stamps:</h2>'
     earnedStampsHtml += data.earnedStampsDetails
       .map(
