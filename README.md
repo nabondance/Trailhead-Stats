@@ -14,11 +14,13 @@ Markdown files.
 
 ## Prerequisites
 
-For the standard use case of having your Trailhead Stats displayed
-on your GitHub homepage, you need:
+For the standard use case of having your Trailhead Stats displayed on your
+GitHub homepage, you need:
 
 - [Personalized Profile Readme](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/managing-your-profile-readme)
 - [Basic GitHub Actions knowledge](https://docs.github.com/en/actions/quickstart)
+
+If you're lost, follow the [quickstart documentation](./QUICKSTART.md).
 
 ## GitHub Action
 
