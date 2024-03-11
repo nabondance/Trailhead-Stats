@@ -6,9 +6,8 @@
 
 **Trailhead Stats** is a GitHub Action created to dynamically display Trailhead
 statistics based on a specified Trailhead username. This action can be used to
-showcase your Trailhead achievements, such as badges, points, ranks,
-certifications and stamps, directly in your GitHub repository's README or other
-Markdown files.
+showcase your Trailhead achievements, such as badges, points and more, directly
+in your GitHub repository's README or other Markdown files.
 
 ## Usage
 
@@ -89,7 +88,7 @@ daily.
 | -------------------- | ---------- | ---------------------------------------------------------------------- | ----------- |
 | `trailhead-username` | Required   | The username on Trailhead.                                             | `username`  |
 | `display-file`       | Config     | The file to update for displaying the Trailhead stats.                 | `README.md` |
-| `file-format`        | Config     | Format of the file. Options: `md`,`html`                               | `md`        |
+| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                             | `md`        |
 | `display-type`       | Preference | The type of display output. Options: `text`, `html`, `card`, `output`. | `text`      |
 | `output-only`        | Config     | Set to true to only output the stats without modifying the file.       | `false`     |
 | `no-commit`          | Debug      | Set to true to not commit the modification.                            | `false`     |
