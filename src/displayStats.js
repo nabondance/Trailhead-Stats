@@ -60,17 +60,17 @@ function prepareData(
   // Work on data
   // Badges
   const badgeDetails = trailheadBadges.earnedAwards.edges.map(edge => ({
-    title: edge.node.award.title,
-    iconUrl: edge.node.award.icon,
-    webUrl: edge.node.award.content?.webUrl
+    title: edge.node.award?.title,
+    iconUrl: edge.node.award?.icon,
+    webUrl: edge.node.award?.content?.webUrl
   }))
 
   // SuperBadges
   const superbadgeDetails = trailheadSuperBadges.earnedAwards.edges.map(
     edge => ({
-      title: edge.node.award.title,
-      iconUrl: edge.node.award.icon,
-      webUrl: edge.node.award.content?.webUrl
+      title: edge.node.award?.title,
+      iconUrl: edge.node.award?.icon,
+      webUrl: edge.node.award?.content?.webUrl
     })
   )
 
