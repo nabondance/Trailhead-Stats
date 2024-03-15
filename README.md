@@ -26,7 +26,7 @@ If you're lost, follow the [quickstart documentation](./QUICKSTART.md).
 To use this action in your workflow, add the following step:
 
 ```yaml
-- uses: nabondance/trailhead-stats@v1.0.1
+- uses: nabondance/trailhead-stats@v1.0.2
   permissions:
     contents: write
   with:
@@ -74,7 +74,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: nabondance/trailhead-stats@v1.0.1
+      - uses: nabondance/trailhead-stats@v1.0.2
         with:
           trailhead-username: 'your_trailhead_username'
 ```

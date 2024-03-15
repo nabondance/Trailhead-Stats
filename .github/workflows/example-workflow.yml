@@ -12,6 +12,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: nabondance/trailhead-stats@v1.0.1
+      - uses: nabondance/trailhead-stats@v1.0.2
         with:
           trailhead-username: 'your_trailhead_username'
