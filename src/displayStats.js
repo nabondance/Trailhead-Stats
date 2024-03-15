@@ -60,19 +60,22 @@ function prepareData(
   // Work on data
   // Badges
   const badgeDetails = trailheadBadges.earnedAwards.edges.map(edge => ({
-    title: edge.node.award.title,
-    iconUrl: edge.node.award.icon,
-    webUrl: edge.node.award.content?.webUrl
+    title: edge.node.award?.title,
+    iconUrl: edge.node.award?.icon,
+    webUrl: edge.node.award?.content?.webUrl
   }))
+  console.log(badgeDetails)
 
+  console.log(JSON.stringify(trailheadSuperBadges.earnedAwards.edges))
   // SuperBadges
   const superbadgeDetails = trailheadSuperBadges.earnedAwards.edges.map(
     edge => ({
-      title: edge.node.award.title,
-      iconUrl: edge.node.award.icon,
-      webUrl: edge.node.award.content?.webUrl
+      title: edge.node.award?.title,
+      iconUrl: edge.node.award?.icon,
+      webUrl: edge.node.award?.content?.webUrl
     })
   )
+  console.log(superbadgeDetails)
 
   // Certifs
   const certificationsDetails = trailheadCertif.map(cert => ({
@@ -81,6 +84,8 @@ function prepareData(
     status: cert.status.title,
     logoUrl: cert.logoUrl
   }))
+  console.log(certificationsDetails)
+
   const sortedCertifications = certificationsDetails
     .filter(cert => new Date(cert.dateCompleted) !== 'Invalid Date')
     .sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted))
@@ -92,6 +97,7 @@ function prepareData(
     name: skill.skill.name,
     points: skill.earnedPointsSum
   }))
+  console.log(skillPointsDetails)
 
   // Stamps
   const earnedStampsDetails = trailheadEarnedStamps?.edges.map(edge => ({
@@ -100,6 +106,8 @@ function prepareData(
     kind: edge.node.kind,
     iconUrl: edge.node.iconUrl
   }))
+  console.log(earnedStampsDetails)
+
   const sortedEarnedStamps = earnedStampsDetails
     .filter(stamp => new Date(stamp.eventDate) !== 'Invalid Date')
     .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate))
