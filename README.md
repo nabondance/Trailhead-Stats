@@ -26,7 +26,7 @@ If you're lost, follow the [quickstart documentation](./QUICKSTART.md).
 To use this action in your workflow, add the following step:
 
 ```yaml
-- uses: nabondance/trailhead-stats@v1.0.2
+- uses: nabondance/trailhead-stats@v1
   permissions:
     contents: write
   with:
@@ -74,7 +74,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: nabondance/trailhead-stats@v1.0.2
+      - uses: nabondance/trailhead-stats@v1
         with:
           trailhead-username: 'your_trailhead_username'
 ```
@@ -110,7 +110,16 @@ The fetched Trailhead stats.
 ## Versions
 
 Consider using a
-[released version](https://github.com/nabondance/Trailhead-Stats/releases).
+[released version](https://github.com/nabondance/Trailhead-Stats/releases). You
+can specify only a major version in order to automatically get all the new
+released features. Thanks to semantic versioning, breaking changes will be in a
+new major version.
+
+`uses: nabondance/trailhead-stats@v1`
+
+If you want a specific version, you can specify it:
+
+`uses: nabondance/trailhead-stats@v1.2.3`
 
 ## Troubleshooting
 
