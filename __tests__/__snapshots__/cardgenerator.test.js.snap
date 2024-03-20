@@ -98,6 +98,23 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
         object-fit: contain; /* this ensures the image is scaled correctly while maintaining its aspect ratio */
         vertical-align: middle; /* This aligns the image nicely with the text */
     }
+    .superbadge-container {
+      max-width: 550px;
+      width: 5500px;
+      display: flex;
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+    .superbadge {
+      position: relative;
+      flex-shrink: 0;
+      margin-right: -30px;
+    }
+    .superbadge-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+    }
     </style>
     
             </head>
@@ -131,11 +148,15 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
           </div>
         </div>
 </div>
-                        <h2>Certifications:</h2>
+                        <h2>1 Certifications:</h2>
       <div class="certification">
         <img src="https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000" alt="Salesforce Certified Platform App Builder" class="cert-logo">
         Salesforce Certified Platform App Builder - Active
       </div>
+                        <h2>1 Superbadges:</h2><div class="superbadge-container">
+          <div class="superbadge">
+            <img src="undefined" alt="Access Governance Superbadge Unit" class="superbadge-logo">
+          </div></div>
                         <h2>Stamps:</h2>
         <div class="certification">
           <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png" alt="Salesforce stamp" class="cert-logo">

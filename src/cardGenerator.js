@@ -16,7 +16,7 @@ async function generateCard(dataToFormat, cardPath) {
 async function createCardAsPng(htmlContent, outputPath) {
   // Launch a headless browser
   const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/chromium-browser',
+    // executablePath: '/usr/bin/chromium-browser',
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   })
   const page = await browser.newPage()
@@ -90,6 +90,23 @@ function generateHtmlContent(data) {
       .join('')
   }
 
+  // Generate the superbadge HTML
+  let superbadgesHtml = ''
+  const superbadgeDetailsLength = data.superbadgeDetails?.length
+  if (superbadgeDetailsLength > 0) {
+    superbadgesHtml = `<h2>${superbadgeDetailsLength} Superbadges:</h2>`
+    superbadgesHtml += `<div class="superbadge-container">`
+    superbadgesHtml += data.superbadgeDetails
+      .map(
+        superbadge => `
+          <div class="superbadge">
+            <img src="${superbadge.icon}" alt="${superbadge.title}" class="superbadge-logo">
+          </div>`
+      )
+      .join('')
+    superbadgesHtml += '</div>'
+  }
+
   // Generate the earned stamps HTML
   let earnedStampsHtml = ''
   if (data.earnedStampsDetails?.length > 0) {
@@ -135,6 +152,7 @@ function generateHtmlContent(data) {
 
                         ${skillsBarChartHtml}
                         ${certificationsHtml}
+                        ${superbadgesHtml}
                         ${earnedStampsHtml}
                     </div>
                 </div>
@@ -239,9 +257,25 @@ function getStyle(styleMode) {
         object-fit: contain; /* this ensures the image is scaled correctly while maintaining its aspect ratio */
         vertical-align: middle; /* This aligns the image nicely with the text */
     }
+    .superbadge-container {
+      max-width: 550px;
+      width: 5500px;
+      display: flex;
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+    .superbadge {
+      position: relative;
+      flex-shrink: 0;
+      margin-right: -30px;
+    }
+    .superbadge-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+    }
     </style>
     `
-
   return style
 }
 
