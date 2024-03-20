@@ -100,7 +100,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     }
     .superbadge-container {
       max-width: 550px;
-      width: 5500px;
+      width: 550px;
       display: flex;
       flex-wrap: wrap;
       overflow: visible;
@@ -111,6 +111,24 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
       margin-right: -30px;
     }
     .superbadge-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+    }
+    .stamp-container {
+      max-width: 600px;
+      width: 600px;
+      display: flex;
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+    .stamp {
+      position: relative;
+      flex-shrink: 0;
+      margin-right: 0px;
+      margin-bottom: 2px;
+    }
+    .stamp-logo {
       width: 80px;
       height: 80px;
       object-fit: contain;
@@ -157,11 +175,10 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
           <div class="superbadge">
             <img src="undefined" alt="Access Governance Superbadge Unit" class="superbadge-logo">
           </div></div>
-                        <h2>Stamps:</h2>
-        <div class="certification">
-          <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png" alt="Salesforce stamp" class="cert-logo">
-          Salesforce stamp
-        </div>
+                        <h2>1 Stamps:</h2><div class="stamp-container">
+        <div class="stamp">
+          <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png" alt="Salesforce stamp" class="stamp-logo">
+        </div></div>
                     </div>
                 </div>
             </body>

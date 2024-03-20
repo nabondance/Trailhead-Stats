@@ -109,17 +109,19 @@ function generateHtmlContent(data) {
 
   // Generate the earned stamps HTML
   let earnedStampsHtml = ''
-  if (data.earnedStampsDetails?.length > 0) {
-    earnedStampsHtml = '<h2>Stamps:</h2>'
+  const earnedStampsDetailsLength = data.earnedStampsDetails?.length
+  if (earnedStampsDetailsLength > 0) {
+    earnedStampsHtml = `<h2>${earnedStampsDetailsLength} Stamps:</h2>`
+    earnedStampsHtml += `<div class="stamp-container">`
     earnedStampsHtml += data.earnedStampsDetails
       .map(
         stamp => `
-        <div class="certification">
-          <img src="${stamp.iconUrl}" alt="${stamp.name}" class="cert-logo">
-          ${stamp.name}
+        <div class="stamp">
+          <img src="${stamp.iconUrl}" alt="${stamp.name}" class="stamp-logo">
         </div>`
       )
       .join('')
+    earnedStampsHtml += '</div>'
   }
 
   const htmlContent = `
@@ -259,7 +261,7 @@ function getStyle(styleMode) {
     }
     .superbadge-container {
       max-width: 550px;
-      width: 5500px;
+      width: 550px;
       display: flex;
       flex-wrap: wrap;
       overflow: visible;
@@ -270,6 +272,24 @@ function getStyle(styleMode) {
       margin-right: -30px;
     }
     .superbadge-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+    }
+    .stamp-container {
+      max-width: 600px;
+      width: 600px;
+      display: flex;
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+    .stamp {
+      position: relative;
+      flex-shrink: 0;
+      margin-right: 0px;
+      margin-bottom: 2px;
+    }
+    .stamp-logo {
       width: 80px;
       height: 80px;
       object-fit: contain;
