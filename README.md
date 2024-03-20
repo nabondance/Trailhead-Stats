@@ -11,7 +11,7 @@ in your GitHub repository's README or other Markdown files.
 
 ## Usage
 
-## Prerequisites
+### Prerequisites
 
 For the standard use case of having your Trailhead Stats displayed on your
 GitHub homepage, you need:
@@ -21,7 +21,7 @@ GitHub homepage, you need:
 
 If you're lost, follow the [quickstart documentation](./QUICKSTART.md).
 
-## GitHub Action
+### GitHub Action
 
 To use this action in your workflow, add the following step:
 
@@ -38,7 +38,7 @@ To use this action in your workflow, add the following step:
 
 This will fetch your Trailhead stats and display them in the specified format.
 
-## Special Tags in Display File
+### Special Tags in Display File
 
 To insert the Trailhead stats into your display-file (like README.md), you need
 to place special comment tags in your file. These tags define where the
@@ -55,7 +55,7 @@ The action will automatically update the content between these tags with the
 latest Trailhead stats. Ensure these tags are in place for the action to work
 correctly.
 
-## Example Workflow
+### Example Workflow
 
 Here's an example of a complete workflow using the Trailhead Stats action:
 
@@ -84,14 +84,14 @@ daily.
 
 ## Inputs
 
-| Input Name           | Kind       | Description                                                            | Default     |
-| -------------------- | ---------- | ---------------------------------------------------------------------- | ----------- |
-| `trailhead-username` | Required   | The username on Trailhead.                                             | `username`  |
-| `display-file`       | Config     | The file to update for displaying the Trailhead stats.                 | `README.md` |
-| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                             | `md`        |
-| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.         | `text`      |
-| `output-only`        | Config     | Set to true to only output the stats without modifying the file.       | `false`     |
-| `no-commit`          | Debug      | Set to true to not commit the modification.                            | `false`     |
+| Input Name           | Kind       | Description                                                      | Default     |
+| -------------------- | ---------- | ---------------------------------------------------------------- | ----------- |
+| `trailhead-username` | Required   | The username on Trailhead.                                       | `username`  |
+| `display-file`       | Config     | The file to update for displaying the Trailhead stats.           | `README.md` |
+| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                       | `md`        |
+| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.   | `text`      |
+| `output-only`        | Config     | Set to true to only output the stats without modifying the file. | `false`     |
+| `no-commit`          | Debug      | Set to true to not commit the modification.                      | `false`     |
 
 ## Outputs
 
