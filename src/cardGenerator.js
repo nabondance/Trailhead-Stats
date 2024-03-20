@@ -78,7 +78,7 @@ function generateHtmlContent(data) {
   // Generate the certifications HTML
   let certificationsHtml = ''
   if (data.certificationsDetails?.length > 0) {
-    certificationsHtml = '<h2>Certifications:</h2>'
+    certificationsHtml = `<h2>${data.nbCertifs} Certifications:</h2>`
     certificationsHtml += data.certificationsDetails
       .map(
         cert => `
