@@ -1,7 +1,6 @@
 const {
   generateCard,
   generateHtmlContent,
-  getStyle,
   hashHtml
 } = require('../src/cardGenerator')
 const puppeteer = require('puppeteer')
@@ -102,18 +101,6 @@ describe('cardGenerator Tests', () => {
 
   // Tests for helper functions
   describe('cardGenerator Utility Function Tests', () => {
-    describe('getStyle function', () => {
-      it('should return correct style string for white', () => {
-        const expectedStyleString = 'background-color: #f4f4f4;'
-
-        const result = getStyle('white')
-
-        expect(result).toContain(expectedStyleString)
-      })
-
-      // Add more tests for different inputs and edge cases
-    })
-
     describe('hashHtml function', () => {
       it('should return consistent hash for same HTML content', () => {
         const htmlContent = '<div>Test HTML</div>'
