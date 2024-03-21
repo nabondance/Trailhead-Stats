@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer')
 const path = require('path')
 const crypto = require('crypto')
-const { generateCss } = require('./cardCss')
+const { generateCss, getSkillColor } = require('./cardCss')
 
 async function generateCard(dataToFormat, cardPath) {
   const cardFullPath = path.join(cardPath, 'TScard.png')
@@ -47,33 +47,39 @@ function generateHtmlContent(data, styleTheme) {
   // Generate the skills bar chart HTML
   let skillsBarChartHtml
   if (data.skillPointsDetails) {
-    // Sort skills by points and normalize
     const maxSkillPoints = Math.max(
       ...data.skillPointsDetails.map(skill => skill.points)
     )
-    // Sort skills by points
+
+    // Ensure skills are sorted by points in descending order
     const sortedSkills = data.skillPointsDetails.sort(
       (a, b) => b.points - a.points
     )
 
-    // Slice the array to only include the top n skills
+    // Slice to get top N skills
     const topSkills = sortedSkills.slice(0, numberTopSkills)
 
+    // Dynamically calculate thresholds
+    const thresholds = calculateThresholds(data.skillPointsDetails)
+
+    // Generate the HTML for the skills bar chart
     skillsBarChartHtml = `<h2>Top ${numberTopSkills} Skills:</h2>`
     skillsBarChartHtml += '<div class="skills-bar-chart">'
     skillsBarChartHtml += topSkills
       .map(skill => {
         const barWidth = (skill.points / maxSkillPoints) * 100 // Normalize to 100%
+        const skillColor = getSkillColor(skill.points, thresholds) // Use dynamic color based on thresholds
+        const skillPoints = getSkillPoints(skill.points, barWidth) // Display or not the skill points
         return `
-        <div class="skill-bar-container">
-          <div class="skill-name">${skill.name}</div>
-          <div class="skill-bar" style="width: ${barWidth}%;">
-            <div class="skill-points">${skill.points}</div>
-          </div>
+            <div class="skill-container">
+            <div class="skill-bar" style="width: ${barWidth}%; background-color: ${skillColor};">
+                <span class="skill-name">${skill.name}</span>
+                <span class="skill-points">${skillPoints}</span>
+            </div>
         </div>`
       })
       .join('')
-    skillsBarChartHtml += '\n</div>'
+    skillsBarChartHtml += '</div>'
   }
 
   // Generate the certifications HTML
@@ -166,6 +172,24 @@ function generateHtmlContent(data, styleTheme) {
   const hash = hashHtml(htmlContent)
   console.log('SHA-256 Hash:', hash)
   return htmlContent
+}
+
+function calculateThresholds(skillPointsDetails) {
+  const points = skillPointsDetails.map(skill => skill.points)
+  const maxPoints = Math.max(...points)
+  const minPoints = Math.min(...points)
+  const range = maxPoints - minPoints
+  const threshold1 = minPoints + range / 3
+  const threshold2 = minPoints + (2 * range) / 3
+  return { threshold1, threshold2 }
+}
+
+function getSkillPoints(points, barWidth) {
+  if (barWidth <= 20) {
+    return ''
+  } else {
+    return points
+  }
 }
 
 function hashHtml(htmlContent) {
