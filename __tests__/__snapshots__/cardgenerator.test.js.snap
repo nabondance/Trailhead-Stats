@@ -168,7 +168,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
       </div>
                         <h2>1 Superbadges:</h2><div class="superbadge-container">
           <div class="superbadge">
-            <img src="undefined" alt="Access Governance Superbadge Unit" class="superbadge-logo">
+            <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,fl_lossy,q_70/learn/superbadges/superbadge_governing_access_sbu/476d05ca5f8e4373526963bf410cc2e0_badge.png" alt="Access Governance Superbadge Unit" class="superbadge-logo">
           </div></div>
                         <h2>1 Stamps:</h2><div class="stamp-container">
         <div class="stamp">

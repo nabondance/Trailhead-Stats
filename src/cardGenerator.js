@@ -107,7 +107,7 @@ function generateHtmlContent(data, styleTheme) {
       .map(
         superbadge => `
           <div class="superbadge">
-            <img src="${superbadge.icon}" alt="${superbadge.title}" class="superbadge-logo">
+            <img src="${superbadge.iconUrl}" alt="${superbadge.title}" class="superbadge-logo">
           </div>`
       )
       .join('')
