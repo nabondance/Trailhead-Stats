@@ -16,7 +16,7 @@ async function generateCard(dataToFormat, cardPath) {
 async function createCardAsPng(htmlContent, outputPath) {
   // Launch a headless browser
   const browser = await puppeteer.launch({
-    // executablePath: '/usr/bin/chromium-browser',
+    executablePath: '/usr/bin/chromium-browser',
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   })
   const page = await browser.newPage()
@@ -170,19 +170,19 @@ function generateHtmlContent(data) {
 function getStyle(styleMode) {
   const style = `
     <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
     }
     .card {
         background-color: white;
         border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         padding: 20px;
         width: 600px;
     }
@@ -209,7 +209,9 @@ function getStyle(styleMode) {
         margin: 5px 0;
         color: #666;
     }
-    .badge, .certification, .skill {
+    .badge,
+    .certification,
+    .skill {
         background-color: #eee;
         padding: 5px;
         border-radius: 5px;
@@ -260,42 +262,42 @@ function getStyle(styleMode) {
         vertical-align: middle; /* This aligns the image nicely with the text */
     }
     .superbadge-container {
-      max-width: 550px;
-      width: 550px;
-      display: flex;
-      flex-wrap: wrap;
-      overflow: visible;
+        max-width: 550px;
+        width: 550px;
+        display: flex;
+        flex-wrap: wrap;
+        overflow: visible;
     }
     .superbadge {
-      position: relative;
-      flex-shrink: 0;
-      margin-right: -30px;
+        position: relative;
+        flex-shrink: 0;
+        margin-right: -30px;
     }
     .superbadge-logo {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
     }
     .stamp-container {
-      max-width: 600px;
-      width: 600px;
-      display: flex;
-      flex-wrap: wrap;
-      overflow: visible;
+        max-width: 600px;
+        width: 600px;
+        display: flex;
+        flex-wrap: wrap;
+        overflow: visible;
     }
     .stamp {
-      position: relative;
-      flex-shrink: 0;
-      margin-right: 0px;
-      margin-bottom: 2px;
+        position: relative;
+        flex-shrink: 0;
+        margin-right: 0px;
+        margin-bottom: 2px;
     }
     .stamp-logo {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
     }
-    </style>
-    `
+  </style>
+  `
   return style
 }
 
