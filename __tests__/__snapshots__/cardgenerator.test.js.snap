@@ -54,43 +54,29 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
       border-radius: 5px;
       margin: 5px 0;
   }
-  .skill {
-      background-color: #eee;
-      padding: 5px;
-      border-radius: 5px;
-      margin: 5px 0;
-  }
-  .skills-bar-chart {
-      padding: 10px;
-      background-color: #f0f0f0;
-      border-radius: 5px;
-      margin-bottom: 10px;
-  }
-  .skill-bar-container {
-      position: relative; /* Add position relative here */
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-      background-color: #ddd; /* Optional: to make the bar background visible */
-  }
-  .skill-name {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 20%;
-      padding-right: 5px;
-      text-align: right;
+  .skill-container {
+    border-radius: 2px;
   }
   .skill-bar {
-      height: 10px;
-      background-color: #4caf50;
-      border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    line-height: 30px;
+    border-radius: 2px;
+    height: 30px;
+    max-width: 600px;
+    overflow: hidden;
+    color: white;
+    font-weight: bold;
+}
+  .skill-name {
+    text-align: left;
+    padding-left: 5px;
   }
   .skill-points {
-      position: absolute;
-      right: 5px;
-      color: green;
-      font-weight: bold;
+    text-align: right;
+    padding-right: 5px;
+    visibility: visible;
   }
   .certification {
       background-color: #eee;
@@ -163,19 +149,18 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <p>Last Stamp: Salesforce stamp</p>
 
                         <h2>Top 5 Skills:</h2><div class="skills-bar-chart">
-        <div class="skill-bar-container">
-          <div class="skill-name">CRM</div>
-          <div class="skill-bar" style="width: 100%;">
-            <div class="skill-points">30325</div>
-          </div>
+            <div class="skill-container">
+            <div class="skill-bar" style="width: 100%; background-color: #7A2048;">
+                <span class="skill-name">CRM</span>
+                <span class="skill-points">30325</span>
+            </div>
         </div>
-        <div class="skill-bar-container">
-          <div class="skill-name">Chatter</div>
-          <div class="skill-bar" style="width: 4.122011541632316%;">
-            <div class="skill-points">1250</div>
-          </div>
-        </div>
-</div>
+            <div class="skill-container">
+            <div class="skill-bar" style="width: 4.122011541632316%; background-color: #1E2761;">
+                <span class="skill-name">Chatter</span>
+                <span class="skill-points"></span>
+            </div>
+        </div></div>
                         <h2>1 Certifications:</h2>
       <div class="certification">
         <img src="https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000" alt="Salesforce Certified Platform App Builder" class="cert-logo">

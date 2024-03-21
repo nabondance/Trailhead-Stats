@@ -46,43 +46,29 @@ function generateCss(styleTheme) {
       border-radius: 5px;
       margin: 5px 0;
   }
-  .skill {
-      background-color: #eee;
-      padding: 5px;
-      border-radius: 5px;
-      margin: 5px 0;
-  }
-  .skills-bar-chart {
-      padding: 10px;
-      background-color: #f0f0f0;
-      border-radius: 5px;
-      margin-bottom: 10px;
-  }
-  .skill-bar-container {
-      position: relative; /* Add position relative here */
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-      background-color: #ddd; /* Optional: to make the bar background visible */
-  }
-  .skill-name {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 20%;
-      padding-right: 5px;
-      text-align: right;
+  .skill-container {
+    border-radius: 2px;
   }
   .skill-bar {
-      height: 10px;
-      background-color: #4caf50;
-      border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    line-height: 30px;
+    border-radius: 2px;
+    height: 30px;
+    max-width: 600px;
+    overflow: hidden;
+    color: white;
+    font-weight: bold;
+}
+  .skill-name {
+    text-align: left;
+    padding-left: 5px;
   }
   .skill-points {
-      position: absolute;
-      right: 5px;
-      color: green;
-      font-weight: bold;
+    text-align: right;
+    padding-right: 5px;
+    visibility: visible;
   }
   .certification {
       background-color: #eee;
@@ -141,6 +127,13 @@ function generateCss(styleTheme) {
   return style
 }
 
+function getSkillColor(points, thresholds) {
+  if (points <= thresholds.threshold1) return '#1E2761' // Low level color
+  if (points <= thresholds.threshold2) return '#408EC6' // Medium level color
+  return '#7A2048' // High level color
+}
+
 module.exports = {
-  generateCss
+  generateCss,
+  getSkillColor
 }
