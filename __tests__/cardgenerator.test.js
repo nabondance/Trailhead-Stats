@@ -76,10 +76,24 @@ describe('cardGenerator Tests', () => {
       }
     ]
   }
-  const mockPath = './path/to/'
+
+  let mockInputs
+  beforeEach(() => {
+    mockInputs = {
+      trailheadUsername: 'username',
+      displayFile: 'dummyFile.txt',
+      displayType: 'text',
+      fileFormat: 'md',
+      cardPath: './path/to/',
+      nbSkills: 123,
+      outputOnly: 'false',
+      noCommit: false
+    }
+  })
+
   describe('generateCard function', () => {
     it('should correctly generate a card', async () => {
-      const result = await generateCard(mockData, mockPath)
+      const result = await generateCard(mockData, mockInputs)
 
       // Assertions
       expect(result).toBe('path/to/TScard.png')
@@ -88,7 +102,7 @@ describe('cardGenerator Tests', () => {
     })
 
     it('should work when no data', async () => {
-      const result = await generateCard({}, mockPath)
+      const result = await generateCard({}, mockInputs)
 
       // Assertions
       expect(result).toBe('path/to/TScard.png')
@@ -119,7 +133,7 @@ describe('cardGenerator Tests', () => {
   // Snapshot tests for HTML/CSS output
   describe('Snapshot testing', () => {
     it('should match the snapshot', async () => {
-      const htmlContent = generateHtmlContent(mockData) // Assuming this is a function in your module
+      const htmlContent = generateHtmlContent(mockData, mockInputs, 'light') // Assuming this is a function in your module
 
       expect(htmlContent).toMatchSnapshot()
     })

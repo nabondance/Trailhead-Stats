@@ -185,15 +185,17 @@ describe('displayStats Function', () => {
     }
   }
 
-  let inputs
+  let mockInputs
   beforeEach(() => {
-    inputs = {
+    mockInputs = {
       trailheadUsername: 'username',
       displayFile: 'dummyFile.txt',
       displayType: 'text',
       fileFormat: 'md',
       cardPath: 'images',
-      outputOnly: 'false'
+      nbSkills: 123,
+      outputOnly: 'false',
+      noCommit: false
     }
   })
 
@@ -202,7 +204,7 @@ describe('displayStats Function', () => {
     const mockEmptyData = { data: { profile: {} } }
 
     const result = await displayStats(
-      inputs,
+      mockInputs,
       undefined, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -218,10 +220,10 @@ describe('displayStats Function', () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
-    inputs.fileFormat = 'html'
+    mockInputs.fileFormat = 'html'
 
     const result = await displayStats(
-      inputs,
+      mockInputs,
       undefined, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -237,10 +239,10 @@ describe('displayStats Function', () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
-    inputs.displayType = 'badType'
+    mockInputs.displayType = 'badType'
 
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -259,7 +261,7 @@ describe('displayStats Function', () => {
     const mockEmptyData = { data: { profile: {} } }
 
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -277,7 +279,7 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display badge stats', async () => {
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -291,7 +293,7 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display superbadge stats', async () => {
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -305,7 +307,7 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display certification stats', async () => {
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -320,7 +322,7 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display skill stats', async () => {
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -334,7 +336,7 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display earned stamps stats', async () => {
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -347,10 +349,10 @@ describe('displayStats Function', () => {
   })
 
   it('should correctly format and display as output', async () => {
-    inputs.displayType = 'output'
+    mockInputs.displayType = 'output'
 
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -363,10 +365,10 @@ describe('displayStats Function', () => {
   })
 
   it('should correctly format and display as text md', async () => {
-    inputs.fileFormat = 'md'
+    mockInputs.fileFormat = 'md'
 
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -379,10 +381,10 @@ describe('displayStats Function', () => {
   })
 
   it('should correctly format and display as text html', async () => {
-    inputs.fileFormat = 'html'
+    mockInputs.fileFormat = 'html'
 
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -397,11 +399,11 @@ describe('displayStats Function', () => {
   it('should correctly format and display as card md', async () => {
     // Setup the mock to return a specific value
     cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
-    inputs.displayType = 'card'
-    inputs.fileFormat = 'md'
+    mockInputs.displayType = 'card'
+    mockInputs.fileFormat = 'md'
 
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -414,18 +416,18 @@ describe('displayStats Function', () => {
     expect(result).toContain('![Trailhead-Stats](path/to/generated/card.png)')
     expect(cardGenerator.generateCard).toHaveBeenCalledWith(
       expect.anything(), // The data object passed to generateCard
-      'images' // The cardPath argument passed to displayStats
+      mockInputs // The cardPath argument passed to displayStats
     )
   })
 
   it('should correctly format and display as card html', async () => {
     // Setup the mock to return a specific value
     cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
-    inputs.displayType = 'card'
-    inputs.fileFormat = 'html'
+    mockInputs.displayType = 'card'
+    mockInputs.fileFormat = 'html'
 
     const result = await displayStats(
-      inputs,
+      mockInputs,
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
@@ -440,7 +442,7 @@ describe('displayStats Function', () => {
     )
     expect(cardGenerator.generateCard).toHaveBeenCalledWith(
       expect.anything(), // The data object passed to generateCard
-      'images' // The cardPath argument passed to displayStats
+      mockInputs // The cardPath argument passed to displayStats
     )
   })
 })

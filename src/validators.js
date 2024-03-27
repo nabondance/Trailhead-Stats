@@ -12,6 +12,14 @@ function validateStringField(field, fieldName) {
   }
 }
 
+function validateIntegerField(field, fieldName) {
+  if (!Number.isInteger(field)) {
+    throw new Error(
+      `${fieldName} must be an integer, got ${typeof field}: ${field}`
+    )
+  }
+}
+
 function validateBooleanField(field, fieldName) {
   if (field === 'true') {
     field = true
@@ -31,5 +39,6 @@ function validateBooleanField(field, fieldName) {
 module.exports = {
   validateRequiredField,
   validateStringField,
+  validateIntegerField,
   validateBooleanField
 }

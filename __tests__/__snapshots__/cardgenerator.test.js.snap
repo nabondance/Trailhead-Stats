@@ -148,7 +148,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <p>Last Certification: Salesforce Certified Associate</p>
                         <p>Last Stamp: Salesforce stamp</p>
 
-                        <h2>Top 5 Skills:</h2><div class="skills-bar-chart">
+                        <h2>Top 123 Skills:</h2><div class="skills-bar-chart">
             <div class="skill-container">
             <div class="skill-bar" style="width: 100%; background-color: #7A2048;">
                 <span class="skill-name">CRM</span>

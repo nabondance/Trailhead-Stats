@@ -3,9 +3,9 @@ const path = require('path')
 const crypto = require('crypto')
 const { generateCss, getSkillColor } = require('./cardCss')
 
-async function generateCard(dataToFormat, cardPath) {
-  const cardFullPath = path.join(cardPath, 'TScard.png')
-  const htmlContent = generateHtmlContent(dataToFormat, 'light')
+async function generateCard(dataToFormat, inputs) {
+  const cardFullPath = path.join(inputs.cardPath, 'TScard.png')
+  const htmlContent = generateHtmlContent(dataToFormat, inputs, 'light')
 
   // Create the card as a PNG image
   await createCardAsPng(htmlContent, cardFullPath)
@@ -39,10 +39,10 @@ async function createCardAsPng(htmlContent, outputPath) {
   await browser.close()
 }
 
-function generateHtmlContent(data, styleTheme) {
+function generateHtmlContent(data, inputs, styleTheme) {
   // Define the HTML structure with inline CSS for styling
   const style = generateCss(styleTheme)
-  const numberTopSkills = 5
+  const numberTopSkills = inputs.nbSkills
 
   // Generate the skills bar chart HTML
   let skillsBarChartHtml
