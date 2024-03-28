@@ -53,6 +53,32 @@ describe('Validators', () => {
     })
   })
 
+  describe('validateIntegerField', () => {
+    it('should not throw an error for valid integer input', () => {
+      expect(() =>
+        validators.validateIntegerField(123, 'Test Field')
+      ).not.toThrow()
+    })
+
+    it('should throw an error for non-integer input (string)', () => {
+      expect(() =>
+        validators.validateIntegerField('notAnInteger', 'Test Field')
+      ).toThrow('Test Field must be an integer, got string: notAnInteger')
+    })
+
+    it('should throw an error for non-integer input (boolean)', () => {
+      expect(() => validators.validateIntegerField(true, 'Test Field')).toThrow(
+        'Test Field must be an integer, got boolean: true'
+      )
+    })
+
+    it('should throw an error for non-integer input (object)', () => {
+      expect(() => validators.validateIntegerField({}, 'Test Field')).toThrow(
+        'Test Field must be an integer, got object: [object Object]'
+      )
+    })
+  })
+
   describe('validateBooleanField', () => {
     it('should return true for string "true"', () => {
       expect(validators.validateBooleanField('true', 'Test Field')).toBe(true)

@@ -198,7 +198,7 @@ function displayStatsOutput(dataToFormat) {
 async function displayStatsCard(inputs, dataToFormat) {
   try {
     // Await the generation of the card and get the full path
-    const fullPath = await generateCard(dataToFormat, inputs.cardPath)
+    const fullPath = await generateCard(dataToFormat, inputs)
     console.log(`Card image saved at ${fullPath}`)
 
     // Construct the image display depending on the file format

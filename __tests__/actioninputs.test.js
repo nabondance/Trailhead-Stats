@@ -15,6 +15,7 @@ describe('Input Validation Tests', () => {
     inputs.displayType = 'text'
     inputs.fileFormat = 'md'
     inputs.cardPath = './images'
+    inputs.nbSkills = 123
     inputs.outputOnly = false
     inputs.noCommit = false
   })
@@ -169,7 +170,26 @@ describe('Input Validation Tests', () => {
       inputs.cardPath = './images'
 
       expect(() => {
-        inputs.validateFileFormat()
+        inputs.validateCardPath()
+      }).not.toThrow()
+    })
+  })
+
+  // Tests for validateCardPath
+  describe('validateNbSkills', () => {
+    it('should throw an error if nbSkills is not an integer', () => {
+      inputs.nbSkills = 'notAnInteger'
+
+      expect(() => {
+        inputs.validateNbSkills()
+      }).toThrow('nb-skills must be an integer, got string: notAnInteger')
+    })
+
+    it('should not throw an error for a valid nbSkills', () => {
+      inputs.cardPath = './images'
+
+      expect(() => {
+        inputs.validateNbSkills()
       }).not.toThrow()
     })
   })

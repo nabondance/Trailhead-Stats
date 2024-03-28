@@ -2,6 +2,7 @@ const core = require('@actions/core')
 const {
   validateRequiredField,
   validateStringField,
+  validateIntegerField,
   validateBooleanField
 } = require('./validators')
 
@@ -14,6 +15,7 @@ class ActionInputs {
     this.displayType = core.getInput('display-type', { required: false })
     this.fileFormat = core.getInput('file-format', { required: false })
     this.cardPath = core.getInput('card-path', { required: false })
+    this.nbSkills = core.getInput('nb-skills', { required: false })
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
 
@@ -28,6 +30,7 @@ class ActionInputs {
       this.validateDisplayType()
       this.validateFileFormat()
       this.validateCardPath()
+      this.validateNbSkills()
       this.validateOutputOnly()
       this.validateNoCommit()
     } catch (error) {
@@ -77,6 +80,14 @@ class ActionInputs {
   validateCardPath() {
     validateRequiredField(this.cardPath, 'card-path')
     validateStringField(this.cardPath, 'card-path')
+  }
+
+  validateNbSkills() {
+    const parsed = parseInt(this.nbSkills)
+    if (!isNaN(parsed)) {
+      this.nbSkills = parsed
+    }
+    validateIntegerField(this.nbSkills, 'nb-skills')
   }
 
   validateOutputOnly() {

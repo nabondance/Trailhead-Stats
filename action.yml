@@ -27,6 +27,11 @@ inputs:
     description: Folder path to save the card
     required: false
     default: 'images'
+  nb-skills:
+    description: Max number of skills to display
+    required: false
+    type: number
+    default: 5
   output-only:
     description: Only output, do not modify file
     required: false
