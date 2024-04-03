@@ -66,9 +66,9 @@ jobs:
         uses: ./
         with:
           trailhead-username: nabondance
-          display-type: 'output'
+          display-type: 'card'
           display-file: 'README-example.md'
-          output-only: true
+          no-commit: true
 
       - name: Print Output
         id: output
