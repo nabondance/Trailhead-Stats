@@ -108,6 +108,15 @@ The fetched Trailhead stats.
 | `card`       | ![HTML Display Example](images/readme/display_card.png) |
 | `output`     | Object to use in a GitHub Action                        |
 
+## Card features
+
+Theses features doesn't require any configuration, they are fully automatic
+
+- Card is displayed inside the file selected by `display-file`, with the correct
+  format set by `file-format`.
+- Clicking on the card will redirect to the trailhead profile.
+- The card won't display empty blocs (Certifications, Superbadges, Stamps).
+
 ## Versions
 
 Consider using a
@@ -203,10 +212,12 @@ Feel free to create a PR to add your personal example
 
 Ideas I have in mind, in no particular order:
 
-- select the language
-- more data
-- add more options to select what to display
-- find a way to remove the required permission
+- Select the language
+- More data
+- Add more options to select what to display
+- Find a way to remove the required permission
+- Automatically display light or dark theme
+- Dynamic card and not static PNG
 
 ## Abandoned Features
 
