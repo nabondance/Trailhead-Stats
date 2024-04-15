@@ -47,7 +47,8 @@ follow the [README.md](./README.md).
 
 You can adjust the cron schedule in the workflow file to update your stats more
 or less frequently. Customize the action further if needed, based on the
-action's [documentation](https://github.com/nabondance/Trailhead-Stats).
+action's
+[documentation](https://github.com/nabondance/Trailhead-Stats?tab=readme-ov-file#inputs).
 
 ### Enhanced GitHub profile readme
 

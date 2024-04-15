@@ -77,6 +77,7 @@ jobs:
       - uses: nabondance/trailhead-stats@v1
         with:
           trailhead-username: 'your_trailhead_username'
+          display-type: 'card'
 ```
 
 This workflow will update your Trailhead stats in your repository's README.md
@@ -84,15 +85,15 @@ daily.
 
 ## Inputs
 
-| Input Name           | Kind       | Description                                                      | Default     |
-| -------------------- | ---------- | ---------------------------------------------------------------- | ----------- |
-| `trailhead-username` | Required   | The username on Trailhead.                                       | `username`  |
-| `display-file`       | Config     | The file to update for displaying the Trailhead stats.           | `README.md` |
-| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                       | `md`        |
-| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.   | `text`      |
-| `nb-skills`          | Preference | The max number of skills to display in the card.                 | `5`         |
-| `output-only`        | Config     | Set to true to only output the stats without modifying the file. | `false`     |
-| `no-commit`          | Debug      | Set to true to not commit the modification.                      | `false`     |
+| Input Name           | Kind       | Description                                                    | Default     |
+| -------------------- | ---------- | -------------------------------------------------------------- | ----------- |
+| `trailhead-username` | Required   | The username on Trailhead.                                     | `username`  |
+| `display-file`       | Config     | The file to update for displaying the Trailhead stats.         | `README.md` |
+| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                     | `md`        |
+| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`. | `text`      |
+| `nb-skills`          | Preference | The max number of skills to display in the card.               | `5`         |
+| `output-only`        | Debug      | Set to true to only output without modifying the file.         | `false`     |
+| `no-commit`          | Debug      | Set to true to not commit the modification.                    | `false`     |
 
 ## Outputs
 
