@@ -15,3 +15,4 @@ jobs:
       - uses: nabondance/trailhead-stats@v1
         with:
           trailhead-username: 'your_trailhead_username'
+          display-type: 'card'
