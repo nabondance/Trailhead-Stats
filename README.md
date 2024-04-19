@@ -117,6 +117,8 @@ Theses features doesn't require any configuration, they are fully automatic
   format set by `file-format`.
 - Clicking on the card will redirect to the trailhead profile.
 - The card won't display empty blocs (Certifications, Superbadges, Stamps).
+- The Card will be displayed on light or dark theme based on the GitHub theme of
+  the user.
 
 ## Versions
 

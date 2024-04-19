@@ -1,9 +1,36 @@
 function generateCss(styleTheme) {
+  let colorBackground
+  let colorText
+  let colorTextSkill
+  let colorBlock
+
+  switch (styleTheme) {
+    case 'light':
+      colorBackground = '#FFFFFF'
+      colorText = '#1F2328'
+      colorTextSkill = '#FFFFFF'
+      colorBlock = '#F5F8FA'
+      break
+    case 'dark':
+      colorBackground = '#22272D'
+      colorText = '#C4D1DE'
+      colorTextSkill = '#FFFFFF'
+      colorBlock = '#1C2128'
+      break
+  }
+
   const style = `
   <style>
+  :root {
+    --color-background: ${colorBackground};
+    --color-text: ${colorText};
+    --color-text-skill: ${colorTextSkill};
+    --color-block: ${colorBlock};
+  }
   body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      background-color: var(--color-background);
+      color: var(--color-text);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -11,7 +38,7 @@ function generateCss(styleTheme) {
       margin: 0;
   }
   .card {
-      background-color: white;
+      background-color: var(--color-background);
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       padding: 20px;
@@ -34,14 +61,14 @@ function generateCss(styleTheme) {
   }
   .card-content h2 {
       margin: 5px 0;
-      color: #333;
+      color: var(--color-text);
   }
   .card-content p {
       margin: 5px 0;
-      color: #666;
+      color: var(--color-text);
   }
   .badge {
-      background-color: #eee;
+      background-color: var(--color-block);
       padding: 5px;
       border-radius: 5px;
       margin: 5px 0;
@@ -58,7 +85,7 @@ function generateCss(styleTheme) {
     height: 30px;
     max-width: 600px;
     overflow: hidden;
-    color: white;
+    color: var(--color-text-skill);
     font-weight: bold;
 }
   .skill-name {
@@ -71,7 +98,7 @@ function generateCss(styleTheme) {
     visibility: visible;
   }
   .certification {
-      background-color: #eee;
+      background-color: var(--color-block);
       padding: 5px;
       border-radius: 5px;
       margin: 5px 0;
@@ -127,10 +154,26 @@ function generateCss(styleTheme) {
   return style
 }
 
-function getSkillColor(points, thresholds) {
-  if (points <= thresholds.threshold1) return '#1E2761' // Low level color
-  if (points <= thresholds.threshold2) return '#408EC6' // Medium level color
-  return '#7A2048' // High level color
+function getSkillColor(points, thresholds, styleTheme) {
+  let colorSkillLow
+  let colorSkillMedium
+  let colorSkillHigh
+  switch (styleTheme) {
+    case 'light':
+      colorSkillLow = '#1E2761'
+      colorSkillMedium = '#408EC6'
+      colorSkillHigh = '#7A2048'
+      break
+    case 'dark':
+      colorSkillLow = '#4078c0'
+      colorSkillMedium = '#c9510c'
+      colorSkillHigh = '#6e5494'
+      break
+  }
+
+  if (points <= thresholds.threshold1) return `${colorSkillLow}` // Low level color
+  if (points <= thresholds.threshold2) return `${colorSkillMedium}` // Medium level color
+  return `${colorSkillHigh}` // High level color
 }
 
 module.exports = {

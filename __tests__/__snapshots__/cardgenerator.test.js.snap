@@ -9,9 +9,16 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                 <title>Trailhead Stats Card</title>
                 
   <style>
+  :root {
+    --color-background: #FFFFFF;
+    --color-text: #1F2328;
+    --color-text-skill: #FFFFFF;
+    --color-block: #F5F8FA;
+  }
   body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      background-color: var(--color-background);
+      color: var(--color-text);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -19,7 +26,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
       margin: 0;
   }
   .card {
-      background-color: white;
+      background-color: var(--color-background);
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       padding: 20px;
@@ -42,14 +49,14 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
   }
   .card-content h2 {
       margin: 5px 0;
-      color: #333;
+      color: var(--color-text);
   }
   .card-content p {
       margin: 5px 0;
-      color: #666;
+      color: var(--color-text);
   }
   .badge {
-      background-color: #eee;
+      background-color: var(--color-block);
       padding: 5px;
       border-radius: 5px;
       margin: 5px 0;
@@ -66,7 +73,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     height: 30px;
     max-width: 600px;
     overflow: hidden;
-    color: white;
+    color: var(--color-text-skill);
     font-weight: bold;
 }
   .skill-name {
@@ -79,7 +86,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     visibility: visible;
   }
   .certification {
-      background-color: #eee;
+      background-color: var(--color-block);
       padding: 5px;
       border-radius: 5px;
       margin: 5px 0;

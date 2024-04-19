@@ -93,19 +93,19 @@ describe('cardGenerator Tests', () => {
 
   describe('generateCard function', () => {
     it('should correctly generate a card', async () => {
-      const result = await generateCard(mockData, mockInputs)
+      const result = await generateCard(mockData, mockInputs, 'theme')
 
       // Assertions
-      expect(result).toBe('path/to/TScard.png')
+      expect(result).toBe('path/to/TScard-theme.png')
       expect(puppeteer.launch).toHaveBeenCalled()
       // More assertions to verify correct function behavior
     })
 
     it('should work when no data', async () => {
-      const result = await generateCard({}, mockInputs)
+      const result = await generateCard({}, mockInputs, undefined)
 
       // Assertions
-      expect(result).toBe('path/to/TScard.png')
+      expect(result).toBe('path/to/TScard-undefined.png')
       expect(puppeteer.launch).toHaveBeenCalled()
       // More assertions to verify correct function behavior
     })

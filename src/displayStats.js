@@ -198,17 +198,26 @@ function displayStatsOutput(dataToFormat) {
 async function displayStatsCard(inputs, dataToFormat) {
   try {
     // Await the generation of the card and get the full path
-    const fullPath = await generateCard(dataToFormat, inputs)
-    console.log(`Card image saved at ${fullPath}`)
+    const fullPathLight = await generateCard(dataToFormat, inputs, 'light')
+    console.log(`Card image Light saved at ${fullPathLight}`)
+    const fullPathDark = await generateCard(dataToFormat, inputs, 'dark')
+    console.log(`Card image Dark saved at ${fullPathDark}`)
 
     // Construct the image display depending on the file format
     let dataContent = ''
     switch (inputs.fileFormat) {
       case 'md':
-        dataContent = `![Trailhead-Stats](${fullPath})`
+        dataContent = `![Trailhead-Stats-Light](${fullPathLight})![Trailhead-Stats-Dark](${fullPathDark})`
         break
       case 'html':
-        dataContent = `<a href="https://www.salesforce.com/trailblazer/${inputs.trailheadUsername}"><img src="${fullPath}"></a>`
+        dataContent = `
+        <a href="https://www.salesforce.com/trailblazer/${inputs.trailheadUsername}">
+        <picture>
+            <source media="(prefers-color-scheme: light)" srcset="${fullPathLight}">
+            <source media="(prefers-color-scheme: dark)" srcset="${fullPathDark}">
+            <img alt="Shows the Trailhead Stats card in either light or dark theme." src="${fullPathLight}">
+        </picture>
+        </a>`
         break
     }
     return dataContent
@@ -232,4 +241,4 @@ function appDChtml(propertyLabel, propertyValue) {
   return ''
 }
 
-module.exports = displayStats
+module.exports = { displayStats, displayStatsCard }
