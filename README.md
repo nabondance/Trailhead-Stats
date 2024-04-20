@@ -219,7 +219,6 @@ Ideas I have in mind, in no particular order:
 - More data
 - Add more options to select what to display
 - Find a way to remove the required permission
-- Automatically display light or dark theme
 - Dynamic card and not static PNG
 
 ## Abandoned Features
