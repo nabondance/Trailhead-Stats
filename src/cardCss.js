@@ -6,15 +6,15 @@ function generateCss(styleTheme) {
 
   switch (styleTheme) {
     case 'light':
-      colorBackground = '#FFFFFF'
+      colorBackground = 'white'
       colorText = '#1F2328'
-      colorTextSkill = '#FFFFFF'
+      colorTextSkill = 'white'
       colorBlock = '#F5F8FA'
       break
     case 'dark':
       colorBackground = '#22272D'
-      colorText = '#C4D1DE'
-      colorTextSkill = '#FFFFFF'
+      colorText = 'white'
+      colorTextSkill = 'white'
       colorBlock = '#1C2128'
       break
   }
