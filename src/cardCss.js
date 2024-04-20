@@ -3,6 +3,7 @@ function generateCss(styleTheme) {
   let colorText
   let colorTextSkill
   let colorBlock
+  let colorLine
 
   switch (styleTheme) {
     case 'light':
@@ -10,12 +11,14 @@ function generateCss(styleTheme) {
       colorText = '#1F2328'
       colorTextSkill = 'white'
       colorBlock = '#F5F8FA'
+      colorLine = '#1C2128'
       break
     case 'dark':
       colorBackground = '#22272D'
       colorText = 'white'
       colorTextSkill = 'white'
       colorBlock = '#1C2128'
+      colorLine = '#F5F8FA'
       break
   }
 
@@ -26,6 +29,7 @@ function generateCss(styleTheme) {
     --color-text: ${colorText};
     --color-text-skill: ${colorTextSkill};
     --color-block: ${colorBlock};
+    --color-line: ${colorLine};
   }
   body {
       font-family: Arial, sans-serif;
@@ -40,14 +44,13 @@ function generateCss(styleTheme) {
   .card {
       background-color: var(--color-background);
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       padding: 20px;
       width: 600px;
   }
   .card-header {
       display: flex;
       align-items: center;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid var(--color-line);
       padding-bottom: 10px;
       margin-bottom: 10px;
   }
@@ -110,7 +113,7 @@ function generateCss(styleTheme) {
       max-width: 100px;
       max-height: 100px;
       margin-right: 10px;
-      object-fit: contain; /* this ensures the image is scaled correctly while maintaining its aspect ratio */
+      object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
       vertical-align: middle; /* This aligns the image nicely with the text */
   }
   .superbadge-container {
