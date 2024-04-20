@@ -211,13 +211,13 @@ async function displayStatsCard(inputs, dataToFormat) {
         break
       case 'html':
         dataContent = `
-        <a href="https://www.salesforce.com/trailblazer/${inputs.trailheadUsername}">
-        <picture>
-            <source media="(prefers-color-scheme: light)" srcset="${fullPathLight}">
-            <source media="(prefers-color-scheme: dark)" srcset="${fullPathDark}">
-            <img alt="Shows the Trailhead Stats card in either light or dark theme." src="${fullPathLight}">
-        </picture>
-        </a>`
+<a href="https://www.salesforce.com/trailblazer/${inputs.trailheadUsername}">
+<picture>
+    <source media="(prefers-color-scheme: light)" srcset="${fullPathLight}">
+    <source media="(prefers-color-scheme: dark)" srcset="${fullPathDark}">
+    <img alt="Shows the Trailhead Stats card in either light or dark theme." src="${fullPathLight}">
+</picture>
+</a>`
         break
     }
     return dataContent
