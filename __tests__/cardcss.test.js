@@ -3,7 +3,7 @@ const { generateCss, getSkillColor } = require('../src/cardCss')
 describe('cardCss Tests', () => {
   describe('getStyle function', () => {
     it('should return correct style string for light', () => {
-      const expectedStyleString = '--color-background: #FFFFFF;'
+      const expectedStyleString = '--color-background: white;'
 
       const result = generateCss('light')
 

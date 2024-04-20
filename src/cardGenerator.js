@@ -33,7 +33,7 @@ async function createCardAsPng(htmlContent, outputPath) {
   // Take a screenshot of the card element
   const cardSelector = '.card'
   const card = await page.$(cardSelector)
-  await card.screenshot({ path: outputPath })
+  await card.screenshot({ path: outputPath, type: 'png' })
 
   // Close the browser
   await browser.close()
