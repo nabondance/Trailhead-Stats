@@ -207,17 +207,19 @@ async function displayStatsCard(inputs, dataToFormat) {
     let dataContent = ''
     switch (inputs.fileFormat) {
       case 'md':
-        dataContent = `![Trailhead-Stats-Light](${fullPathLight})![Trailhead-Stats-Dark](${fullPathDark})`
+        dataContent = `
+![Trailhead-Stats-Light](${fullPathLight}#gh-light-mode-only)
+![Trailhead-Stats-Dark](${fullPathDark}#gh-dark-mode-only)`
         break
       case 'html':
         dataContent = `
-        <a href="https://www.salesforce.com/trailblazer/${inputs.trailheadUsername}">
-        <picture>
-            <source media="(prefers-color-scheme: light)" srcset="${fullPathLight}">
-            <source media="(prefers-color-scheme: dark)" srcset="${fullPathDark}">
-            <img alt="Shows the Trailhead Stats card in either light or dark theme." src="${fullPathLight}">
-        </picture>
-        </a>`
+<a href="https://www.salesforce.com/trailblazer/${inputs.trailheadUsername}">
+<picture>
+    <source media="(prefers-color-scheme: light)" srcset="${fullPathLight}">
+    <source media="(prefers-color-scheme: dark)" srcset="${fullPathDark}">
+    <img alt="Shows the Trailhead Stats card in either light or dark theme." src="${fullPathLight}">
+</picture>
+</a>`
         break
     }
     return dataContent
