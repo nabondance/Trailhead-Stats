@@ -40,7 +40,6 @@ function generateCss(styleTheme) {
   .card {
       background-color: var(--color-background);
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       padding: 20px;
       width: 600px;
   }
@@ -110,7 +109,7 @@ function generateCss(styleTheme) {
       max-width: 100px;
       max-height: 100px;
       margin-right: 10px;
-      object-fit: contain; /* this ensures the image is scaled correctly while maintaining its aspect ratio */
+      object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
       vertical-align: middle; /* This aligns the image nicely with the text */
   }
   .superbadge-container {
