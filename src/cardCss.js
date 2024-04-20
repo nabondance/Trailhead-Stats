@@ -87,7 +87,7 @@ function generateCss(styleTheme) {
     overflow: hidden;
     color: var(--color-text-skill);
     font-weight: bold;
-}
+  }
   .skill-name {
     text-align: left;
     padding-left: 5px;
