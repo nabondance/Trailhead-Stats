@@ -103,11 +103,11 @@ The fetched Trailhead stats.
 
 ### Visual display in your file
 
-| Display Type | Example                                                 |
-| ------------ | ------------------------------------------------------- |
-| `text`       | ![Text Display Example](images/readme/display_text.png) |
-| `card`       | ![HTML Display Example](images/readme/display_card.png) |
-| `output`     | Object to use in a GitHub Action                        |
+| Display Type | Example Light Theme                                 | Example Dark Theme                                |
+| ------------ | --------------------------------------------------- | ------------------------------------------------- |
+| `text`       | ![Text Light](images/readme/display_text_light.png) | ![Text Dark](images/readme/display_text_dark.png) |
+| `card`       | ![Card Light](images/readme/display_card_light.png) | ![Card Dark](images/readme/display_card_dark.png) |
+| `output`     | Object to use in a GitHub Action                    | Object to use in a GitHub Action                  |
 
 ## Card features
 
