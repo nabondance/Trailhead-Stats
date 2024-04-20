@@ -231,7 +231,7 @@ async function displayStatsCard(inputs, dataToFormat) {
 
 function appDC(propertyLabel, propertyValue) {
   if (propertyValue !== undefined && propertyValue !== null) {
-    return ` ${propertyLabel}: ${propertyValue}\n`
+    return ` ${propertyLabel}: ${propertyValue}  \n`
   }
   return ''
 }
