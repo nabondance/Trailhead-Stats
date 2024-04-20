@@ -3,6 +3,7 @@ function generateCss(styleTheme) {
   let colorText
   let colorTextSkill
   let colorBlock
+  let colorLine
 
   switch (styleTheme) {
     case 'light':
@@ -10,12 +11,14 @@ function generateCss(styleTheme) {
       colorText = '#1F2328'
       colorTextSkill = 'white'
       colorBlock = '#F5F8FA'
+      colorLine = '#1C2128'
       break
     case 'dark':
       colorBackground = '#22272D'
       colorText = 'white'
       colorTextSkill = 'white'
       colorBlock = '#1C2128'
+      colorLine = '#F5F8FA'
       break
   }
 
@@ -26,6 +29,7 @@ function generateCss(styleTheme) {
     --color-text: ${colorText};
     --color-text-skill: ${colorTextSkill};
     --color-block: ${colorBlock};
+    --color-line: ${colorLine};
   }
   body {
       font-family: Arial, sans-serif;
@@ -46,7 +50,7 @@ function generateCss(styleTheme) {
   .card-header {
       display: flex;
       align-items: center;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid var(--color-line);
       padding-bottom: 10px;
       margin-bottom: 10px;
   }
