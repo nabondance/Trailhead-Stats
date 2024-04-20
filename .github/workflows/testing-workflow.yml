@@ -66,6 +66,7 @@ jobs:
           trailhead-username: ${{ inputs.trailhead-username }}
           display-type: ${{ inputs.display-type }}
           display-file: ${{ inputs.display-file }}
+          file-format: ${{ inputs.file-format }}
           card-path: ${{ inputs.card-path }}
           output-only: ${{ inputs.output-only }}
           no-commit: ${{ inputs.no-commit }}
