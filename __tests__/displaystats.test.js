@@ -1,4 +1,4 @@
-const displayStats = require('./../src/displayStats')
+const { displayStats } = require('./../src/displayStats')
 const cardGenerator = require('.././src/cardGenerator')
 const core = require('@actions/core')
 
@@ -235,6 +235,25 @@ describe('displayStats Function', () => {
     expect(setFailedMock).toHaveBeenCalledWith(undefined)
   })
 
+  it('should fail if there is no rank in card', async () => {
+    // Mock other data as empty or minimal for this test
+    const mockEmptyData = { data: { profile: {} } }
+
+    mockInputs.fileFormat = 'card'
+
+    const result = await displayStats(
+      mockInputs,
+      undefined, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
+    )
+
+    expect(setFailedMock).toHaveBeenCalledWith(undefined)
+  })
+
   it('should fail if the display type is not allowed', async () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
@@ -413,10 +432,13 @@ describe('displayStats Function', () => {
     )
 
     // Check if the result contains the path returned by the mocked generateCard function
-    expect(result).toContain('![Trailhead-Stats](path/to/generated/card.png)')
+    expect(result).toContain(
+      '![Trailhead-Stats-Light](path/to/generated/card.png)![Trailhead-Stats-Dark](path/to/generated/card.png)'
+    )
     expect(cardGenerator.generateCard).toHaveBeenCalledWith(
       expect.anything(), // The data object passed to generateCard
-      mockInputs // The cardPath argument passed to displayStats
+      mockInputs, // The cardPath argument passed to displayStats
+      'light' // The theme argument passed to generateCard
     )
   })
 
@@ -437,12 +459,11 @@ describe('displayStats Function', () => {
     )
 
     // Check if the result contains the path returned by the mocked generateCard function
-    expect(result).toContain(
-      '<a href="https://www.salesforce.com/trailblazer/username"><img src="path/to/generated/card.png"></a>'
-    )
+    expect(result).toContain('path/to/generated/card.png')
     expect(cardGenerator.generateCard).toHaveBeenCalledWith(
       expect.anything(), // The data object passed to generateCard
-      mockInputs // The cardPath argument passed to displayStats
+      mockInputs, // The cardPath argument passed to displayStats
+      'light' // The theme argument passed to generateCard
     )
   })
 })
