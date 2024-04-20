@@ -147,9 +147,9 @@ function generateHtmlContent(data, inputs, styleTheme) {
                         }" alt="Rank Logo" class="rank-logo">
                         <div>
                             <h2>${data.rank}</h2>
-                            <p>${data.nbBadges} Badges, ${
+                            <p><b>${data.nbBadges}</b> Badges, <b>${
                               data.points
-                            } Points</p>
+                            }</b> Points</p>
                         </div>
                     </div>
                     <div class="card-content">
