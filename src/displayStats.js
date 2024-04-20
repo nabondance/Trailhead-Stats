@@ -207,7 +207,9 @@ async function displayStatsCard(inputs, dataToFormat) {
     let dataContent = ''
     switch (inputs.fileFormat) {
       case 'md':
-        dataContent = `![Trailhead-Stats-Light](${fullPathLight})![Trailhead-Stats-Dark](${fullPathDark})`
+        dataContent = `
+![Trailhead-Stats-Light](${fullPathLight}#gh-light-mode-only)
+![Trailhead-Stats-Dark](${fullPathDark}#gh-dark-mode-only)`
         break
       case 'html':
         dataContent = `

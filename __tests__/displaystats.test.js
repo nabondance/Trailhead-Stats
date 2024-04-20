@@ -432,9 +432,7 @@ describe('displayStats Function', () => {
     )
 
     // Check if the result contains the path returned by the mocked generateCard function
-    expect(result).toContain(
-      '![Trailhead-Stats-Light](path/to/generated/card.png)![Trailhead-Stats-Dark](path/to/generated/card.png)'
-    )
+    expect(result).toContain('path/to/generated/card.png#gh-light-mode-only')
     expect(cardGenerator.generateCard).toHaveBeenCalledWith(
       expect.anything(), // The data object passed to generateCard
       mockInputs, // The cardPath argument passed to displayStats
