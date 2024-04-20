@@ -14,7 +14,6 @@ on:
         type: choice
         options:
           - text
-          - html
           - card
           - output
         default: text
@@ -23,6 +22,14 @@ on:
         required: false
         type: string
         default: 'README-example.md'
+      file-format:
+        description: 'Format of the file: md|html'
+        required: false
+        default: md
+        type: choice
+        options:
+          - md
+          - html
       card-path:
         description: Folder path to save the card
         required: false
