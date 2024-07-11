@@ -29,6 +29,9 @@ coverage
 # nyc test coverage
 .nyc_output
 
+# Mega linter reports
+megalinter-reports/
+
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 

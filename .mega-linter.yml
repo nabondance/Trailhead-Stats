@@ -1,0 +1,40 @@
+# Configuration file for MegaLinter
+#
+# See all available variables at https://megalinter.io/latest/config-file/ and in
+# linters documentation
+
+# all, none, or list of linter keys
+APPLY_FIXES: none
+
+# If you use ENABLE variable, all other languages/formats/tooling-formats will
+# be disabled by default
+# ENABLE:
+
+DISABLE:
+  - COPYPASTE # Disable checks of excessive copy-pastes
+  - SPELL # Disable checks of spelling mistakes
+
+# If you use ENABLE_LINTERS variable, all other linters will be disabled by
+# default
+# ENABLE_LINTERS:
+#   - JAVASCRIPT
+#   - YAML
+
+DISABLE_LINTERS:
+  - MARKDOWN_MARKDOWN_TABLE_FORMATTER # Disable because of conflict with prettier way to handle tables
+  - REPOSITORY_SECRETLINT # Disable checks of secrets in repository
+  - REPOSITORY_KICS # Disable because of GHA sha required
+  - REPOSITORY_TRIVY # Disable because of low warning on deps
+  - REPOSITORY_DEVSKIM # Disable because
+  - JAVASCRIPT_STANDARD # Disable because of conflict with prettier
+
+# JavaScript configuration
+JAVASCRIPT_ES_FILTER_REGEX_EXCLUDE: '(dist)' # Filter out files to lint
+
+JAVASCRIPT_DEFAULT_STYLE: prettier
+
+SHOW_ELAPSED_TIME: true
+
+FILEIO_REPORTER: false
+# Uncomment if you want MegaLinter to detect errors but not block CI to pass
+# DISABLE_ERRORS: true
