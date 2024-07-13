@@ -1,6 +1,6 @@
 ---
 name: Labeler
-on:
+on: # yamllint disable-line
   - pull_request
 
 jobs:

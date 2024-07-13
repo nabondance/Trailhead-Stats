@@ -10,7 +10,7 @@
 ---
 name: Check Transpiled JavaScript
 
-on:
+on: # yamllint disable-line
   pull_request:
     branches:
       - main
