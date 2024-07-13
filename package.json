@@ -31,7 +31,7 @@
     "ci-test": "jest --coverage",
     "format:check": "prettier --check **/*.{js,md,yml}",
     "format:write": "prettier --write **/*.{js,md,yml}",
-    "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
+    "lint": "npx eslint . -c ./eslint.config.js",
     "package:watch": "npm run package -- --watch",
     "package": "ncc build src/index.js --license licenses.txt",
     "postinstall": "npm install --platform=linux --arch=x64 sharp",
@@ -44,7 +44,7 @@
   },
   "license": "MIT",
   "eslintConfig": {
-    "extends": "./.github/linters/.eslintrc.yml"
+    "extends": "./.github/linters/eslint.config.js"
   },
   "jest": {
     "verbose": true,
@@ -80,14 +80,15 @@
     "puppeteer": "^22.13.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.9",
-    "@babel/eslint-parser": "^7.24.8",
-    "@babel/preset-env": "^7.24.8",
+    "@babel/core": "^7.24.7",
+    "@babel/eslint-parser": "^7.24.7",
+    "@babel/preset-env": "^7.24.7",
     "@eslint/compat": "^1.1.1",
     "@vercel/ncc": "^0.38.1",
     "babel-jest": "^29.7.0",
     "babel-preset-jest": "^29.6.3",
     "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
     "eslint-plugin-github": "^5.0.1",
     "eslint-plugin-jest": "^28.6.0",
     "jest": "^29.7.0",
