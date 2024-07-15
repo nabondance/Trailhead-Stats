@@ -80,10 +80,12 @@
     "puppeteer": "^22.13.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.7",
+    "@babel/core": "^7.24.9",
     "@babel/eslint-parser": "^7.24.7",
-    "@babel/preset-env": "^7.24.7",
+    "@babel/preset-env": "^7.24.8",
+    "@eslint/compat": "^1.1.1",
     "@vercel/ncc": "^0.38.1",
+    "babel-jest": "^29.7.0",
     "babel-preset-jest": "^29.6.3",
     "eslint": "^8.57.0",
     "eslint-plugin-github": "^5.0.1",
