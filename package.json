@@ -77,7 +77,7 @@
     "child_process": "^1.0.2",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
-    "puppeteer": "^22.13.0"
+    "puppeteer": "^22.13.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",
