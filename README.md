@@ -1,6 +1,6 @@
 # Trailhead Stats GitHub Action
 
-[![GitHub Super-Linter](https://github.com/nabondance/Trailhead-Stats/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)![CI](https://github.com/nabondance/Trailhead-Stats/actions/workflows/ci.yml/badge.svg)[![codecov](https://codecov.io/gh/nabondance/Trailhead-Stats/branch/main/graph/badge.svg)](https://codecov.io/gh/nabondance/Trailhead-Stats)
+[![MegaLinter](https://github.com/nabondance/Trailhead-Stats/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/nabondance/Trailhead-Stats/actions/workflows/mega-linter.yml)![CI](https://github.com/nabondance/Trailhead-Stats/actions/workflows/ci.yml/badge.svg)[![codecov](https://codecov.io/gh/nabondance/Trailhead-Stats/branch/main/graph/badge.svg)](https://codecov.io/gh/nabondance/Trailhead-Stats)
 
 ## Description
 
@@ -103,11 +103,11 @@ The fetched Trailhead stats.
 
 ### Visual display in your file
 
-| Display Type | Example Light Theme                                 | Example Dark Theme                                |
-| ------------ | --------------------------------------------------- | ------------------------------------------------- |
-| `text`       | ![Text Light](images/readme/display_text_light.png) | ![Text Dark](images/readme/display_text_dark.png) |
-| `card`       | ![Card Light](images/readme/display_card_light.png) | ![Card Dark](images/readme/display_card_dark.png) |
-| `output`     | Object to use in a GitHub Action                    | Object to use in a GitHub Action                  |
+| Display Type | Example Light Theme                         | Example Dark Theme                        |
+| ------------ | ------------------------------------------- | ----------------------------------------- |
+| `text`       | ![Text Light](images/readme/text_light.png) | ![Text Dark](images/readme/text_dark.png) |
+| `card`       | ![Card Light](images/readme/card_light.png) | ![Card Dark](images/readme/card_dark.png) |
+| `output`     | Object to use in a GitHub Action            | Object to use in a GitHub Action          |
 
 ## Card features
 

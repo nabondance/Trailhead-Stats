@@ -9,9 +9,10 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
+---
 name: CodeQL
 
-on:
+on: # yamllint disable-line
   pull_request:
     branches:
       - main

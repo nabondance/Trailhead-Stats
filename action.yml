@@ -1,3 +1,4 @@
+---
 name: Trailhead Stats
 description: Display Trailhead stats based on the username
 author: nabondance
@@ -30,18 +31,15 @@ inputs:
   nb-skills:
     description: Max number of skills to display
     required: false
-    type: number
-    default: 5
+    default: '5'
   output-only:
     description: Only output, do not modify file
     required: false
-    type: boolean
-    default: false
+    default: 'false'
   no-commit:
     description: Do not commit any modification, for debugging purpose
     required: false
-    type: boolean
-    default: false
+    default: 'false'
 
 outputs:
   stats:

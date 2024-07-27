@@ -1,6 +1,7 @@
+---
 name: Update Trailhead Stats
 
-on:
+on: # yamllint disable-line
   schedule:
     - cron: '0 0 * * *' # Runs daily
 

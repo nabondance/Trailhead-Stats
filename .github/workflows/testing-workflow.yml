@@ -1,6 +1,7 @@
+---
 name: Testing Workflow
 
-on:
+on: # yamllint disable-line
   workflow_dispatch:
     inputs:
       trailhead-username:
