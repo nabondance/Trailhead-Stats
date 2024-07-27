@@ -26,15 +26,14 @@
     "node": ">=20"
   },
   "scripts": {
-    "all": "npm run format:write && npm run lint && npm run test && npm run package",
-    "bundle": "npm run format:write && npm run package",
+    "all": "pnpm run format:write && pnpm run lint && pnpm run test && pnpm run package",
+    "bundle": "pnpm run format:write && pnpm run package",
     "ci-test": "jest --coverage",
     "format:check": "prettier --check **/*.{js,md,yml}",
     "format:write": "prettier --write **/*.{js,md,yml}",
     "lint": "npx eslint . -c ./eslint.config.js",
-    "package:watch": "npm run package -- --watch",
+    "package:watch": "pnpm run package -- --watch",
     "package": "ncc build src/index.js --license licenses.txt",
-    "postinstall": "npm install --platform=linux --arch=x64 sharp",
     "test": "(jest && make-coverage-badge --output-path ./badges/coverage.svg) || make-coverage-badge --output-path ./badges/coverage.svg"
   },
   "lint-staged": {
