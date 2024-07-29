@@ -43,7 +43,7 @@
   },
   "license": "MIT",
   "eslintConfig": {
-    "extends": "./.github/linters/eslint.config.js"
+    "extends": "./eslint.config.js"
   },
   "jest": {
     "verbose": true,
