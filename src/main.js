@@ -54,7 +54,7 @@ async function run() {
       // Commit file if wanted
       if (inputs.noCommit === 'false') {
         // Update file on branch
-        pushUpdatedFile(inputs.displayFile, inputs.cardPath)
+        await pushUpdatedFile(inputs.displayFile, inputs.cardPath)
       }
     }
 
