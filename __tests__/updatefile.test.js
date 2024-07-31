@@ -4,11 +4,12 @@ const fs = require('fs')
 const { execSync } = require('child_process')
 const path = require('path')
 
+// Mocks
 jest.mock('fs', () => {
   const originalModule = jest.requireActual('fs')
-
   return {
     ...originalModule,
+    existsSync: jest.fn().mockReturnValue(true),
     promises: {
       readFile: jest.fn().mockResolvedValue('mock file content'),
       writeFile: jest.fn().mockResolvedValue()
@@ -21,14 +22,34 @@ jest.mock('fs', () => {
 jest.mock('child_process', () => ({
   execSync: jest.fn()
 }))
+
 jest.mock('@actions/core')
 jest.mock('axios')
+jest.mock('@actions/github', () => ({
+  getOctokit: jest.fn().mockReturnValue({
+    git: {
+      createBlob: jest.fn().mockResolvedValue({ data: { sha: 'blobSha' } }),
+      getRef: jest
+        .fn()
+        .mockResolvedValue({ data: { object: { sha: 'refSha' } } }),
+      getCommit: jest
+        .fn()
+        .mockResolvedValue({ data: { tree: { sha: 'treeSha' } } }),
+      createTree: jest.fn().mockResolvedValue({ data: { sha: 'newTreeSha' } }),
+      createCommit: jest
+        .fn()
+        .mockResolvedValue({ data: { sha: 'newCommitSha' } }),
+      updateRef: jest.fn().mockResolvedValue({})
+    }
+  })
+}))
 
 describe('Update File Tests', () => {
   const mockDisplayFile = 'readme.md'
-  const mockCardFile = 'images/TS.png'
+  const mockCardPath = 'images'
   const mockDataContent = 'New stats data'
   let mockFilePath
+  let octokit
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -37,7 +58,31 @@ describe('Update File Tests', () => {
     process.env.GITHUB_REF = 'refs/heads/main'
     process.env.GITHUB_TOKEN = 'fake-token'
     process.env.GITHUB_REPOSITORY = 'user/repo'
+    process.env.GITHUB_REPOSITORY_OWNER = 'user'
     mockFilePath = path.join(process.env.GITHUB_WORKSPACE, mockDisplayFile)
+
+    // Ensure the mocked `getOctokit` returns a valid object with the `git` property
+    const github = require('@actions/github')
+    github.getOctokit.mockReturnValue({
+      git: {
+        createBlob: jest.fn().mockResolvedValue({ data: { sha: 'blobSha' } }),
+        getRef: jest
+          .fn()
+          .mockResolvedValue({ data: { object: { sha: 'refSha' } } }),
+        getCommit: jest
+          .fn()
+          .mockResolvedValue({ data: { tree: { sha: 'treeSha' } } }),
+        createTree: jest
+          .fn()
+          .mockResolvedValue({ data: { sha: 'newTreeSha' } }),
+        createCommit: jest
+          .fn()
+          .mockResolvedValue({ data: { sha: 'newCommitSha' } }),
+        updateRef: jest.fn().mockResolvedValue({})
+      }
+    })
+
+    octokit = github.getOctokit(process.env.GITHUB_TOKEN)
   })
 
   describe('updateStatsOnFile', () => {
@@ -66,52 +111,25 @@ describe('Update File Tests', () => {
   })
 
   describe('pushUpdatedFile', () => {
-    it('should push updated file successfully when there are changes', () => {
-      // Simulate git status showing changes
-      execSync.mockImplementation(cmd => {
-        if (cmd === 'git status --porcelain') {
-          return 'M somefile'
-        }
-        return ''
-      })
+    it('should push updated file successfully', async () => {
+      fs.existsSync.mockReturnValue(true)
 
-      pushUpdatedFile(mockDisplayFile, './')
+      await pushUpdatedFile(mockDisplayFile, mockCardPath)
 
-      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
-      expect(execSync).toHaveBeenCalledWith(
-        expect.stringContaining('git commit')
-      )
-      expect(execSync).toHaveBeenCalledWith(expect.stringContaining('git push'))
+      expect(octokit.git.createBlob).toHaveBeenCalledTimes(2)
+      expect(octokit.git.getRef).toHaveBeenCalledTimes(1)
+      expect(octokit.git.getCommit).toHaveBeenCalledTimes(1)
+      expect(octokit.git.createTree).toHaveBeenCalledTimes(1)
+      expect(octokit.git.createCommit).toHaveBeenCalledTimes(1)
+      expect(octokit.git.updateRef).toHaveBeenCalledTimes(1)
     })
 
-    it('should not push when there are no changes', () => {
-      // Simulate git status showing no changes
-      execSync.mockImplementation(cmd => {
-        if (cmd === 'git status --porcelain') {
-          return ''
-        }
-        return ''
-      })
+    it('should handle error when pushing changes', async () => {
+      octokit.git.createBlob.mockRejectedValue(new Error('Create blob failed'))
 
-      pushUpdatedFile(mockDisplayFile, undefined)
+      await pushUpdatedFile(mockDisplayFile, mockCardPath)
 
-      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
-      expect(execSync).not.toHaveBeenCalledWith(
-        expect.stringContaining('git commit')
-      )
-      expect(execSync).not.toHaveBeenCalledWith(
-        expect.stringContaining('git push')
-      )
-    })
-
-    it('should handle git command failure', () => {
-      execSync.mockImplementation(() => {
-        throw new Error('Git command failed')
-      })
-
-      pushUpdatedFile(mockDisplayFile, mockCardFile)
-
-      expect(core.setFailed).toHaveBeenCalledWith('Git command failed')
+      expect(core.setFailed).toHaveBeenCalledWith('Create blob failed')
     })
   })
 })

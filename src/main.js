@@ -1,5 +1,4 @@
 const core = require('@actions/core')
-const github = require('@actions/github')
 const { displayStats } = require('./displayStats')
 const { ActionInputs } = require('./actionInputs')
 const { updateStatsOnFile, pushUpdatedFile } = require('./updateFile')
@@ -55,7 +54,7 @@ async function run() {
       // Commit file if wanted
       if (inputs.noCommit === 'false') {
         // Update file on branch
-        pushUpdatedFile(inputs.displayFile, inputs.cardPath)
+        await pushUpdatedFile(inputs.displayFile, inputs.cardPath)
       }
     }
 
