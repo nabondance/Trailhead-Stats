@@ -15,8 +15,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       axios:
-        specifier: ^1.7.2
-        version: 1.7.2
+        specifier: ^1.7.5
+        version: 1.7.5
       child_process:
         specifier: ^1.0.2
         version: 1.0.2
@@ -1129,8 +1129,8 @@ packages:
     resolution: {integrity: sha512-QbUdXJVTpvUTHU7871ppZkdOLBeGUKBQWHkHrvN2V9IQWGMt61zf3B45BtzjxEJzYuj0JBjBZP/hmYS/R9pmAw==}
     engines: {node: '>=4'}
 
-  axios@1.7.2:
-    resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
+  axios@1.7.5:
+    resolution: {integrity: sha512-fZu86yCo+svH3uqJ/yTdQ0QHpQu5oL+/QE+QPSv6BZSkDAoky9vytxp7u5qk83OJFS3kEBcesWni9WTZAv3tSw==}
 
   axobject-query@3.1.1:
     resolution: {integrity: sha512-goKlv8DZrK9hUh975fnHzhNIO4jUnFCfv/dszV5VwUGDFjI6vQ2VwoyjYjYNEbBE8AH87TduWP5uyDR1D+Iteg==}
@@ -1989,6 +1989,10 @@ packages:
     resolution: {integrity: sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==}
     engines: {node: '>= 4'}
 
+  ignore@5.3.2:
+    resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
+    engines: {node: '>= 4'}
+
   import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -2052,6 +2056,10 @@ packages:
 
   is-core-module@2.15.0:
     resolution: {integrity: sha512-Dd+Lb2/zvk9SKy1TGCt1wFJFo/MWBPMX5x7KcvLajWTGuomczdQX61PvY5yK6SVACwpoexWo81IfFyoKY2QnTA==}
+    engines: {node: '>= 0.4'}
+
+  is-core-module@2.15.1:
+    resolution: {integrity: sha512-z0vtXSwucUJtANQWldhbtbt7BnL0vxiFjIdDLAatwhDYty2bad6s+rijD6Ri4YuYJubLzIJLUidCh09e1djEVQ==}
     engines: {node: '>= 0.4'}
 
   is-data-view@1.0.1:
@@ -4624,7 +4632,7 @@ snapshots:
 
   axe-core@4.9.1: {}
 
-  axios@1.7.2:
+  axios@1.7.5:
     dependencies:
       follow-redirects: 1.15.6
       form-data: 4.0.0
@@ -5303,9 +5311,9 @@ snapshots:
       eslint-plugin-es-x: 7.8.0(eslint@8.57.0)
       get-tsconfig: 4.7.6
       globals: 13.24.0
-      ignore: 5.3.1
+      ignore: 5.3.2
       is-builtin-module: 3.2.1
-      is-core-module: 2.15.0
+      is-core-module: 2.15.1
       minimatch: 3.1.2
       resolve: 1.22.8
       semver: 7.6.3
@@ -5678,6 +5686,8 @@ snapshots:
 
   ignore@5.3.1: {}
 
+  ignore@5.3.2: {}
+
   import-fresh@3.3.0:
     dependencies:
       parent-module: 1.0.1
@@ -5742,6 +5752,10 @@ snapshots:
   is-callable@1.2.7: {}
 
   is-core-module@2.15.0:
+    dependencies:
+      hasown: 2.0.2
+
+  is-core-module@2.15.1:
     dependencies:
       hasown: 2.0.2
 
