@@ -1,5 +1,4 @@
 const core = require('@actions/core')
-const path = require('path')
 const { generateCard } = require('./cardGenerator')
 
 async function displayStats(
@@ -11,8 +10,8 @@ async function displayStats(
   thSkills,
   thEarnedStamps
 ) {
-  core.info(`Will update the file: ${inputs.displayFile}`)
-  core.info(`Starting to display with type: ${inputs.displayType}`)
+  core.debug(`Will update the file: ${inputs.displayFile}`)
+  core.debug(`Starting to display with type: ${inputs.displayType}`)
 
   const dataToFormat = prepareData(
     thRank,
@@ -155,7 +154,7 @@ function displayStatsTextMd(dataToFormat) {
   dataContent += appDC('Number of Stamps Earned', dataToFormat.nbEarnedStamps)
   dataContent += appDC('Last Stamp earned', dataToFormat.lastEarnedStamps)
 
-  core.info(`Stats to be displayed:\n${dataContent}`)
+  core.debug(`Stats to be displayed:\n${dataContent}`)
 
   return dataContent
 }
@@ -186,12 +185,12 @@ function displayStatsTextHtml(dataToFormat) {
   dataContent += appDChtml('Last Stamp earned', dataToFormat.lastEarnedStamps)
   dataContent += '</ul>'
 
-  core.info(`Stats to be displayed:\n${dataContent}`)
+  core.debug(`Stats to be displayed:\n${dataContent}`)
   return dataContent
 }
 
 function displayStatsOutput(dataToFormat) {
-  core.info(`Stats to be displayed:\n${JSON.stringify(dataToFormat)}`)
+  core.debug(`Stats to be displayed:\n${JSON.stringify(dataToFormat)}`)
   return dataToFormat
 }
 
@@ -199,9 +198,9 @@ async function displayStatsCard(inputs, dataToFormat) {
   try {
     // Await the generation of the card and get the full path
     const fullPathLight = await generateCard(dataToFormat, inputs, 'light')
-    console.log(`Card image Light saved at ${fullPathLight}`)
+    core.debug(`Card image Light saved at ${fullPathLight}`)
     const fullPathDark = await generateCard(dataToFormat, inputs, 'dark')
-    console.log(`Card image Dark saved at ${fullPathDark}`)
+    core.debug(`Card image Dark saved at ${fullPathDark}`)
 
     // Construct the image display depending on the file format
     let dataContent = ''

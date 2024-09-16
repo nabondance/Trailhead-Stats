@@ -1,12 +1,10 @@
 const core = require('@actions/core')
-const github = require('@actions/github')
 const main = require('../src/main')
 
 // Mock the GitHub Actions core library
-const infoMock = jest.spyOn(core, 'info').mockImplementation()
+jest.mock('@actions/core')
 const getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
 const setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
-const setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
 
 // Mock the action's main function
 const runMock = jest.spyOn(main, 'run')

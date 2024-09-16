@@ -289,7 +289,6 @@ describe('displayStats Function', () => {
       mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
-    expect(core.info).toHaveBeenCalledWith(expect.any(String))
     expect(result).toContain('Rank: Triple Star Ranger')
     expect(result).toContain('Badges: 480')
     expect(result).toContain('Points: 185300')
@@ -335,7 +334,6 @@ describe('displayStats Function', () => {
       mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
-    expect(core.info).toHaveBeenCalledWith(expect.any(String))
     expect(result).toContain('Number of Certification: 2')
   })
 

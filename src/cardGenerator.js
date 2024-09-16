@@ -1,3 +1,4 @@
+const core = require('@actions/core')
 const puppeteer = require('puppeteer')
 const path = require('path')
 const crypto = require('crypto')
@@ -7,6 +8,12 @@ async function generateCard(dataToFormat, inputs, styleTheme) {
   const cardFullPath = path.join(inputs.cardPath, `TScard-${styleTheme}.png`)
   const htmlContent = generateHtmlContent(dataToFormat, inputs, styleTheme)
 
+  // Debugs
+  core.debug('Data to format:', dataToFormat)
+  core.debug('Inputs:', inputs)
+  core.debug('Style theme:', styleTheme)
+  core.debug('Card full path:', cardFullPath)
+
   // Create the card as a PNG image
   await createCardAsPng(htmlContent, cardFullPath)
 
@@ -15,6 +22,10 @@ async function generateCard(dataToFormat, inputs, styleTheme) {
 }
 
 async function createCardAsPng(htmlContent, outputPath) {
+  // Debug
+  core.debug('HTML content:', htmlContent)
+  core.debug('Output path:', outputPath)
+
   // Launch a headless browser
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium-browser',
@@ -168,9 +179,9 @@ function generateHtmlContent(data, inputs, styleTheme) {
             </body>
         </html>
     `
-  console.log(htmlContent)
+  core.debug(htmlContent)
   const hash = hashHtml(htmlContent)
-  console.log('SHA-256 Hash:', hash)
+  core.debug('SHA-256 Hash:', hash)
   return htmlContent
 }
 

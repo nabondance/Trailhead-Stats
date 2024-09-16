@@ -21,6 +21,9 @@ jest.mock('puppeteer', () => ({
   })
 }))
 
+// Mocking @actions/core
+jest.mock('@actions/core')
+
 describe('cardGenerator Tests', () => {
   // Mocks
   const mockData = {
@@ -133,7 +136,7 @@ describe('cardGenerator Tests', () => {
   // Snapshot tests for HTML/CSS output
   describe('Snapshot testing', () => {
     it('should match the snapshot', async () => {
-      const htmlContent = generateHtmlContent(mockData, mockInputs, 'light') // Assuming this is a function in your module
+      const htmlContent = generateHtmlContent(mockData, mockInputs, 'light')
 
       expect(htmlContent).toMatchSnapshot()
     })
