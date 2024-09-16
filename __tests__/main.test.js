@@ -1,5 +1,4 @@
 const core = require('@actions/core')
-const github = require('@actions/github')
 const main = require('../src/main')
 
 // Mock the GitHub Actions core library

@@ -1,5 +1,4 @@
 const core = require('@actions/core')
-const path = require('path')
 const { generateCard } = require('./cardGenerator')
 
 async function displayStats(
