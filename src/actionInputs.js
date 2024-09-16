@@ -19,6 +19,10 @@ class ActionInputs {
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
 
+    // Debug
+    core.debug('Action inputs:', this)
+
+    // Validate inputs
     this.validateInputs()
   }
 

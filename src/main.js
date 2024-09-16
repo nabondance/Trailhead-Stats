@@ -19,7 +19,7 @@ const {
 async function run() {
   try {
     const inputs = new ActionInputs()
-    core.info(`Getting stats for ${inputs.trailheadUsername}`)
+    core.debug(`Getting stats for ${inputs.trailheadUsername}`)
 
     // Get stats
     const thRank = await fetchTrailblazerRankInfo(inputs.trailheadUsername)
@@ -34,7 +34,7 @@ async function run() {
     const thEarnedStamps = await fetchTrailblazerEarnedStampsInfo(
       inputs.trailheadUsername
     )
-    core.info(`All stats received.`)
+    core.debug(`All stats received.`)
 
     // Update Readme
     const dataContent = await displayStats(
@@ -59,16 +59,10 @@ async function run() {
       }
     }
 
-    //core.setOutput('stats', JSON.stringify(dataContent))
     const encodedOutput = Buffer.from(JSON.stringify(dataContent)).toString(
       'base64'
     )
     core.setOutput('stats', encodedOutput)
-
-    // Output the payload for debugging
-    // core.info(
-    //   `The event payload: ${JSON.stringify(github.context.payload, null, 2)}`
-    // )
   } catch (error) {
     // Fail the workflow step if an error occurs
     core.setFailed(error.message)

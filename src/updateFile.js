@@ -32,7 +32,7 @@ function updateStatsOnFile(displayFile, dataContent) {
 
     // Write the updated content back to the file
     fs.writeFileSync(filePath, fileContent, 'utf8')
-    core.info('File updated successfully.')
+    core.debug('File updated successfully.')
   } catch (error) {
     console.error('Error updating the file:', error)
     core.setFailed(error.message)
@@ -63,14 +63,14 @@ function pushUpdatedFile(displayFile, cardPath) {
     // Check if there are any changes
     const status = execSync('git status --porcelain').toString()
     if (status === '') {
-      core.info('No changes detected. Skipping commit and push.')
+      core.debug('No changes detected. Skipping commit and push.')
       return
     }
 
     execSync(`git commit -m "Update Trailhead Stats in ${displayFile}"`)
     execSync(`git push origin ${branchName}`)
 
-    core.info('Changes pushed to branch: ', branchName)
+    core.debug('Changes pushed to branch: ', branchName)
   } catch (error) {
     console.error('Error pushing changes: ', error)
     core.setFailed(error.message)
