@@ -2,10 +2,7 @@
 name: Continuous Integration
 
 on: # yamllint disable-line
-  pull_request:
-  push:
-    branches:
-      - main
+  pull_request
 
 permissions:
   contents: read
