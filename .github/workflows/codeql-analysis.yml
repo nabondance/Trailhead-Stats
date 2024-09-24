@@ -20,7 +20,7 @@ on: # yamllint disable-line
     branches:
       - main
   schedule:
-    - cron: '19 4 * * 3'
+    - cron: '0 13 * * 0'
 
 jobs:
   analyze:
