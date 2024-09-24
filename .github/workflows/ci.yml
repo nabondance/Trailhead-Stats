@@ -3,6 +3,8 @@ name: Continuous Integration
 
 on: # yamllint disable-line
   pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
