@@ -75,7 +75,7 @@ jobs:
 
         # You can override MegaLinter flavor used to have faster performances
         # More info at https://megalinter.io/latest/flavors/
-        uses: oxsecurity/megalinter/flavors/javascript@v8.0.0
+        uses: oxsecurity/megalinter/flavors/javascript@v8.1.0
 
         id: ml
 
@@ -100,6 +100,22 @@ jobs:
 
           # ADD YOUR CUSTOM ENV VARIABLES HERE TO OVERRIDE VALUES OF
           # .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
+
+          # Uncomment to use ApiReporter (Grafana)
+          API_REPORTER: true
+          API_REPORTER_URL: ${{ secrets.API_REPORTER_URL }}
+          API_REPORTER_BASIC_AUTH_USERNAME:
+            ${{ secrets.API_REPORTER_BASIC_AUTH_USERNAME }}
+          API_REPORTER_BASIC_AUTH_PASSWORD:
+            ${{ secrets.API_REPORTER_BASIC_AUTH_PASSWORD }}
+          API_REPORTER_METRICS_URL: ${{ secrets.API_REPORTER_METRICS_URL }}
+          API_REPORTER_METRICS_BASIC_AUTH_USERNAME:
+            ${{ secrets.API_REPORTER_METRICS_BASIC_AUTH_USERNAME }}
+          API_REPORTER_METRICS_BASIC_AUTH_PASSWORD:
+            ${{ secrets.API_REPORTER_METRICS_BASIC_AUTH_PASSWORD }}
+          API_REPORTER_DEBUG: true
+          ENABLE_LOGS: true
+          LOG_LEVEL: DEBUG
 
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
