@@ -133,6 +133,23 @@ function generateCss(styleTheme) {
       height: 80px;
       object-fit: contain;
   }
+  .eventBadge-container {
+    max-width: 550px;
+    width: 550px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .eventBadge {
+      position: relative;
+      flex-shrink: 0;
+      margin-right: -30px;
+  }
+  .eventBadge-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+  }
   .stamp-container {
       max-width: 600px;
       width: 600px;

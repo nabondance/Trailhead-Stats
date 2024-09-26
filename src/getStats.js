@@ -88,6 +88,34 @@ async function fetchTrailblazerSuperBadgesInfo(trailheadUsername) {
   }
 }
 
+async function fetchTrailblazerEventBadgesInfo(trailheadUsername) {
+  const endpoint = 'https://profile.api.trailhead.com/graphql'
+
+  const graphqlQuery = {
+    query: GET_TRAILBLAZER_BADGES,
+    variables: {
+      count: 100,
+      after: null,
+      filter: 'EVENT',
+      hasSlug: true,
+      slug: trailheadUsername
+    }
+  }
+
+  try {
+    const response = await axios.post(endpoint, graphqlQuery, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.error('Error fetching data: ', error)
+    return null
+  }
+}
+
 async function fetchTrailblazerCertifsInfo(trailheadUsername) {
   const endpoint = 'https://profile.api.trailhead.com/graphql'
 
@@ -167,6 +195,7 @@ module.exports = {
   fetchTrailblazerRankInfo,
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,
+  fetchTrailblazerEventBadgesInfo,
   fetchTrailblazerCertifsInfo,
   fetchTrailblazerSkillsInfo,
   fetchTrailblazerEarnedStampsInfo

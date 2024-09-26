@@ -118,6 +118,23 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
       height: 80px;
       object-fit: contain;
   }
+  .eventBadge-container {
+    max-width: 550px;
+    width: 550px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .eventBadge {
+      position: relative;
+      flex-shrink: 0;
+      margin-right: -30px;
+  }
+  .eventBadge-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+  }
   .stamp-container {
       max-width: 600px;
       width: 600px;
@@ -153,6 +170,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <h2>Latest Achievements:</h2>
                         <p>Last Badge: Quest For Data Literacy</p>
                         <p>Last Superbadge: Access Governance Superbadge Unit</p>
+                        <p>Last Event Badge: Become An Accessibility Champion Quest</p>
                         <p>Last Certification: Salesforce Certified Associate</p>
                         <p>Last Stamp: Salesforce stamp</p>
 
@@ -177,6 +195,13 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <h2>1 Superbadges:</h2><div class="superbadge-container">
           <div class="superbadge">
             <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,fl_lossy,q_70/learn/superbadges/superbadge_governing_access_sbu/476d05ca5f8e4373526963bf410cc2e0_badge.png" alt="Access Governance Superbadge Unit" class="superbadge-logo">
+          </div></div>
+                        <h2>2 Event Badges:</h2><div class="eventBadge-container">
+          <div class="eventBadge">
+            <img src="https://dfc-static-production.s3.amazonaws.com/resource/images/trailhead/badges/community/trailhead_community_accessibilitychampion_quest2023.png" alt="Become An Accessibility Champion Quest" class="eventBadge-logo">
+          </div>
+          <div class="eventBadge">
+            <img src="https://dfc-static-production.s3.amazonaws.com/resource/images/trailhead/badges/community/trailhead_community_datacloudquest_2023.png" alt="Data Cloud Quest" class="eventBadge-logo">
           </div></div>
                         <h2>1 Stamps:</h2><div class="stamp-container">
         <div class="stamp">

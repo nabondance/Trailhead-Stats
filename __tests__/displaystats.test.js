@@ -120,6 +120,36 @@ describe('displayStats Function', () => {
     }
   }
 
+  const mockTrailheadEventBadgesData = {
+    data: {
+      profile: {
+        trailheadStats: {
+          __typename: 'TrailheadProfileStats',
+          earnedBadgesCount: 103,
+          superbadgeCount: 3
+        },
+        earnedAwards: {
+          edges: [
+            {
+              node: {
+                award: {
+                  title: 'Event',
+                  type: 'EVENT',
+                  icon: 'https://example.com/event-badge.png',
+                  content: {
+                    webUrl:
+                      'https://trailhead.salesforce.com/example-event-badge'
+                  }
+                }
+              }
+            }
+            // ... more superbadges
+          ]
+        }
+      }
+    }
+  }
+
   const mockTrailheadSkillsData = {
     data: {
       profile: {
@@ -208,6 +238,7 @@ describe('displayStats Function', () => {
       undefined, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -227,6 +258,7 @@ describe('displayStats Function', () => {
       undefined, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -246,6 +278,7 @@ describe('displayStats Function', () => {
       undefined, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -265,6 +298,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -284,6 +318,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -301,6 +336,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -315,12 +351,28 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
-    expect(result).toContain('Number of Superbadge: 3')
+    expect(result).toContain('Number of Superbadges: 3')
+  })
+
+  it('should correctly format and display event badge stats', async () => {
+    const result = await displayStats(
+      mockInputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
+    )
+
+    expect(result).toContain('Number of Event Badges: 1')
   })
 
   it('should correctly format and display certification stats', async () => {
@@ -329,6 +381,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -343,6 +396,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -357,6 +411,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -373,6 +428,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -389,6 +445,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -405,6 +462,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -424,6 +482,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps
@@ -450,6 +509,7 @@ describe('displayStats Function', () => {
       mockTrailheadRankData, // thRank
       mockTrailheadBadgesData, // thBadges
       mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
       mockTrailheadCertifsData, // thCertifs
       mockTrailheadSkillsData, // thSkills
       mockTrailheadEarnedStampsData // thEarnedStamps

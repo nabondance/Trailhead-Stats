@@ -4,6 +4,7 @@ const {
   fetchTrailblazerRankInfo,
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,
+  fetchTrailblazerEventBadgesInfo,
   fetchTrailblazerCertifsInfo,
   fetchTrailblazerSkillsInfo,
   fetchTrailblazerEarnedStampsInfo
@@ -87,6 +88,35 @@ describe('fetchTrailblazerRankInfo', () => {
           count: 100,
           after: null,
           filter: 'SUPERBADGE',
+          hasSlug: true,
+          slug: 'testUsername'
+        }
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+    expect(response).toEqual(mockData.data)
+  })
+
+  it('fetches successfully data from the API: TrailblazerEventBadges', async () => {
+    const mockData = {
+      data: {
+        /* mock response data */
+      }
+    }
+    axios.post.mockResolvedValue(mockData)
+
+    const response = await fetchTrailblazerEventBadgesInfo('testUsername')
+
+    expect(axios.post).toHaveBeenCalledWith(
+      'https://profile.api.trailhead.com/graphql',
+      {
+        query: expect.any(String),
+        variables: {
+          count: 100,
+          after: null,
+          filter: 'EVENT',
           hasSlug: true,
           slug: 'testUsername'
         }
@@ -248,6 +278,36 @@ describe('fetchTrailblazerRankInfo', () => {
           count: 100,
           after: null,
           filter: 'SUPERBADGE',
+          hasSlug: true,
+          slug: 'testUsername'
+        }
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+    expect(response).toBeNull()
+    expect(console.error).toHaveBeenCalledWith(
+      'Error fetching data: ',
+      expect.any(Error)
+    )
+  })
+
+  it('handles API error : TrailblazerEventBadges', async () => {
+    const errorMessage = 'Network Error'
+    axios.post.mockRejectedValue(new Error(errorMessage))
+    console.error = jest.fn()
+
+    const response = await fetchTrailblazerEventBadgesInfo('testUsername')
+
+    expect(axios.post).toHaveBeenCalledWith(
+      'https://profile.api.trailhead.com/graphql',
+      {
+        query: expect.any(String),
+        variables: {
+          count: 100,
+          after: null,
+          filter: 'EVENT',
           hasSlug: true,
           slug: 'testUsername'
         }

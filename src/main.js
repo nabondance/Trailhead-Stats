@@ -6,6 +6,7 @@ const {
   fetchTrailblazerRankInfo,
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,
+  fetchTrailblazerEventBadgesInfo,
   fetchTrailblazerCertifsInfo,
   fetchTrailblazerSkillsInfo,
   fetchTrailblazerEarnedStampsInfo
@@ -26,6 +27,9 @@ async function run() {
     const thSuperBadges = await fetchTrailblazerSuperBadgesInfo(
       inputs.trailheadUsername
     )
+    const thEventBadges = await fetchTrailblazerEventBadgesInfo(
+      inputs.trailheadUsername
+    )
     const thCertifs = await fetchTrailblazerCertifsInfo(
       inputs.trailheadUsername
     )
@@ -41,6 +45,7 @@ async function run() {
       thRank,
       thBadges,
       thSuperBadges,
+      thEventBadges,
       thCertifs,
       thSkills,
       thEarnedStamps

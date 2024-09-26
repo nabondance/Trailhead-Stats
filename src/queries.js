@@ -205,6 +205,7 @@ const GET_TRAILBLAZER_SKILLS = `
     }
   }
 `
+
 const GET_TRAILBLAZER_EARNED_STAMPS = `
 query EarnedStamps($slug: String!, $first: Int, $after: String) {
   earnedStamps(slug: $slug, first: $first, after: $after) {
