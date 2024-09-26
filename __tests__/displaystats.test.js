@@ -443,6 +443,7 @@ describe('displayStats Function', () => {
     cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
     mockInputs.displayType = 'card'
     mockInputs.fileFormat = 'html'
+    mockInputs.cardPath = 'newImages'
 
     const result = await displayStats(
       mockInputs,

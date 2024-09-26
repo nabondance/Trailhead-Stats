@@ -1,5 +1,6 @@
 const core = require('@actions/core')
 const { generateCard } = require('./cardGenerator')
+const { mkdir, existsSync } = require('fs')
 
 async function displayStats(
   inputs,
@@ -196,6 +197,16 @@ function displayStatsOutput(dataToFormat) {
 
 async function displayStatsCard(inputs, dataToFormat) {
   try {
+    // Create the card path if it doesn't exist
+    if (!existsSync(inputs.cardPath)) {
+      mkdir(inputs.cardPath, { recursive: true }, err => {
+        if (err) {
+          core.error(`Error creating the card path: ${err}`)
+          core.setFailed(`Error creating the card path: ${err}`)
+        }
+      })
+    }
+
     // Await the generation of the card and get the full path
     const fullPathLight = await generateCard(dataToFormat, inputs, 'light')
     core.debug(`Card image Light saved at ${fullPathLight}`)

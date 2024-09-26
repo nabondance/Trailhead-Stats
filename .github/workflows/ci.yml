@@ -73,9 +73,6 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: Create outputImages folder
-        run: mkdir ./outputImages
-
       - name: Test Local Action
         id: test-action
         uses: ./
@@ -83,7 +80,7 @@ jobs:
           trailhead-username: nabondance
           display-type: 'card'
           display-file: 'README-example.md'
-          card-path: './outputImages'
+          card-path: './output/images'
           no-commit: true
 
       - name: Print Output
@@ -96,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: images
-          path: ./outputImages/*
+          path: ./output/images/*
 
       - name: Comment on PR
         id: comment-on-pr
