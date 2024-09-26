@@ -14,7 +14,7 @@ function generateCss(styleTheme) {
       colorLine = '#1C2128'
       break
     case 'dark':
-      colorBackground = '#22272D'
+      colorBackground = '#202830'
       colorText = 'white'
       colorTextSkill = 'white'
       colorBlock = '#1C2128'
