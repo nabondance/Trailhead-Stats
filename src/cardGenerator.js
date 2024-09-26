@@ -74,13 +74,16 @@ function generateHtmlContent(data, inputs, styleTheme) {
     const thresholds = calculateThresholds(data.skillPointsDetails)
 
     // Generate the HTML for the skills bar chart
-    skillsBarChartHtml = `<h2>Top ${numberTopSkills} Skills:</h2>`
+    skillsBarChartHtml = `<h2>Top ${numberTopSkills?.toLocaleString('fr')} Skills:</h2>`
     skillsBarChartHtml += '<div class="skills-bar-chart">'
     skillsBarChartHtml += topSkills
       .map(skill => {
         const barWidth = (skill.points / maxSkillPoints) * 100 // Normalize to 100%
         const skillColor = getSkillColor(skill.points, thresholds, styleTheme) // Use dynamic color based on thresholds
-        const skillPoints = getSkillPoints(skill.points, barWidth) // Display or not the skill points
+        const skillPoints = getSkillPoints(
+          skill.points,
+          barWidth
+        )?.toLocaleString('fr') // Display or not the skill points
         return `
             <div class="skill-container">
             <div class="skill-bar" style="width: ${barWidth}%; background-color: ${skillColor};">
@@ -96,7 +99,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
   // Generate the certifications HTML
   let certificationsHtml = ''
   if (data.certificationsDetails?.length > 0) {
-    certificationsHtml = `<h2>${data.nbCertifs} Certifications:</h2>`
+    certificationsHtml = `<h2>${data.nbCertifs?.toLocaleString('fr')} Certifications:</h2>`
     certificationsHtml += data.certificationsDetails
       .map(
         cert => `
@@ -129,7 +132,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
   let earnedStampsHtml = ''
   const earnedStampsDetailsLength = data.earnedStampsDetails?.length
   if (earnedStampsDetailsLength > 0) {
-    earnedStampsHtml = `<h2>${earnedStampsDetailsLength} Stamps:</h2>`
+    earnedStampsHtml = `<h2>${earnedStampsDetailsLength?.toLocaleString('fr')} Stamps:</h2>`
     earnedStampsHtml += `<div class="stamp-container">`
     earnedStampsHtml += data.earnedStampsDetails
       .map(
@@ -158,9 +161,8 @@ function generateHtmlContent(data, inputs, styleTheme) {
                         }" alt="Rank Logo" class="rank-logo">
                         <div>
                             <h2>${data.rank}</h2>
-                            <p><b>${data.nbBadges}</b> Badges, <b>${
-                              data.points
-                            }</b> Points</p>
+                            <p><b>${data.nbBadges?.toLocaleString('fr')}</b> Badges,
+                            <b>${data.points?.toLocaleString('fr')}</b> Points</p>
                         </div>
                     </div>
                     <div class="card-content">
