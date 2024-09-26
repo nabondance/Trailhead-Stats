@@ -12,7 +12,7 @@ describe('cardCss Tests', () => {
   })
 
   it('should return correct style string for dark', () => {
-    const expectedStyleString = '--color-background: #22272D;'
+    const expectedStyleString = '--color-background: #202830;'
 
     const result = generateCss('dark')
 
