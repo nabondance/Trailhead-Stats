@@ -118,6 +118,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
     superbadgesHtml = `<h2>${superbadgeDetailsLength} Superbadges:</h2>`
     superbadgesHtml += `<div class="superbadge-container">`
     superbadgesHtml += data.superbadgeDetails
+      .filter(superbadge => superbadge.iconUrl !== undefined)
       .map(
         superbadge => `
           <div class="superbadge">
