@@ -7,6 +7,7 @@ async function displayStats(
   thRank,
   thBadges,
   thSuperBadges,
+  thEventBadges,
   thCertifs,
   thSkills,
   thEarnedStamps
@@ -18,6 +19,7 @@ async function displayStats(
     thRank,
     thBadges,
     thSuperBadges,
+    thEventBadges,
     thCertifs,
     thSkills,
     thEarnedStamps
@@ -41,6 +43,7 @@ function prepareData(
   thRank,
   thBadges,
   thSuperBadges,
+  thEventBadges,
   thCertifs,
   thSkills,
   thEarnedStamps
@@ -49,6 +52,7 @@ function prepareData(
   const trailheadStats = thRank?.data?.profile.trailheadStats
   const trailheadBadges = thBadges?.data?.profile
   const trailheadSuperBadges = thSuperBadges?.data?.profile
+  const trailheadEventBadges = thEventBadges?.data?.profile
   const trailheadCertif = thCertifs?.data?.profile.credential.certifications
   const trailheadSkills = thSkills?.data?.profile.earnedSkills
   const trailheadEarnedStamps = thEarnedStamps?.data?.earnedStamps
@@ -66,7 +70,16 @@ function prepareData(
   }))
 
   // SuperBadges
-  const superbadgeDetails = trailheadSuperBadges.earnedAwards.edges.map(
+  const superBadgeDetails = trailheadSuperBadges.earnedAwards.edges.map(
+    edge => ({
+      title: edge.node.award?.title,
+      iconUrl: edge.node.award?.icon,
+      webUrl: edge.node.award?.content?.webUrl
+    })
+  )
+
+  // EventBadges
+  const eventBadgeDetails = trailheadEventBadges.earnedAwards.edges.map(
     edge => ({
       title: edge.node.award?.title,
       iconUrl: edge.node.award?.icon,
@@ -115,9 +128,12 @@ function prepareData(
     badgeDetails,
     nbBadges: trailheadStats?.earnedBadgesCount,
     lastBadge: badgeDetails[0]?.title,
-    superbadgeDetails,
+    superBadgeDetails,
     nbSuperBadges: trailheadSuperBadges?.trailheadStats.superbadgeCount,
-    lastSuperbadge: superbadgeDetails[0]?.title,
+    lastSuperBadge: superBadgeDetails[0]?.title,
+    eventBadgeDetails,
+    nbEventBadges: trailheadEventBadges?.earnedAwards?.edges?.length,
+    lastEventBadge: eventBadgeDetails[0]?.title,
     certificationsDetails,
     nbCertifs: trailheadCertif?.length,
     lastCertif: lastCertification?.title,
@@ -147,10 +163,12 @@ function displayStatsTextMd(dataToFormat) {
   dataContent += appDC('Badges', dataToFormat.nbBadges)
   dataContent += appDC('Points', dataToFormat.points)
   dataContent += appDC('Number of trails completed', dataToFormat.trails)
-  dataContent += appDC('Number of Superbadge', dataToFormat.nbSuperBadges)
-  dataContent += appDC('Last Superbadge earned', dataToFormat.lastSuperbadge)
   dataContent += appDC('Number of Certification', dataToFormat.nbCertifs)
   dataContent += appDC('Last Certification earned', dataToFormat.lastCertif)
+  dataContent += appDC('Number of Superbadges', dataToFormat.nbSuperBadges)
+  dataContent += appDC('Last Superbadge earned', dataToFormat.lastSuperBadge)
+  dataContent += appDC('Number of Event Badges', dataToFormat.nbEventBadges)
+  dataContent += appDC('Last Event Badge earned', dataToFormat.lastEventBadge)
   dataContent += appDC('Main skill', dataToFormat.skillPointsDetails[0]?.name)
   dataContent += appDC('Number of Stamps Earned', dataToFormat.nbEarnedStamps)
   dataContent += appDC('Last Stamp earned', dataToFormat.lastEarnedStamps)
@@ -168,13 +186,18 @@ function displayStatsTextHtml(dataToFormat) {
   dataContent += appDChtml('Badges', dataToFormat.nbBadges)
   dataContent += appDChtml('Points', dataToFormat.points)
   dataContent += appDChtml('Number of trails completed', dataToFormat.trails)
-  dataContent += appDChtml('Number of Superbadge', dataToFormat.nbSuperBadges)
-  dataContent += appDChtml(
-    'Last Superbadge earned',
-    dataToFormat.lastSuperbadge
-  )
   dataContent += appDChtml('Number of Certification', dataToFormat.nbCertifs)
   dataContent += appDChtml('Last Certification earned', dataToFormat.lastCertif)
+  dataContent += appDChtml('Number of Superbadges', dataToFormat.nbSuperBadges)
+  dataContent += appDChtml(
+    'Last Superbadge earned',
+    dataToFormat.lastSuperBadge
+  )
+  dataContent += appDChtml('Number of Event Badges', dataToFormat.nbEventBadges)
+  dataContent += appDChtml(
+    'Last Event Badge earned',
+    dataToFormat.lastEventBadge
+  )
   dataContent += appDChtml(
     'Main skill',
     dataToFormat.skillPointsDetails[0]?.name

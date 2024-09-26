@@ -112,12 +112,12 @@ function generateHtmlContent(data, inputs, styleTheme) {
   }
 
   // Generate the superbadge HTML
-  let superbadgesHtml = ''
-  const superbadgeDetailsLength = data.superbadgeDetails?.length
-  if (superbadgeDetailsLength > 0) {
-    superbadgesHtml = `<h2>${superbadgeDetailsLength} Superbadges:</h2>`
-    superbadgesHtml += `<div class="superbadge-container">`
-    superbadgesHtml += data.superbadgeDetails
+  let superBadgesHtml = ''
+  const superBadgeDetailsLength = data.superBadgeDetails?.length
+  if (superBadgeDetailsLength > 0) {
+    superBadgesHtml = `<h2>${superBadgeDetailsLength} Superbadges:</h2>`
+    superBadgesHtml += `<div class="superbadge-container">`
+    superBadgesHtml += data.superBadgeDetails
       .filter(superbadge => superbadge.iconUrl !== undefined)
       .map(
         superbadge => `
@@ -126,7 +126,25 @@ function generateHtmlContent(data, inputs, styleTheme) {
           </div>`
       )
       .join('')
-    superbadgesHtml += '</div>'
+    superBadgesHtml += '</div>'
+  }
+
+  // Generate the event badge HTML
+  let eventBadgesHtml = ''
+  const eventBadgeDetailsLength = data.eventBadgeDetails?.length
+  if (eventBadgeDetailsLength > 0) {
+    eventBadgesHtml = `<h2>${eventBadgeDetailsLength} Event Badges:</h2>`
+    eventBadgesHtml += `<div class="eventBadge-container">`
+    eventBadgesHtml += data.eventBadgeDetails
+      .filter(eventBadge => eventBadge.iconUrl !== undefined)
+      .map(
+        eventBadge => `
+          <div class="eventBadge">
+            <img src="${eventBadge.iconUrl}" alt="${eventBadge.title}" class="eventBadge-logo">
+          </div>`
+      )
+      .join('')
+    eventBadgesHtml += '</div>'
   }
 
   // Generate the earned stamps HTML
@@ -169,13 +187,15 @@ function generateHtmlContent(data, inputs, styleTheme) {
                     <div class="card-content">
                         <h2>Latest Achievements:</h2>
                         ${appendDCcard('Last Badge', data.lastBadge)}
-                        ${appendDCcard('Last Superbadge', data.lastSuperbadge)}
+                        ${appendDCcard('Last Superbadge', data.lastSuperBadge)}
+                        ${appendDCcard('Last Event Badge', data.lastEventBadge)}
                         ${appendDCcard('Last Certification', data.lastCertif)}
                         ${appendDCcard('Last Stamp', data.lastEarnedStamps)}
 
                         ${skillsBarChartHtml}
                         ${certificationsHtml}
-                        ${superbadgesHtml}
+                        ${superBadgesHtml}
+                        ${eventBadgesHtml}
                         ${earnedStampsHtml}
                     </div>
                 </div>

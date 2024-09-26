@@ -42,7 +42,7 @@ describe('cardGenerator Tests', () => {
     points: 185400,
     trails: 45,
     nbSuperBadges: 5,
-    superbadgeDetails: [
+    superBadgeDetails: [
       {
         title: 'Access Governance Superbadge Unit',
         iconUrl:
@@ -51,7 +51,22 @@ describe('cardGenerator Tests', () => {
           'https://trailhead.salesforce.com/content/learn/superbadges/superbadge_governing_access_sbu'
       }
     ],
-    lastSuperbadge: 'Access Governance Superbadge Unit',
+    lastSuperBadge: 'Access Governance Superbadge Unit',
+    eventBadgeDetails: [
+      {
+        title: 'Become An Accessibility Champion Quest',
+        type: 'EVENT',
+        iconUrl:
+          'https://dfc-static-production.s3.amazonaws.com/resource/images/trailhead/badges/community/trailhead_community_accessibilitychampion_quest2023.png'
+      },
+      {
+        title: 'Data Cloud Quest',
+        type: 'EVENT',
+        iconUrl:
+          'https://dfc-static-production.s3.amazonaws.com/resource/images/trailhead/badges/community/trailhead_community_datacloudquest_2023.png'
+      }
+    ],
+    lastEventBadge: 'Become An Accessibility Champion Quest',
     nbCertifs: 1,
     certificationsDetails: [
       {
