@@ -145,7 +145,8 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <img src="https://res.cloudinary.com/trailhead/image/upload/public-trailhead/assets/images/ranks/triple-star-ranger.png" alt="Rank Logo" class="rank-logo">
                         <div>
                             <h2>Triple Star Ranger</h2>
-                            <p><b>481</b> Badges, <b>185400</b> Points</p>
+                            <p><b>481</b> Badges,
+                            <b>185 400</b> Points</p>
                         </div>
                     </div>
                     <div class="card-content">
@@ -159,7 +160,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
             <div class="skill-container">
             <div class="skill-bar" style="width: 100%; background-color: #7A2048;">
                 <span class="skill-name">CRM</span>
-                <span class="skill-points">30325</span>
+                <span class="skill-points">30 325</span>
             </div>
         </div>
             <div class="skill-container">
