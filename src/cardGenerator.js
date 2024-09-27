@@ -186,10 +186,10 @@ function generateHtmlContent(data, inputs, styleTheme) {
                     </div>
                     <div class="card-content">
                         <h2>Latest Achievements:</h2>
+                        ${appendDCcard('Last Certification', data.lastCertif)}
                         ${appendDCcard('Last Badge', data.lastBadge)}
                         ${appendDCcard('Last Superbadge', data.lastSuperBadge)}
                         ${appendDCcard('Last Event Badge', data.lastEventBadge)}
-                        ${appendDCcard('Last Certification', data.lastCertif)}
                         ${appendDCcard('Last Stamp', data.lastEarnedStamps)}
 
                         ${skillsBarChartHtml}
