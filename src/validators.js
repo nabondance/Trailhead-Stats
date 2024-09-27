@@ -36,9 +36,19 @@ function validateBooleanField(field, fieldName) {
   return field
 }
 
+function validateStringInListField(field, fieldName, validValues) {
+  if (!validValues.includes(field)) {
+    console.log(validValues)
+    throw new Error(
+      `${fieldName} must be one of [${validValues.join(', ')}], got: ${field}`
+    )
+  }
+}
+
 module.exports = {
   validateRequiredField,
   validateStringField,
   validateIntegerField,
-  validateBooleanField
+  validateBooleanField,
+  validateStringInListField
 }

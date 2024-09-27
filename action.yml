@@ -40,6 +40,50 @@ inputs:
     description: Do not commit any modification, for debugging purpose
     required: false
     default: 'false'
+  show-skill:
+    description: 'Show the skills: hidden|visible'
+    required: false
+    default: 'visible'
+  show-certification:
+    description: 'Show the certification: hidden|icon|detail|number'
+    required: false
+    default: 'detail'
+  show-certification-latest:
+    description: 'Show the latest certification: hidden|visible'
+    required: false
+    default: 'visible'
+  show-badge:
+    description: 'Show the badges: hidden|icon|detail|number'
+    required: false
+    default: 'hidden'
+  show-badge-latest:
+    description: 'Show the latest badge: hidden|visible'
+    required: false
+    default: 'visible'
+  show-superbadge:
+    description: 'Show the superbadge: hidden|icon|detail|number'
+    required: false
+    default: 'icon'
+  show-superbadge-latest:
+    description: 'Show the latest superbadge: hidden|visible'
+    required: false
+    default: 'visible'
+  show-event-badge:
+    description: 'Show the event badge: hidden|icon|detail|number'
+    required: false
+    default: 'icon'
+  show-event-badge-latest:
+    description: 'Show the latest event badge: hidden|visible'
+    required: false
+    default: 'visible'
+  show-stamp:
+    description: 'Show the stamp: hidden|icon|detail|number'
+    required: false
+    default: 'icon'
+  show-stamp-latest:
+    description: 'Show the latest stamp: hidden|visible'
+    required: false
+    default: 'visible'
 
 outputs:
   stats:

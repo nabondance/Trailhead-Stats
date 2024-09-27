@@ -94,6 +94,7 @@ daily.
 | `nb-skills`          | Preference | The max number of skills to display in the card.               | `5`         |
 | `output-only`        | Debug      | Set to true to only output without modifying the file.         | `false`     |
 | `no-commit`          | Debug      | Set to true to not commit the modification.                    | `false`     |
+| `show-*`             | Preference | On a card, display the element. See Card Display customization |             |
 
 ## Outputs
 
@@ -101,7 +102,7 @@ daily.
 
 The fetched Trailhead stats.
 
-### Visual display in your file
+## Visual display in your file
 
 | Display Type | Example Light Theme                         | Example Dark Theme                        |
 | ------------ | ------------------------------------------- | ----------------------------------------- |
@@ -110,6 +111,34 @@ The fetched Trailhead stats.
 | `output`     | Object to use in a GitHub Action            | Object to use in a GitHub Action          |
 
 ## Card features
+
+### Card Display customization
+
+Theses inputs allows you to select what is displayed and how.
+
+| Input Name                  | Description                                                             | Default   |
+| --------------------------- | ----------------------------------------------------------------------- | --------- |
+| `show-skill`                | Display the skill bar. Options: `hidden`, `visible`.                    | `visible` |
+| `show-certification`        | Display the certifications. Options: `hidden`,`icon`,`detail`,`number`. | `detail`  |
+| `show-certification-latest` | Display the latest certification. Options: `hidden`, `visible`.         | `visible` |
+| `show-badge`                | Display the badges. Options: `hidden`,`icon`,`detail`,`number`.         | `hidden`  |
+| `show-badge-latest`         | Display the latest badge. Options: `hidden`, `visible`.                 | `visible` |
+| `show-superbadge`           | Display the superbadges. Options: `hidden`,`icon`,`detail`,`number`.    | `icon`    |
+| `show-superbadge-latest`    | Display the latest superbadge. Options: `hidden`, `visible`.            | `visible` |
+| `show-event-badge`          | Display the event badges. Options: `hidden`,`icon`,`detail`,`number`.   | `icon`    |
+| `show-event-badge-latest`   | Display the latest event badge. Options: `hidden`, `visible`.           | `visible` |
+| `show-stamp`                | Display the stamps. Options: `hidden`,`icon`,`detail`,`number`.         | `detail`  |
+| `show-stamp-latest`         | Display the latest stamp. Options: `hidden`, `visible`.                 | `visible` |
+
+| Selected Display Option | Example                                       |
+| ----------------------- | --------------------------------------------- |
+| `hidden`                | ![hidden](images/readme/display_hidden.png)   |
+| `visible`               | ![visible](images/readme/display_visible.png) |
+| `icon`                  | ![icon](images/readme/display_icon.png)       |
+| `detail`                | ![detail](images/readme/display_detail.png)   |
+| `number`                | ![number](images/readme/display_number.png)   |
+
+### Card automatism
 
 Theses features doesn't require any configuration, they are fully automatic
 

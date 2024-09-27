@@ -168,10 +168,10 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                     </div>
                     <div class="card-content">
                         <h2>Latest Achievements:</h2>
+                        <p>Last Certification: Salesforce Certified Associate</p>
                         <p>Last Badge: Quest For Data Literacy</p>
                         <p>Last Superbadge: Access Governance Superbadge Unit</p>
                         <p>Last Event Badge: Become An Accessibility Champion Quest</p>
-                        <p>Last Certification: Salesforce Certified Associate</p>
                         <p>Last Stamp: Salesforce stamp</p>
 
                         <h2>Top 123 Skills:</h2><div class="skills-bar-chart">
