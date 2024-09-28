@@ -173,10 +173,10 @@ describe('cardGenerator Tests', () => {
         const result = selectHtmlDisplay(
           'detail',
           mockData.certificationsDetails,
-          'Certifications'
+          'Certification'
         )
 
-        expect(result).toContain('<h2>1 Certifications:</h2>')
+        expect(result).toContain('<h2>1 Certification:</h2>')
         expect(result).toContain('Salesforce Certified Platform App Builder')
       })
 
@@ -184,10 +184,10 @@ describe('cardGenerator Tests', () => {
         const result = selectHtmlDisplay(
           'icon',
           mockData.superBadgeDetails,
-          'Super Badges'
+          'Super Badge'
         )
 
-        expect(result).toContain('<h2>1 Super Badges:</h2>')
+        expect(result).toContain('<h2>1 Super Badge:</h2>')
         expect(result).toContain('Access Governance Superbadge Unit')
       })
 
@@ -195,7 +195,7 @@ describe('cardGenerator Tests', () => {
         const result = selectHtmlDisplay(
           'number',
           mockData.eventBadgeDetails,
-          'Event Badges'
+          'Event Badge'
         )
 
         expect(result).toContain('<h2>2 Event Badges</h2>')
@@ -205,10 +205,10 @@ describe('cardGenerator Tests', () => {
         const result = selectHtmlDisplay(
           'table',
           mockData.earnedStampsDetails,
-          'Stamps'
+          'Stamp'
         )
 
-        expect(result).toContain('<h2>1 Stamps:</h2>')
+        expect(result).toContain('<h2>1 Stamp:</h2>')
         expect(result).toContain('dreamforce-2023.png')
       })
 
@@ -216,7 +216,7 @@ describe('cardGenerator Tests', () => {
         const result = selectHtmlDisplay(
           'hidden',
           mockData.certificationsDetails,
-          'Certifications'
+          'Certification'
         )
 
         expect(result).toBe('')

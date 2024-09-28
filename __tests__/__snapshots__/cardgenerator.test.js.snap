@@ -152,7 +152,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <img src="https://res.cloudinary.com/trailhead/image/upload/public-trailhead/assets/images/ranks/triple-star-ranger.png" alt="Rank Logo" class="rank-logo">
                         <div>
                             <h2>Triple Star Ranger</h2>
-                            <p><b>481</b> Badges,
+                            <p><b>481</b> Badge,
                             <b>185 400</b> Points</p>
                         </div>
                     </div>
@@ -177,18 +177,18 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                 <span class="skill-points"></span>
             </div>
         </div></div>
-                        <h2>1 Certifications:</h2>
+                        <h2>1 Certification:</h2>
       <div class="detail">
         <img src="https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000" alt="Salesforce Certified Platform App Builder" class="detail-logo">
         Salesforce Certified Platform App Builder - Active
       </div>
                         
-                        <h2>1 Superbadges:</h2><div class="icon-container">
+                        <h2>1 Superbadge:</h2><div class="icon-container">
           <div class="icon">
             <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,fl_lossy,q_70/learn/superbadges/superbadge_governing_access_sbu/476d05ca5f8e4373526963bf410cc2e0_badge.png" alt="Access Governance Superbadge Unit" class="icon-logo">
           </div></div>
                         <h2>2 Event Badges</h2>
-                        <h2>1 Stamps:</h2><div class="table-container">
+                        <h2>1 Stamp:</h2><div class="table-container">
           <div class="table">
             <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png" alt="undefined" class="table-logo">
           </div></div>
