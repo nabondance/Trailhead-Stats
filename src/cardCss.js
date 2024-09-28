@@ -32,49 +32,49 @@ function generateCss(styleTheme) {
     --color-line: ${colorLine};
   }
   body {
-      font-family: Arial, sans-serif;
-      background-color: var(--color-background);
-      color: var(--color-text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
   }
   .card {
-      background-color: var(--color-background);
-      border-radius: 10px;
-      padding: 20px;
-      width: 600px;
+    background-color: var(--color-background);
+    border-radius: 10px;
+    padding: 20px;
+    width: 600px;
   }
   .card-header {
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid var(--color-line);
-      padding-bottom: 10px;
-      margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--color-line);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
   }
   .rank-logo {
-      max-width: 100px;
-      max-height: 100px;
-      margin-right: 10px;
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
   }
   .card-content {
-      line-height: 1.6;
+    line-height: 1.6;
   }
   .card-content h2 {
-      margin: 5px 0;
-      color: var(--color-text);
+    margin: 5px 0;
+    color: var(--color-text);
   }
   .card-content p {
-      margin: 5px 0;
-      color: var(--color-text);
+    margin: 5px 0;
+    color: var(--color-text);
   }
   .badge {
-      background-color: var(--color-block);
-      padding: 5px;
-      border-radius: 5px;
-      margin: 5px 0;
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px 0;
   }
   .skill-container {
     border-radius: 2px;
@@ -100,73 +100,63 @@ function generateCss(styleTheme) {
     padding-right: 5px;
     visibility: visible;
   }
-  .certification {
-      background-color: var(--color-block);
-      padding: 5px;
-      border-radius: 5px;
-      margin: 5px 0;
-      display: flex;
-      align-items: center; /* This will vertically align the logo with the text */
-      margin-bottom: 10px; /* Add some space between certification entries */
-  }
-  .cert-logo {
-      max-width: 100px;
-      max-height: 100px;
-      margin-right: 10px;
-      object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
-      vertical-align: middle; /* This aligns the image nicely with the text */
-  }
-  .superbadge-container {
-      max-width: 550px;
-      width: 550px;
-      display: flex;
-      flex-wrap: wrap;
-      overflow: visible;
-  }
-  .superbadge {
-      position: relative;
-      flex-shrink: 0;
-      margin-right: -30px;
-  }
-  .superbadge-logo {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-  }
-  .eventBadge-container {
+  .icon-container {
     max-width: 550px;
     width: 550px;
     display: flex;
     flex-wrap: wrap;
     overflow: visible;
   }
-  .eventBadge {
-      position: relative;
-      flex-shrink: 0;
-      margin-right: -30px;
+  .icon {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: -30px;
   }
-  .eventBadge-logo {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
+  .icon-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+  .detail {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center; /* This will vertically align the logo with the text */
+    margin-bottom: 10px;
+  }
+  .detail-logo {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
+    object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
+    vertical-align: middle; /* This aligns the image nicely with the text */
+  }
+  .table-container {
+    max-width: 600px;
+    width: 600px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .table {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: 0px;
+    margin-bottom: 2px;
+  }
+  .table-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
   }
   .stamp-container {
-      max-width: 600px;
-      width: 600px;
-      display: flex;
-      flex-wrap: wrap;
-      overflow: visible;
-  }
-  .stamp {
-      position: relative;
-      flex-shrink: 0;
-      margin-right: 0px;
-      margin-bottom: 2px;
-  }
-  .stamp-logo {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
+    max-width: 600px;
+    width: 600px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
   }
   </style>
   `

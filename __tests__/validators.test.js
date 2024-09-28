@@ -114,4 +114,53 @@ describe('Validators', () => {
       ).toThrow('Test Field must be a boolean, got string: not a boolean')
     })
   })
+
+  describe('validateStringInListField', () => {
+    const validValues = ['valid1', 'valid2']
+    it('should not throw an error for valid string input', () => {
+      expect(() =>
+        validators.validateStringInListField(
+          'valid1',
+          'Test Field',
+          validValues
+        )
+      ).not.toThrow()
+    })
+
+    it('should throw an error for invalid string "invalidValue"', () => {
+      expect(() =>
+        validators.validateStringInListField(
+          'invalidValue',
+          'Test Field',
+          validValues
+        )
+      ).toThrow('Test Field must be one of [valid1, valid2], got: invalidValue')
+    })
+
+    it('should throw an error for invalid string "id1"', () => {
+      expect(() =>
+        validators.validateStringInListField('id1', 'Test Field', validValues)
+      ).toThrow('Test Field must be one of [valid1, valid2], got: id1')
+    })
+
+    it('should throw an error for non-string input (number)', () => {
+      expect(() =>
+        validators.validateStringInListField(123, 'Test Field', validValues)
+      ).toThrow('Test Field must be one of [valid1, valid2], got: 123')
+    })
+
+    it('should throw an error for non-string input (boolean)', () => {
+      expect(() =>
+        validators.validateStringInListField(true, 'Test Field', validValues)
+      ).toThrow('Test Field must be one of [valid1, valid2], got: true')
+    })
+
+    it('should throw an error for non-string input (object)', () => {
+      expect(() =>
+        validators.validateStringInListField({}, 'Test Field', validValues)
+      ).toThrow(
+        'Test Field must be one of [valid1, valid2], got: [object Object]'
+      )
+    })
+  })
 })

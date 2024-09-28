@@ -56,8 +56,8 @@ function generateHtmlContent(data, inputs, styleTheme) {
   const numberTopSkills = inputs.nbSkills
 
   // Generate the skills bar chart HTML
-  let skillsBarChartHtml
-  if (data.skillPointsDetails) {
+  let skillsBarChartHtml = ``
+  if (inputs.showSkill == 'visible' && data.skillPointsDetails) {
     const maxSkillPoints = Math.max(
       ...data.skillPointsDetails.map(skill => skill.points)
     )
@@ -96,73 +96,52 @@ function generateHtmlContent(data, inputs, styleTheme) {
     skillsBarChartHtml += '</div>'
   }
 
-  // Generate the certifications HTML
-  let certificationsHtml = ''
-  if (data.certificationsDetails?.length > 0) {
-    certificationsHtml = `<h2>${data.nbCertifs?.toLocaleString('fr')} Certifications:</h2>`
-    certificationsHtml += data.certificationsDetails
-      .map(
-        cert => `
-      <div class="certification">
-        <img src="${cert.logoUrl}" alt="${cert.title}" class="cert-logo">
-        ${cert.title} - ${cert.status}
-      </div>`
-      )
-      .join('')
+  // Generate the HTML for latest achievements
+  let latestAchievementsHtml = ''
+  if (
+    inputs.showBadgeLatest == 'visible' ||
+    inputs.showCertificationLatest == 'visible' ||
+    inputs.showSuperBadgeLatest == 'visible' ||
+    inputs.showEventBadgeLatest == 'visible' ||
+    inputs.showStampLatest == 'visible'
+  ) {
+    latestAchievementsHtml = `<h2>Latest Achievements:</h2>`
   }
+
+  // Generate the certifications HTML
+  let certificationsHtml = selectHtmlDisplay(
+    inputs.showCertification,
+    data.certificationsDetails,
+    'Certifications'
+  )
+
+  // Generate the badge HTML
+  let badgesHtml = selectHtmlDisplay(
+    inputs.showBadge,
+    data.badgeDetails,
+    'Badges'
+  )
 
   // Generate the superbadge HTML
-  let superBadgesHtml = ''
-  const superBadgeDetailsLength = data.superBadgeDetails?.length
-  if (superBadgeDetailsLength > 0) {
-    superBadgesHtml = `<h2>${superBadgeDetailsLength} Superbadges:</h2>`
-    superBadgesHtml += `<div class="superbadge-container">`
-    superBadgesHtml += data.superBadgeDetails
-      .filter(superbadge => superbadge.iconUrl !== undefined)
-      .map(
-        superbadge => `
-          <div class="superbadge">
-            <img src="${superbadge.iconUrl}" alt="${superbadge.title}" class="superbadge-logo">
-          </div>`
-      )
-      .join('')
-    superBadgesHtml += '</div>'
-  }
+  let superBadgesHtml = selectHtmlDisplay(
+    inputs.showSuperBadge,
+    data.superBadgeDetails,
+    'Superbadges'
+  )
 
   // Generate the event badge HTML
-  let eventBadgesHtml = ''
-  const eventBadgeDetailsLength = data.eventBadgeDetails?.length
-  if (eventBadgeDetailsLength > 0) {
-    eventBadgesHtml = `<h2>${eventBadgeDetailsLength} Event Badges:</h2>`
-    eventBadgesHtml += `<div class="eventBadge-container">`
-    eventBadgesHtml += data.eventBadgeDetails
-      .filter(eventBadge => eventBadge.iconUrl !== undefined)
-      .map(
-        eventBadge => `
-          <div class="eventBadge">
-            <img src="${eventBadge.iconUrl}" alt="${eventBadge.title}" class="eventBadge-logo">
-          </div>`
-      )
-      .join('')
-    eventBadgesHtml += '</div>'
-  }
+  let eventBadgesHtml = selectHtmlDisplay(
+    inputs.showEventBadge,
+    data.eventBadgeDetails,
+    'Event Badges'
+  )
 
   // Generate the earned stamps HTML
-  let earnedStampsHtml = ''
-  const earnedStampsDetailsLength = data.earnedStampsDetails?.length
-  if (earnedStampsDetailsLength > 0) {
-    earnedStampsHtml = `<h2>${earnedStampsDetailsLength?.toLocaleString('fr')} Stamps:</h2>`
-    earnedStampsHtml += `<div class="stamp-container">`
-    earnedStampsHtml += data.earnedStampsDetails
-      .map(
-        stamp => `
-        <div class="stamp">
-          <img src="${stamp.iconUrl}" alt="${stamp.name}" class="stamp-logo">
-        </div>`
-      )
-      .join('')
-    earnedStampsHtml += '</div>'
-  }
+  let earnedStampsHtml = selectHtmlDisplay(
+    inputs.showStamp,
+    data.earnedStampsDetails,
+    'Stamps'
+  )
 
   const htmlContent = `
         <html>
@@ -185,15 +164,16 @@ function generateHtmlContent(data, inputs, styleTheme) {
                         </div>
                     </div>
                     <div class="card-content">
-                        <h2>Latest Achievements:</h2>
-                        ${appendDCcard('Last Badge', data.lastBadge)}
-                        ${appendDCcard('Last Superbadge', data.lastSuperBadge)}
-                        ${appendDCcard('Last Event Badge', data.lastEventBadge)}
-                        ${appendDCcard('Last Certification', data.lastCertif)}
-                        ${appendDCcard('Last Stamp', data.lastEarnedStamps)}
+                        ${latestAchievementsHtml}
+                        ${makeLatestHtml('Last Certification', data.lastCertif, inputs.showCertificationLatest)}
+                        ${makeLatestHtml('Last Badge', data.lastBadge, inputs.showBadgeLatest)}
+                        ${makeLatestHtml('Last Superbadge', data.lastSuperBadge, inputs.showSuperBadgeLatest)}
+                        ${makeLatestHtml('Last Event Badge', data.lastEventBadge, inputs.showEventBadgeLatest)}
+                        ${makeLatestHtml('Last Stamp', data.lastEarnedStamps, inputs.showStampLatest)}
 
                         ${skillsBarChartHtml}
                         ${certificationsHtml}
+                        ${badgesHtml}
                         ${superBadgesHtml}
                         ${eventBadgesHtml}
                         ${earnedStampsHtml}
@@ -226,19 +206,112 @@ function getSkillPoints(points, barWidth) {
   }
 }
 
-function hashHtml(htmlContent) {
-  return crypto.createHash('sha256').update(htmlContent).digest('hex')
+function makeIconDisplay(details, name) {
+  let iconDisplayHtml = ''
+  const detailsLength = details?.length
+  if (detailsLength > 0) {
+    iconDisplayHtml = `<h2>${detailsLength?.toLocaleString('fr')} ${name}:</h2>`
+    iconDisplayHtml += `<div class="icon-container">`
+    iconDisplayHtml += details
+      .filter(detail => detail.iconUrl !== undefined)
+      .map(
+        detail => `
+          <div class="icon">
+            <img src="${detail.iconUrl}" alt="${detail.title}" class="icon-logo">
+          </div>`
+      )
+      .join('')
+    iconDisplayHtml += '</div>'
+  }
+
+  return iconDisplayHtml
 }
 
-function appendDCcard(propertyLabel, propertyValue) {
-  if (propertyValue !== null && propertyValue !== undefined) {
+function makeTableDisplay(details, name) {
+  let iconDisplayHtml = ''
+  const detailsLength = details?.length
+  if (detailsLength > 0) {
+    iconDisplayHtml = `<h2>${detailsLength?.toLocaleString('fr')} ${name}:</h2>`
+    iconDisplayHtml += `<div class="table-container">`
+    iconDisplayHtml += details
+      .filter(detail => detail.iconUrl !== undefined)
+      .map(
+        detail => `
+          <div class="table">
+            <img src="${detail.iconUrl}" alt="${detail.title}" class="table-logo">
+          </div>`
+      )
+      .join('')
+    iconDisplayHtml += '</div>'
+  }
+
+  return iconDisplayHtml
+}
+
+function makeDetailDisplay(details, name) {
+  let detailHtml = ''
+  const detailsLength = details?.length
+  if (detailsLength > 0) {
+    detailHtml = `<h2>${detailsLength?.toLocaleString('fr')} ${name}:</h2>`
+    detailHtml += details
+      .filter(detail => detail.iconUrl !== undefined)
+      .map(
+        detail => `
+      <div class="detail">
+        <img src="${detail.iconUrl}" alt="${detail.title}" class="detail-logo">
+        ${detail?.title}${detail?.status ? ' - ' + detail?.status : ''}
+      </div>`
+      )
+      .join('')
+  }
+
+  return detailHtml
+}
+
+function makeNumberDisplay(details, name) {
+  let numberHtml = ''
+  const detailsLength = details?.length
+  if (detailsLength > 0) {
+    numberHtml = `<h2>${detailsLength?.toLocaleString('fr')} ${name}</h2>`
+  }
+
+  return numberHtml
+}
+
+function selectHtmlDisplay(displayType, details, name) {
+  switch (displayType) {
+    case 'icon':
+      return makeIconDisplay(details, name)
+    case 'table':
+      return makeTableDisplay(details, name)
+    case 'detail':
+      return makeDetailDisplay(details, name)
+    case 'number':
+      return makeNumberDisplay(details, name)
+    default:
+      return ''
+  }
+}
+
+function makeLatestHtml(propertyLabel, propertyValue, propertyShow) {
+  if (
+    propertyShow == 'visible' &&
+    propertyValue !== null &&
+    propertyValue !== undefined
+  ) {
     return `<p>${propertyLabel}: ${propertyValue}</p>`
   }
   return ''
 }
 
+function hashHtml(htmlContent) {
+  return crypto.createHash('sha256').update(htmlContent).digest('hex')
+}
+
 module.exports = {
   generateCard,
   generateHtmlContent,
+  selectHtmlDisplay,
+  makeLatestHtml,
   hashHtml
 }

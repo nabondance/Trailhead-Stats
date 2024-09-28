@@ -3,8 +3,12 @@ const {
   validateRequiredField,
   validateStringField,
   validateIntegerField,
-  validateBooleanField
+  validateBooleanField,
+  validateStringInListField
 } = require('./validators')
+
+const validHiddenVisible = ['hidden', 'visible']
+const validDisplayChoice = ['hidden', 'icon', 'table', 'detail', 'number']
 
 class ActionInputs {
   constructor() {
@@ -18,6 +22,29 @@ class ActionInputs {
     this.nbSkills = core.getInput('nb-skills', { required: false })
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
+    this.showSkill = core.getInput('show-skill', { required: false })
+    this.showCertification = core.getInput('show-certification', {
+      required: false
+    })
+    this.showCertificationLatest = core.getInput('show-certification-latest', {
+      required: false
+    })
+    this.showBadge = core.getInput('show-badge', { required: false })
+    this.showBadgeLatest = core.getInput('show-badge-latest', {
+      required: false
+    })
+    this.showSuperBadge = core.getInput('show-superbadge', { required: false })
+    this.showSuperBadgeLatest = core.getInput('show-superbadge-latest', {
+      required: false
+    })
+    this.showEventBadge = core.getInput('show-event-badge', { required: false })
+    this.showEventBadgeLatest = core.getInput('show-event-badge-latest', {
+      required: false
+    })
+    this.showStamp = core.getInput('show-stamp', { required: false })
+    this.showStampLatest = core.getInput('show-stamp-latest', {
+      required: false
+    })
 
     // Debug
     core.debug('Action inputs:', this)
@@ -37,6 +64,17 @@ class ActionInputs {
       this.validateNbSkills()
       this.validateOutputOnly()
       this.validateNoCommit()
+      this.validateShowSkill()
+      this.validateShowCertification()
+      this.validateShowCertificationLatest()
+      this.validateShowBadge()
+      this.validateShowBadgeLatest()
+      this.validateshowSuperBadge()
+      this.validateshowSuperBadgeLatest()
+      this.validateShowEventBadge()
+      this.validateShowEventBadgeLatest()
+      this.validateShowStamp()
+      this.validateShowStampLatest()
     } catch (error) {
       console.error(`Error during inputs validation: ${error.message}`)
       core.setFailed(`Error during inputs validation: ${error.message}`)
@@ -100,6 +138,96 @@ class ActionInputs {
 
   validateNoCommit() {
     validateBooleanField(this.noCommit, 'no-commit')
+  }
+
+  validateShowSkill() {
+    validateStringField(this.showSkill, 'show-skill')
+    validateStringInListField(this.showSkill, 'show-skill', validHiddenVisible)
+  }
+
+  validateShowCertification() {
+    validateStringField(this.showCertification, 'show-certification')
+    validateStringInListField(
+      this.showCertification,
+      'show-certification',
+      validDisplayChoice
+    )
+  }
+
+  validateShowCertificationLatest() {
+    validateStringField(
+      this.showCertificationLatest,
+      'show-certification-latest'
+    )
+    validateStringInListField(
+      this.showCertificationLatest,
+      'show-certification-latest',
+      validHiddenVisible
+    )
+  }
+
+  validateShowBadge() {
+    validateStringField(this.showBadge, 'show-badge')
+    validateStringInListField(this.showBadge, 'show-badge', validDisplayChoice)
+  }
+
+  validateShowBadgeLatest() {
+    validateStringField(this.showBadgeLatest, 'show-badge-latest')
+    validateStringInListField(
+      this.showBadgeLatest,
+      'show-badge-latest',
+      validHiddenVisible
+    )
+  }
+
+  validateshowSuperBadge() {
+    validateStringField(this.showSuperBadge, 'show-superbadge')
+    validateStringInListField(
+      this.showSuperBadge,
+      'show-superbadge',
+      validDisplayChoice
+    )
+  }
+
+  validateshowSuperBadgeLatest() {
+    validateStringField(this.showSuperBadgeLatest, 'show-superbadge-latest')
+    validateStringInListField(
+      this.showSuperBadgeLatest,
+      'show-superbadge-latest',
+      validHiddenVisible
+    )
+  }
+
+  validateShowEventBadge() {
+    validateStringField(this.showEventBadge, 'show-event-badge')
+    validateStringInListField(
+      this.showEventBadge,
+      'show-event-badge',
+      validDisplayChoice
+    )
+  }
+
+  validateShowEventBadgeLatest() {
+    validateStringField(this.showEventBadgeLatest, 'show-event-badge-latest')
+    validateStringInListField(
+      this.showEventBadgeLatest,
+      'show-event-badge-latest',
+      validHiddenVisible
+    )
+  }
+
+  validateShowStamp() {
+    validateStringField(this.showStamp, 'show-stamp')
+    validateStringInListField(this.showStamp, 'show-stamp', validDisplayChoice)
+  }
+
+  validateShowStampLatest() {
+    validateStringField(this.showStampLatest, 'show-stamp-latest')
+    validateStringInListField(
+      this.showStampLatest,
+      'show-stamp-latest',
+      validHiddenVisible
+    )
   }
 }
 

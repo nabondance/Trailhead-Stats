@@ -92,7 +92,7 @@ function prepareData(
     title: cert.title,
     dateCompleted: cert.dateCompleted,
     status: cert.status.title,
-    logoUrl: cert.logoUrl
+    iconUrl: cert.logoUrl
   }))
   const sortedCertifications = certificationsDetails
     .filter(cert => new Date(cert.dateCompleted) !== 'Invalid Date')
@@ -108,7 +108,7 @@ function prepareData(
 
   // Stamps
   const earnedStampsDetails = trailheadEarnedStamps?.edges.map(edge => ({
-    name: edge.node.name,
+    title: edge.node.name,
     eventDate: edge.node.eventDate,
     kind: edge.node.kind,
     iconUrl: edge.node.iconUrl
@@ -139,7 +139,7 @@ function prepareData(
     lastCertif: lastCertification?.title,
     skillPointsDetails,
     nbEarnedStamps: trailheadEarnedStamps?.count,
-    lastEarnedStamps: lastEarnedStamps?.name,
+    lastEarnedStamp: lastEarnedStamps?.title,
     earnedStampsDetails
   }
 
@@ -171,7 +171,7 @@ function displayStatsTextMd(dataToFormat) {
   dataContent += appDC('Last Event Badge earned', dataToFormat.lastEventBadge)
   dataContent += appDC('Main skill', dataToFormat.skillPointsDetails[0]?.name)
   dataContent += appDC('Number of Stamps Earned', dataToFormat.nbEarnedStamps)
-  dataContent += appDC('Last Stamp earned', dataToFormat.lastEarnedStamps)
+  dataContent += appDC('Last Stamp earned', dataToFormat.lastEarnedStamp)
 
   core.debug(`Stats to be displayed:\n${dataContent}`)
 
@@ -206,7 +206,7 @@ function displayStatsTextHtml(dataToFormat) {
     'Number of Stamps Earned',
     dataToFormat.nbEarnedStamps
   )
-  dataContent += appDChtml('Last Stamp earned', dataToFormat.lastEarnedStamps)
+  dataContent += appDChtml('Last Stamp earned', dataToFormat.lastEarnedStamp)
   dataContent += '</ul>'
 
   core.debug(`Stats to be displayed:\n${dataContent}`)
