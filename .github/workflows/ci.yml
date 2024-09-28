@@ -84,6 +84,7 @@ jobs:
           no-commit: true
           show-skill-number: 8
           show-event-badge: 'number'
+          show-badge: 'icon'
 
       - name: Print Output
         id: output
