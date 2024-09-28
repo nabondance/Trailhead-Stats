@@ -74,7 +74,8 @@ function generateHtmlContent(data, inputs, styleTheme) {
     const thresholds = calculateThresholds(data.skillPointsDetails)
 
     // Generate the HTML for the skills bar chart
-    skillsBarChartHtml = `<h2>Top ${numberTopSkills?.toLocaleString('fr')} Skills:</h2>`
+    const plural = numberTopSkills > 1 ? 's' : ''
+    skillsBarChartHtml = `<h2>Top ${numberTopSkills?.toLocaleString('fr')} Skill${plural}:</h2>`
     skillsBarChartHtml += '<div class="skills-bar-chart">'
     skillsBarChartHtml += topSkills
       .map(skill => {
@@ -112,35 +113,35 @@ function generateHtmlContent(data, inputs, styleTheme) {
   let certificationsHtml = selectHtmlDisplay(
     inputs.showCertification,
     data.certificationsDetails,
-    'Certifications'
+    'Certification'
   )
 
   // Generate the badge HTML
   let badgesHtml = selectHtmlDisplay(
     inputs.showBadge,
     data.badgeDetails,
-    'Badges'
+    'Badge'
   )
 
   // Generate the superbadge HTML
   let superBadgesHtml = selectHtmlDisplay(
     inputs.showSuperBadge,
     data.superBadgeDetails,
-    'Superbadges'
+    'Superbadge'
   )
 
   // Generate the event badge HTML
   let eventBadgesHtml = selectHtmlDisplay(
     inputs.showEventBadge,
     data.eventBadgeDetails,
-    'Event Badges'
+    'Event Badge'
   )
 
   // Generate the earned stamps HTML
   let earnedStampsHtml = selectHtmlDisplay(
     inputs.showStamp,
     data.earnedStampsDetails,
-    'Stamps'
+    'Stamp'
   )
 
   const htmlContent = `
@@ -159,7 +160,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
                         }" alt="Rank Logo" class="rank-logo">
                         <div>
                             <h2>${data.rank}</h2>
-                            <p><b>${data.nbBadges?.toLocaleString('fr')}</b> Badges,
+                            <p><b>${data.nbBadges?.toLocaleString('fr')}</b> Badge${data.nbBadges?.length > 1 ? 's' : ''},
                             <b>${data.points?.toLocaleString('fr')}</b> Points</p>
                         </div>
                     </div>
@@ -279,6 +280,11 @@ function makeNumberDisplay(details, name) {
 }
 
 function selectHtmlDisplay(displayType, details, name) {
+  // Pluralize name if there are multiple
+  if (details?.length > 1) {
+    name = name + 's'
+  }
+  // Select correct display based on display type
   switch (displayType) {
     case 'icon':
       return makeIconDisplay(details, name)
