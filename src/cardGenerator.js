@@ -53,7 +53,7 @@ async function createCardAsPng(htmlContent, outputPath) {
 function generateHtmlContent(data, inputs, styleTheme) {
   // Define the HTML structure with inline CSS for styling
   const style = generateCss(styleTheme)
-  const numberTopSkills = inputs.nbSkills
+  const numberTopSkills = inputs.showSkillNumber
 
   // Generate the skills bar chart HTML
   let skillsBarChartHtml = ``

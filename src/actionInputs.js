@@ -19,7 +19,9 @@ class ActionInputs {
     this.displayType = core.getInput('display-type', { required: false })
     this.fileFormat = core.getInput('file-format', { required: false })
     this.cardPath = core.getInput('card-path', { required: false })
-    this.nbSkills = core.getInput('nb-skills', { required: false })
+    this.showSkillNumber = core.getInput('show-skill-number', {
+      required: false
+    })
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
     this.showSkill = core.getInput('show-skill', { required: false })
@@ -61,7 +63,7 @@ class ActionInputs {
       this.validateDisplayType()
       this.validateFileFormat()
       this.validateCardPath()
-      this.validateNbSkills()
+      this.validateshowSkillNumber()
       this.validateOutputOnly()
       this.validateNoCommit()
       this.validateShowSkill()
@@ -124,12 +126,12 @@ class ActionInputs {
     validateStringField(this.cardPath, 'card-path')
   }
 
-  validateNbSkills() {
-    const parsed = parseInt(this.nbSkills)
+  validateshowSkillNumber() {
+    const parsed = parseInt(this.showSkillNumber)
     if (!isNaN(parsed)) {
-      this.nbSkills = parsed
+      this.showSkillNumber = parsed
     }
-    validateIntegerField(this.nbSkills, 'nb-skills')
+    validateIntegerField(this.showSkillNumber, 'show-skill-number')
   }
 
   validateOutputOnly() {
