@@ -8,7 +8,7 @@ const {
 } = require('./validators')
 
 const validHiddenVisible = ['hidden', 'visible']
-const validDisplayChoice = ['hidden', 'icon', 'detail', 'number']
+const validDisplayChoice = ['hidden', 'icon', 'table', 'detail', 'number']
 
 class ActionInputs {
   constructor() {
@@ -33,8 +33,8 @@ class ActionInputs {
     this.showBadgeLatest = core.getInput('show-badge-latest', {
       required: false
     })
-    this.showSuperbadge = core.getInput('show-superbadge', { required: false })
-    this.showSuperbadgeLatest = core.getInput('show-superbadge-latest', {
+    this.showSuperBadge = core.getInput('show-superbadge', { required: false })
+    this.showSuperBadgeLatest = core.getInput('show-superbadge-latest', {
       required: false
     })
     this.showEventBadge = core.getInput('show-event-badge', { required: false })
@@ -69,8 +69,8 @@ class ActionInputs {
       this.validateShowCertificationLatest()
       this.validateShowBadge()
       this.validateShowBadgeLatest()
-      this.validateShowSuperbadge()
-      this.validateShowSuperbadgeLatest()
+      this.validateshowSuperBadge()
+      this.validateshowSuperBadgeLatest()
       this.validateShowEventBadge()
       this.validateShowEventBadgeLatest()
       this.validateShowStamp()
@@ -180,19 +180,19 @@ class ActionInputs {
     )
   }
 
-  validateShowSuperbadge() {
-    validateStringField(this.showSuperbadge, 'show-superbadge')
+  validateshowSuperBadge() {
+    validateStringField(this.showSuperBadge, 'show-superbadge')
     validateStringInListField(
-      this.showSuperbadge,
+      this.showSuperBadge,
       'show-superbadge',
       validDisplayChoice
     )
   }
 
-  validateShowSuperbadgeLatest() {
-    validateStringField(this.showSuperbadgeLatest, 'show-superbadge-latest')
+  validateshowSuperBadgeLatest() {
+    validateStringField(this.showSuperBadgeLatest, 'show-superbadge-latest')
     validateStringInListField(
-      this.showSuperbadgeLatest,
+      this.showSuperBadgeLatest,
       'show-superbadge-latest',
       validHiddenVisible
     )

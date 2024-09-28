@@ -82,6 +82,8 @@ jobs:
           display-file: 'README-example.md'
           card-path: './output/images'
           no-commit: true
+          nb-skills: 8
+          show-event-badge: 'number'
 
       - name: Print Output
         id: output

@@ -17,49 +17,49 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     --color-line: #1C2128;
   }
   body {
-      font-family: Arial, sans-serif;
-      background-color: var(--color-background);
-      color: var(--color-text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
   }
   .card {
-      background-color: var(--color-background);
-      border-radius: 10px;
-      padding: 20px;
-      width: 600px;
+    background-color: var(--color-background);
+    border-radius: 10px;
+    padding: 20px;
+    width: 600px;
   }
   .card-header {
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid var(--color-line);
-      padding-bottom: 10px;
-      margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--color-line);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
   }
   .rank-logo {
-      max-width: 100px;
-      max-height: 100px;
-      margin-right: 10px;
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
   }
   .card-content {
-      line-height: 1.6;
+    line-height: 1.6;
   }
   .card-content h2 {
-      margin: 5px 0;
-      color: var(--color-text);
+    margin: 5px 0;
+    color: var(--color-text);
   }
   .card-content p {
-      margin: 5px 0;
-      color: var(--color-text);
+    margin: 5px 0;
+    color: var(--color-text);
   }
   .badge {
-      background-color: var(--color-block);
-      padding: 5px;
-      border-radius: 5px;
-      margin: 5px 0;
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px 0;
   }
   .skill-container {
     border-radius: 2px;
@@ -85,73 +85,63 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     padding-right: 5px;
     visibility: visible;
   }
-  .certification {
-      background-color: var(--color-block);
-      padding: 5px;
-      border-radius: 5px;
-      margin: 5px 0;
-      display: flex;
-      align-items: center; /* This will vertically align the logo with the text */
-      margin-bottom: 10px; /* Add some space between certification entries */
-  }
-  .cert-logo {
-      max-width: 100px;
-      max-height: 100px;
-      margin-right: 10px;
-      object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
-      vertical-align: middle; /* This aligns the image nicely with the text */
-  }
-  .superbadge-container {
-      max-width: 550px;
-      width: 550px;
-      display: flex;
-      flex-wrap: wrap;
-      overflow: visible;
-  }
-  .superbadge {
-      position: relative;
-      flex-shrink: 0;
-      margin-right: -30px;
-  }
-  .superbadge-logo {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-  }
-  .eventBadge-container {
+  .icon-container {
     max-width: 550px;
     width: 550px;
     display: flex;
     flex-wrap: wrap;
     overflow: visible;
   }
-  .eventBadge {
-      position: relative;
-      flex-shrink: 0;
-      margin-right: -30px;
+  .icon {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: -30px;
   }
-  .eventBadge-logo {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
+  .icon-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+  .detail {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center; /* This will vertically align the logo with the text */
+    margin-bottom: 10px;
+  }
+  .detail-logo {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
+    object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
+    vertical-align: middle; /* This aligns the image nicely with the text */
+  }
+  .table-container {
+    max-width: 600px;
+    width: 600px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .table {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: 0px;
+    margin-bottom: 2px;
+  }
+  .table-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
   }
   .stamp-container {
-      max-width: 600px;
-      width: 600px;
-      display: flex;
-      flex-wrap: wrap;
-      overflow: visible;
-  }
-  .stamp {
-      position: relative;
-      flex-shrink: 0;
-      margin-right: 0px;
-      margin-bottom: 2px;
-  }
-  .stamp-logo {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
+    max-width: 600px;
+    width: 600px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
   }
   </style>
   
@@ -168,7 +158,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                     </div>
                     <div class="card-content">
                         <h2>Latest Achievements:</h2>
-                        <p>Last Certification: Salesforce Certified Associate</p>
+                        <p>Last Certification: Salesforce Certified Platform App Builder</p>
                         <p>Last Badge: Quest For Data Literacy</p>
                         <p>Last Superbadge: Access Governance Superbadge Unit</p>
                         <p>Last Event Badge: Become An Accessibility Champion Quest</p>
@@ -188,25 +178,20 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
             </div>
         </div></div>
                         <h2>1 Certifications:</h2>
-      <div class="certification">
-        <img src="https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000" alt="Salesforce Certified Platform App Builder" class="cert-logo">
+      <div class="detail">
+        <img src="https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000" alt="Salesforce Certified Platform App Builder" class="detail-logo">
         Salesforce Certified Platform App Builder - Active
       </div>
-                        <h2>1 Superbadges:</h2><div class="superbadge-container">
-          <div class="superbadge">
-            <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,fl_lossy,q_70/learn/superbadges/superbadge_governing_access_sbu/476d05ca5f8e4373526963bf410cc2e0_badge.png" alt="Access Governance Superbadge Unit" class="superbadge-logo">
+                        
+                        <h2>1 Superbadges:</h2><div class="icon-container">
+          <div class="icon">
+            <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,fl_lossy,q_70/learn/superbadges/superbadge_governing_access_sbu/476d05ca5f8e4373526963bf410cc2e0_badge.png" alt="Access Governance Superbadge Unit" class="icon-logo">
           </div></div>
-                        <h2>2 Event Badges:</h2><div class="eventBadge-container">
-          <div class="eventBadge">
-            <img src="https://dfc-static-production.s3.amazonaws.com/resource/images/trailhead/badges/community/trailhead_community_accessibilitychampion_quest2023.png" alt="Become An Accessibility Champion Quest" class="eventBadge-logo">
-          </div>
-          <div class="eventBadge">
-            <img src="https://dfc-static-production.s3.amazonaws.com/resource/images/trailhead/badges/community/trailhead_community_datacloudquest_2023.png" alt="Data Cloud Quest" class="eventBadge-logo">
+                        <h2>2 Event Badges</h2>
+                        <h2>1 Stamps:</h2><div class="table-container">
+          <div class="table">
+            <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png" alt="undefined" class="table-logo">
           </div></div>
-                        <h2>1 Stamps:</h2><div class="stamp-container">
-        <div class="stamp">
-          <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png" alt="Salesforce stamp" class="stamp-logo">
-        </div></div>
                     </div>
                 </div>
             </body>

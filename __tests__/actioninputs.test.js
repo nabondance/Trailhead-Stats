@@ -23,8 +23,8 @@ describe('Input Validation Tests', () => {
     inputs.showCertificationLatest = 'visible'
     inputs.showBadge = 'hidden'
     inputs.showBadgeLatest = 'visible'
-    inputs.showSuperbadge = 'icon'
-    inputs.showSuperbadgeLatest = 'visible'
+    inputs.showSuperBadge = 'icon'
+    inputs.showSuperBadgeLatest = 'visible'
     inputs.showEventBadge = 'icon'
     inputs.showEventBadgeLatest = 'visible'
     inputs.showStamp = 'icon'
@@ -272,7 +272,7 @@ describe('Input Validation Tests', () => {
       expect(() => {
         inputs.validateShowCertification()
       }).toThrow(
-        'show-certification must be one of [hidden, icon, detail, number], got: invalidValue'
+        'show-certification must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
@@ -314,7 +314,7 @@ describe('Input Validation Tests', () => {
       expect(() => {
         inputs.validateShowBadge()
       }).toThrow(
-        'show-badge must be one of [hidden, icon, detail, number], got: invalidValue'
+        'show-badge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
@@ -348,44 +348,44 @@ describe('Input Validation Tests', () => {
     })
   })
 
-  // Tests for validateShowSuperbadge
-  describe('validateShowSuperbadge', () => {
+  // Tests for validateshowSuperBadge
+  describe('validateshowSuperBadge', () => {
     it('should throw an error if show-superbadge is not a valid value', () => {
-      inputs.showSuperbadge = 'invalidValue'
+      inputs.showSuperBadge = 'invalidValue'
 
       expect(() => {
-        inputs.validateShowSuperbadge()
+        inputs.validateshowSuperBadge()
       }).toThrow(
-        'show-superbadge must be one of [hidden, icon, detail, number], got: invalidValue'
+        'show-superbadge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
     it('should not throw an error for a valid show-superbadge', () => {
-      inputs.showSuperbadge = 'icon'
+      inputs.showSuperBadge = 'icon'
 
       expect(() => {
-        inputs.validateShowSuperbadge()
+        inputs.validateshowSuperBadge()
       }).not.toThrow()
     })
   })
 
-  // Tests for validateShowSuperbadgeLatest
-  describe('validateShowSuperbadgeLatest', () => {
+  // Tests for validateshowSuperBadgeLatest
+  describe('validateshowSuperBadgeLatest', () => {
     it('should throw an error if show-superbadge-latest is not a valid value', () => {
-      inputs.showSuperbadgeLatest = 'invalidValue'
+      inputs.showSuperBadgeLatest = 'invalidValue'
 
       expect(() => {
-        inputs.validateShowSuperbadgeLatest()
+        inputs.validateshowSuperBadgeLatest()
       }).toThrow(
         'show-superbadge-latest must be one of [hidden, visible], got: invalidValue'
       )
     })
 
     it('should not throw an error for a valid show-superbadge-latest', () => {
-      inputs.showSuperbadgeLatest = 'visible'
+      inputs.showSuperBadgeLatest = 'visible'
 
       expect(() => {
-        inputs.validateShowSuperbadgeLatest()
+        inputs.validateshowSuperBadgeLatest()
       }).not.toThrow()
     })
   })
@@ -398,7 +398,7 @@ describe('Input Validation Tests', () => {
       expect(() => {
         inputs.validateShowEventBadge()
       }).toThrow(
-        'show-event-badge must be one of [hidden, icon, detail, number], got: invalidValue'
+        'show-event-badge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
@@ -440,7 +440,7 @@ describe('Input Validation Tests', () => {
       expect(() => {
         inputs.validateShowStamp()
       }).toThrow(
-        'show-stamp must be one of [hidden, icon, detail, number], got: invalidValue'
+        'show-stamp must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
@@ -562,7 +562,7 @@ describe('Input Validation Tests', () => {
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
-        'Error during inputs validation: show-certification must be one of [hidden, icon, detail, number], got: invalidValue'
+        'Error during inputs validation: show-certification must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
@@ -580,7 +580,7 @@ describe('Input Validation Tests', () => {
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
-        'Error during inputs validation: show-badge must be one of [hidden, icon, detail, number], got: invalidValue'
+        'Error during inputs validation: show-badge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
@@ -594,16 +594,16 @@ describe('Input Validation Tests', () => {
     })
 
     it('should call setFailed for invalid show-superbadge', () => {
-      inputs.showSuperbadge = 'invalidValue'
+      inputs.showSuperBadge = 'invalidValue'
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
-        'Error during inputs validation: show-superbadge must be one of [hidden, icon, detail, number], got: invalidValue'
+        'Error during inputs validation: show-superbadge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
     it('should call setFailed for invalid show-superbadge-latest', () => {
-      inputs.showSuperbadgeLatest = 'invalidValue'
+      inputs.showSuperBadgeLatest = 'invalidValue'
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
@@ -616,7 +616,7 @@ describe('Input Validation Tests', () => {
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
-        'Error during inputs validation: show-event-badge must be one of [hidden, icon, detail, number], got: invalidValue'
+        'Error during inputs validation: show-event-badge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
@@ -634,7 +634,7 @@ describe('Input Validation Tests', () => {
 
       inputs.validateInputs()
       expect(core.setFailed).toHaveBeenCalledWith(
-        'Error during inputs validation: show-stamp must be one of [hidden, icon, detail, number], got: invalidValue'
+        'Error during inputs validation: show-stamp must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 

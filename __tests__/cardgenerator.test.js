@@ -1,6 +1,8 @@
 const {
   generateCard,
   generateHtmlContent,
+  selectHtmlDisplay,
+  makeLatestHtml,
   hashHtml
 } = require('../src/cardGenerator')
 const puppeteer = require('puppeteer')
@@ -73,11 +75,11 @@ describe('cardGenerator Tests', () => {
         title: 'Salesforce Certified Platform App Builder',
         dateCompleted: '2021-4-2',
         status: 'Active',
-        logoUrl:
+        iconUrl:
           'https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000'
       }
     ],
-    lastCertif: 'Salesforce Certified Associate',
+    lastCertif: 'Salesforce Certified Platform App Builder',
     skillPointsDetails: [
       { name: 'CRM', points: 30325 },
       { name: 'Chatter', points: 1250 }
@@ -105,7 +107,18 @@ describe('cardGenerator Tests', () => {
       cardPath: './path/to/',
       nbSkills: 123,
       outputOnly: 'false',
-      noCommit: false
+      noCommit: false,
+      showSkill: 'visible',
+      showCertification: 'detail',
+      showCertificationLatest: 'visible',
+      showBadge: 'hidden',
+      showBadgeLatest: 'visible',
+      showSuperBadge: 'icon',
+      showSuperBadgeLatest: 'visible',
+      showEventBadge: 'number',
+      showEventBadgeLatest: 'visible',
+      showStamp: 'table',
+      showStampLatest: 'visible'
     }
   })
 
@@ -143,8 +156,100 @@ describe('cardGenerator Tests', () => {
 
         expect(result).toBe(expectedHash)
       })
+    })
 
-      // Tests for different HTML contents and edge cases
+    describe('generateHtmlContent function', () => {
+      it('should correctly generate HTML content', () => {
+        const result = generateHtmlContent(mockData, mockInputs, 'light')
+
+        expect(result).toContain('<html>')
+        expect(result).toContain('<h2>Triple Star Ranger</h2>')
+        expect(result).toContain('Salesforce Certified Platform App Builder')
+      })
+    })
+
+    describe('selectHtmlDisplay function', () => {
+      it('should correctly generate HTML content for detail display', () => {
+        const result = selectHtmlDisplay(
+          'detail',
+          mockData.certificationsDetails,
+          'Certifications'
+        )
+
+        expect(result).toContain('<h2>1 Certifications:</h2>')
+        expect(result).toContain('Salesforce Certified Platform App Builder')
+      })
+
+      it('should correctly generate HTML content for icon display', () => {
+        const result = selectHtmlDisplay(
+          'icon',
+          mockData.superBadgeDetails,
+          'Super Badges'
+        )
+
+        expect(result).toContain('<h2>1 Super Badges:</h2>')
+        expect(result).toContain('Access Governance Superbadge Unit')
+      })
+
+      it('should correctly generate HTML content for number display', () => {
+        const result = selectHtmlDisplay(
+          'number',
+          mockData.eventBadgeDetails,
+          'Event Badges'
+        )
+
+        expect(result).toContain('<h2>2 Event Badges</h2>')
+      })
+
+      it('should correctly generate HTML content for table display', () => {
+        const result = selectHtmlDisplay(
+          'table',
+          mockData.earnedStampsDetails,
+          'Stamps'
+        )
+
+        expect(result).toContain('<h2>1 Stamps:</h2>')
+        expect(result).toContain('dreamforce-2023.png')
+      })
+
+      it('should return empty string for hidden display', () => {
+        const result = selectHtmlDisplay(
+          'hidden',
+          mockData.certificationsDetails,
+          'Certifications'
+        )
+
+        expect(result).toBe('')
+      })
+
+      it('should return empty string for invalid display', () => {
+        const result = selectHtmlDisplay('invalid', [], 'Certifications')
+
+        expect(result).toBe('')
+      })
+    })
+
+    describe('makeLatestHtml function', () => {
+      it('should correctly generate HTML content for latest stats', () => {
+        const result = makeLatestHtml(
+          'Last Certification',
+          mockData.lastCertif,
+          'visible'
+        )
+
+        expect(result).toContain('<p>Last Certification:')
+        expect(result).toContain('Salesforce Certified Platform App Builder')
+      })
+
+      it('should return empty string for hidden display', () => {
+        const result = makeLatestHtml(
+          'Last Certification',
+          mockData.lastCertif,
+          'hidden'
+        )
+
+        expect(result).toBe('')
+      })
     })
   })
 

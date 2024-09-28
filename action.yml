@@ -45,7 +45,7 @@ inputs:
     required: false
     default: 'visible'
   show-certification:
-    description: 'Show the certification: hidden|icon|detail|number'
+    description: 'Show the certification: hidden|icon|table|detail|number'
     required: false
     default: 'detail'
   show-certification-latest:
@@ -53,7 +53,7 @@ inputs:
     required: false
     default: 'visible'
   show-badge:
-    description: 'Show the badges: hidden|icon|detail|number'
+    description: 'Show the badges: hidden|icon|table|detail|number'
     required: false
     default: 'hidden'
   show-badge-latest:
@@ -61,7 +61,7 @@ inputs:
     required: false
     default: 'visible'
   show-superbadge:
-    description: 'Show the superbadge: hidden|icon|detail|number'
+    description: 'Show the superbadge: hidden|icon|table|detail|number'
     required: false
     default: 'icon'
   show-superbadge-latest:
@@ -69,7 +69,7 @@ inputs:
     required: false
     default: 'visible'
   show-event-badge:
-    description: 'Show the event badge: hidden|icon|detail|number'
+    description: 'Show the event badge: hidden|icon|table|detail|number'
     required: false
     default: 'icon'
   show-event-badge-latest:
@@ -77,9 +77,9 @@ inputs:
     required: false
     default: 'visible'
   show-stamp:
-    description: 'Show the stamp: hidden|icon|detail|number'
+    description: 'Show the stamp: hidden|icon|table|detail|number'
     required: false
-    default: 'icon'
+    default: 'table'
   show-stamp-latest:
     description: 'Show the latest stamp: hidden|visible'
     required: false
