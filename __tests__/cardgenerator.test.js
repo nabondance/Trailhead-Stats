@@ -105,7 +105,7 @@ describe('cardGenerator Tests', () => {
       displayType: 'text',
       fileFormat: 'md',
       cardPath: './path/to/',
-      nbSkills: 123,
+      showSkillNumber: 123,
       outputOnly: 'false',
       noCommit: false,
       showSkill: 'visible',

@@ -28,10 +28,6 @@ inputs:
     description: Folder path to save the card
     required: false
     default: 'images'
-  nb-skills:
-    description: Max number of skills to display
-    required: false
-    default: '5'
   output-only:
     description: Only output, do not modify file
     required: false
@@ -44,6 +40,10 @@ inputs:
     description: 'Show the skills: hidden|visible'
     required: false
     default: 'visible'
+  show-skill-number:
+    description: Max number of skills to display
+    required: false
+    default: '5'
   show-certification:
     description: 'Show the certification: hidden|icon|table|detail|number'
     required: false

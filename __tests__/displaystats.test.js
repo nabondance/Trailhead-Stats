@@ -223,7 +223,7 @@ describe('displayStats Function', () => {
       displayType: 'text',
       fileFormat: 'md',
       cardPath: 'images',
-      nbSkills: 123,
+      showSkillNumber: 123,
       outputOnly: 'false',
       noCommit: false
     }

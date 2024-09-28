@@ -15,7 +15,7 @@ describe('Input Validation Tests', () => {
     inputs.displayType = 'text'
     inputs.fileFormat = 'md'
     inputs.cardPath = './images'
-    inputs.nbSkills = 123
+    inputs.showSkillNumber = 123
     inputs.outputOnly = false
     inputs.noCommit = false
     inputs.showSkill = 'visible'
@@ -187,20 +187,22 @@ describe('Input Validation Tests', () => {
   })
 
   // Tests for validateCardPath
-  describe('validateNbSkills', () => {
-    it('should throw an error if nbSkills is not an integer', () => {
-      inputs.nbSkills = 'notAnInteger'
+  describe('validateshowSkillNumber', () => {
+    it('should throw an error if showSkillNumber is not an integer', () => {
+      inputs.showSkillNumber = 'notAnInteger'
 
       expect(() => {
-        inputs.validateNbSkills()
-      }).toThrow('nb-skills must be an integer, got string: notAnInteger')
+        inputs.validateshowSkillNumber()
+      }).toThrow(
+        'show-skill-number must be an integer, got string: notAnInteger'
+      )
     })
 
-    it('should not throw an error for a valid nbSkills', () => {
+    it('should not throw an error for a valid showSkillNumber', () => {
       inputs.cardPath = './images'
 
       expect(() => {
-        inputs.validateNbSkills()
+        inputs.validateshowSkillNumber()
       }).not.toThrow()
     })
   })

@@ -85,16 +85,15 @@ daily.
 
 ## Inputs
 
-| Input Name           | Kind       | Description                                                     | Default     |
-| -------------------- | ---------- | --------------------------------------------------------------- | ----------- |
-| `trailhead-username` | Required   | The username on Trailhead.                                      | `username`  |
-| `display-file`       | Config     | The file to update for displaying the Trailhead stats.          | `README.md` |
-| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                      | `md`        |
-| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.  | `text`      |
-| `nb-skills`          | Preference | The max number of skills to display in the card.                | `5`         |
-| `show-*`             | Preference | On a card, display the element. See Card Display customization. |             |
-| `output-only`        | Debug      | Set to true to only output without modifying the file.          | `false`     |
-| `no-commit`          | Debug      | Set to true to not commit the modification.                     | `false`     |
+| Input Name           | Kind       | Description                                                       | Default     |
+| -------------------- | ---------- | ----------------------------------------------------------------- | ----------- |
+| `trailhead-username` | Required   | The username on Trailhead.                                        | `username`  |
+| `display-file`       | Config     | The file to update for displaying the Trailhead stats.            | `README.md` |
+| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                        | `md`        |
+| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.    | `text`      |
+| `show-*`             | Preference | On a card, customize the element. See Card Display customization. |             |
+| `output-only`        | Debug      | Set to true to only output without modifying the file.            | `false`     |
+| `no-commit`          | Debug      | Set to true to not commit the modification.                       | `false`     |
 
 ## Outputs
 
@@ -116,19 +115,20 @@ The fetched Trailhead stats.
 
 Theses inputs allows you to select what is displayed and how.
 
-| Input Name                  | Description                               | Options                                       | Default   |
-| --------------------------- | ----------------------------------------- | --------------------------------------------- | --------- |
-| `show-skill`                | Display or hide the skill bar.            | `hidden`, `visible`                           | `visible` |
-| `show-certification-latest` | Display or hide the latest certification. | `hidden`, `visible`                           | `visible` |
-| `show-badge-latest`         | Display or hide the latest badge.         | `hidden`, `visible`                           | `visible` |
-| `show-superbadge-latest`    | Display or hide the latest superbadge.    | `hidden`, `visible`                           | `visible` |
-| `show-event-badge-latest`   | Display or hide the latest event badge.   | `hidden`, `visible`                           | `visible` |
-| `show-stamp-latest`         | Display or hide the latest stamp.         | `hidden`, `visible`                           | `visible` |
-| `show-certification`        | How to display the certifications.        | `hidden`, `icon`, `table`, `detail`, `number` | `detail`  |
-| `show-badge`                | How to display the badges.                | `hidden`, `icon`, `table`, `detail`, `number` | `hidden`  |
-| `show-superbadge`           | How to display the superbadges.           | `hidden`, `icon`, `table`, `detail`, `number` | `icon`    |
-| `show-event-badge`          | How to display the event badges.          | `hidden`, `icon`, `table`, `detail`, `number` | `icon`    |
-| `show-stamp`                | How to display the stamps.                | `hidden`, `icon`, `table`, `detail`, `number` | `table`   |
+| Input Name                  | Description                                      | Options                                       | Default   |
+| --------------------------- | ------------------------------------------------ | --------------------------------------------- | --------- |
+| `show-skill`                | Display or hide the skill bar.                   | `hidden`, `visible`                           | `visible` |
+| `show-skill-number`         | The max number of skills to display in the card. | any number                                    | `5`       |
+| `show-certification-latest` | Display or hide the latest certification.        | `hidden`, `visible`                           | `visible` |
+| `show-badge-latest`         | Display or hide the latest badge.                | `hidden`, `visible`                           | `visible` |
+| `show-superbadge-latest`    | Display or hide the latest superbadge.           | `hidden`, `visible`                           | `visible` |
+| `show-event-badge-latest`   | Display or hide the latest event badge.          | `hidden`, `visible`                           | `visible` |
+| `show-stamp-latest`         | Display or hide the latest stamp.                | `hidden`, `visible`                           | `visible` |
+| `show-certification`        | How to display the certifications.               | `hidden`, `icon`, `table`, `detail`, `number` | `detail`  |
+| `show-badge`                | How to display the badges.                       | `hidden`, `icon`, `table`, `detail`, `number` | `hidden`  |
+| `show-superbadge`           | How to display the superbadges.                  | `hidden`, `icon`, `table`, `detail`, `number` | `icon`    |
+| `show-event-badge`          | How to display the event badges.                 | `hidden`, `icon`, `table`, `detail`, `number` | `icon`    |
+| `show-stamp`                | How to display the stamps.                       | `hidden`, `icon`, `table`, `detail`, `number` | `table`   |
 
 You can see how the stat will look depending on the display option:
 
