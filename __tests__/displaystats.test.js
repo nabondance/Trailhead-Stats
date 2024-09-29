@@ -1,6 +1,7 @@
 const { displayStats } = require('./../src/displayStats')
 const cardGenerator = require('.././src/cardGenerator')
 const core = require('@actions/core')
+const { rmSync, existsSync } = require('fs')
 
 jest.mock('@actions/core')
 const setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
@@ -499,10 +500,11 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display as card html', async () => {
     // Setup the mock to return a specific value
+    const cardPathFolder = 'newImages'
     cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
     mockInputs.displayType = 'card'
     mockInputs.fileFormat = 'html'
-    mockInputs.cardPath = 'newImages'
+    mockInputs.cardPath = cardPathFolder
 
     const result = await displayStats(
       mockInputs,
@@ -522,5 +524,10 @@ describe('displayStats Function', () => {
       mockInputs, // The cardPath argument passed to displayStats
       'light' // The theme argument passed to generateCard
     )
+
+    // Remove the newImages folder if it was created
+    if (existsSync(cardPathFolder)) {
+      rmSync(cardPathFolder, { recursive: true })
+    }
   })
 })
