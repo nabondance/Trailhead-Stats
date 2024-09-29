@@ -151,6 +151,7 @@ async function fetchData(
 
 // Use the fetchData function in each specific function
 async function fetchTrailblazerRankInfo(trailheadUsername) {
+  console.log('fetchTrailblazerRankInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_RANK,
@@ -167,6 +168,7 @@ async function fetchTrailblazerRankInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerBadgesInfo(trailheadUsername) {
+  console.log('fetchTrailblazerBadgesInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_BADGES,
@@ -183,6 +185,7 @@ async function fetchTrailblazerBadgesInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerSuperBadgesInfo(trailheadUsername) {
+  console.log('fetchTrailblazerSuperBadgesInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_BADGES,
@@ -199,6 +202,7 @@ async function fetchTrailblazerSuperBadgesInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerEventBadgesInfo(trailheadUsername) {
+  console.log('fetchTrailblazerEventBadgesInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_BADGES,
@@ -215,6 +219,7 @@ async function fetchTrailblazerEventBadgesInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerCertifsInfo(trailheadUsername) {
+  console.log('fetchTrailblazerCertifsInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_CERTIFS,
@@ -229,6 +234,7 @@ async function fetchTrailblazerCertifsInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerSkillsInfo(trailheadUsername) {
+  console.log('fetchTrailblazerSkillsInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_SKILLS,
@@ -242,6 +248,7 @@ async function fetchTrailblazerSkillsInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerEarnedStampsInfo(trailheadUsername) {
+  console.log('fetchTrailblazerEarnedStampsInfo')
   const endpoint = 'https://mobile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_EARNED_STAMPS,
