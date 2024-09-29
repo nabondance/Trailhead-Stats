@@ -102,6 +102,13 @@ async function fetchData(
   allEdges = [],
   pageInfo = null
 ) {
+  console.log('fetchData')
+  console.log('endpoint: ', endpoint)
+  console.log('graphqlQuery: ', graphqlQuery)
+  console.log('profileData: ', profileData)
+  console.log('allEdges: ', allEdges)
+  console.log('pageInfo: ', pageInfo)
+
   try {
     const response = await axios.post(endpoint, graphqlQuery, {
       headers: {
