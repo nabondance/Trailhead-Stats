@@ -102,7 +102,9 @@ async function fetchData(
   currentPage = 1,
   profileData = null,
   allEdges = [],
-  pageInfo = null
+  pageInfo = null,
+  maxRetry = 3,
+  currentRetry = 0
 ) {
   console.log('fetchData')
   console.log('endpoint: ', endpoint)
@@ -158,15 +160,39 @@ async function fetchData(
       currentPage + 1,
       newProfileData,
       newAllEdges,
-      newPageInfo
+      newPageInfo,
+      maxRetry,
+      currentRetry
     )
   } catch (error) {
     console.error('Error fetching data: ', error)
-    return {
-      data: {
-        profile: {
-          ...profileData,
-          earnedAwards: { edges: allEdges, pageInfo }
+    if (error.response && error.response.status === 429) {
+      if (currentRetry < maxRetry) {
+        console.log('Too many requests, waiting for 1 minute before retrying...')
+        await new Promise(resolve => setTimeout(resolve, 60000)) // wait for 1 minute
+        return await fetchData(
+          endpoint,
+          graphqlQuery,
+          extractData,
+          maxPage,
+          currentPage,
+          profileData,
+          allEdges,
+          pageInfo,
+          maxRetry,
+          currentRetry + 1
+        )
+      } else {
+        console.error('Max retry limit reached')
+        throw error
+      }
+    } else {
+      return {
+        data: {
+          profile: {
+            ...profileData,
+            earnedAwards: { edges: allEdges, pageInfo }
+          }
         }
       }
     }
@@ -188,7 +214,7 @@ async function fetchTrailblazerRankInfo(trailheadUsername) {
     }
   }
 
-  return await fetchData(endpoint, graphqlQuery, extractRankData)
+  return await fetchData(endpoint, graphqlQuery, extractRankData, 2)
 }
 
 async function fetchTrailblazerBadgesInfo(trailheadUsername) {
@@ -254,7 +280,7 @@ async function fetchTrailblazerCertifsInfo(trailheadUsername) {
     }
   }
 
-  return await fetchData(endpoint, graphqlQuery, extractCertifsData)
+  return await fetchData(endpoint, graphqlQuery, extractCertifsData, 5)
 }
 
 async function fetchTrailblazerSkillsInfo(trailheadUsername) {
@@ -268,7 +294,7 @@ async function fetchTrailblazerSkillsInfo(trailheadUsername) {
     }
   }
 
-  return await fetchData(endpoint, graphqlQuery, extractSkillsData)
+  return await fetchData(endpoint, graphqlQuery, extractSkillsData, 5)
 }
 
 async function fetchTrailblazerEarnedStampsInfo(trailheadUsername) {
@@ -285,7 +311,7 @@ async function fetchTrailblazerEarnedStampsInfo(trailheadUsername) {
     }
   }
 
-  return await fetchData(endpoint, graphqlQuery, extractStampsData)
+  return await fetchData(endpoint, graphqlQuery, extractStampsData, 5)
 }
 
 module.exports = {
