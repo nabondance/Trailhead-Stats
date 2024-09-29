@@ -105,6 +105,8 @@ async function fetchData(
 ) {
   if (maxPage <= 0) {
     const { dataModel } = extractData(profileData, allEdges, pageInfo)
+    console.log('fetchData: maxPage reached')
+    console.log('dataModel:' + dataModel)
     return {
       data: {
         profile: {
