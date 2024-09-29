@@ -259,7 +259,7 @@ function makeDetailDisplay(details, name) {
         detail => `
       <div class="detail">
         <img src="${detail.iconUrl}" alt="${detail.title}" class="detail-logo">
-        ${detail?.title}${detail?.status ? ' - ' + detail?.status : ''}
+        <b>${detail?.title}</b>${detail?.status ? `&nbsp;-&nbsp;` + detail?.status : ''}
       </div>`
       )
       .join('')

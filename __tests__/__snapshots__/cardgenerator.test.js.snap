@@ -180,7 +180,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <h2>1 Certification:</h2>
       <div class="detail">
         <img src="https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000" alt="Salesforce Certified Platform App Builder" class="detail-logo">
-        Salesforce Certified Platform App Builder - Active
+        <b>Salesforce Certified Platform App Builder</b>&nbsp;-&nbsp;Active
       </div>
                         
                         <h2>1 Superbadge:</h2><div class="icon-container">
