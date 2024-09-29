@@ -38,7 +38,6 @@ function validateBooleanField(field, fieldName) {
 
 function validateStringInListField(field, fieldName, validValues) {
   if (!validValues.includes(field)) {
-    console.log(validValues)
     throw new Error(
       `${fieldName} must be one of [${validValues.join(', ')}], got: ${field}`
     )
