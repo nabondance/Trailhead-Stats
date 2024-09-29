@@ -107,13 +107,13 @@ async function fetchData(
   currentRetry = 0
 ) {
   console.log('fetchData')
-  console.log('endpoint: ', endpoint)
-  console.log('graphqlQuery: ', graphqlQuery)
-  console.log('maxPage: ', maxPage)
-  console.log('currentPage: ', currentPage)
-  console.log('profileData: ', profileData)
-  console.log('allEdges: ', allEdges)
-  console.log('pageInfo: ', pageInfo)
+  // console.log('endpoint: ', endpoint)
+  // console.log('graphqlQuery: ', graphqlQuery)
+  // console.log('maxPage: ', maxPage)
+  // console.log('currentPage: ', currentPage)
+  // console.log('profileData: ', profileData)
+  // console.log('allEdges: ', allEdges)
+  // console.log('pageInfo: ', pageInfo)
 
   if (currentPage > maxPage) {
     return {
