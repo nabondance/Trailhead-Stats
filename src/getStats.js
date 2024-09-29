@@ -98,6 +98,8 @@ async function fetchData(
   endpoint,
   graphqlQuery,
   extractData,
+  maxPage = 100,
+  currentPage = 1,
   profileData = null,
   allEdges = [],
   pageInfo = null
@@ -105,9 +107,22 @@ async function fetchData(
   console.log('fetchData')
   console.log('endpoint: ', endpoint)
   console.log('graphqlQuery: ', graphqlQuery)
+  console.log('maxPage: ', maxPage)
+  console.log('currentPage: ', currentPage)
   console.log('profileData: ', profileData)
   console.log('allEdges: ', allEdges)
   console.log('pageInfo: ', pageInfo)
+
+  if (currentPage > maxPage) {
+    return {
+      data: {
+        profile: {
+          ...profileData,
+          earnedAwards: { edges: allEdges, pageInfo }
+        }
+      }
+    }
+  }
 
   try {
     const response = await axios.post(endpoint, graphqlQuery, {
@@ -139,6 +154,8 @@ async function fetchData(
       endpoint,
       graphqlQuery,
       extractData,
+      maxPage,
+      currentPage + 1,
       newProfileData,
       newAllEdges,
       newPageInfo
