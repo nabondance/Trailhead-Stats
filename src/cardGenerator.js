@@ -74,8 +74,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
     const thresholds = calculateThresholds(data.skillPointsDetails)
 
     // Generate the HTML for the skills bar chart
-    const plural = numberTopSkills > 1 ? 's' : ''
-    skillsBarChartHtml = `<h2>Top ${numberTopSkills?.toLocaleString('fr')} Skill${plural}:</h2>`
+    skillsBarChartHtml = `<h2>Top ${numberTopSkills?.toLocaleString('fr')} Skill${numberTopSkills > 1 ? 's' : ''}:</h2>`
     skillsBarChartHtml += '<div class="skills-bar-chart">'
     skillsBarChartHtml += topSkills
       .map(skill => {
@@ -160,7 +159,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
                         }" alt="Rank Logo" class="rank-logo">
                         <div>
                             <h2>${data.rank}</h2>
-                            <p><b>${data.nbBadges?.toLocaleString('fr')}</b> Badge${data.nbBadges?.length > 1 ? 's' : ''},
+                            <p><b>${data.nbBadges?.toLocaleString('fr')}</b> Badge${data.nbBadges > 1 ? 's' : ''},
                             <b>${data.points?.toLocaleString('fr')}</b> Points</p>
                         </div>
                     </div>

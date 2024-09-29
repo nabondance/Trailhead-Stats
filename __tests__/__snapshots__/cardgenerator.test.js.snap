@@ -152,7 +152,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <img src="https://res.cloudinary.com/trailhead/image/upload/public-trailhead/assets/images/ranks/triple-star-ranger.png" alt="Rank Logo" class="rank-logo">
                         <div>
                             <h2>Triple Star Ranger</h2>
-                            <p><b>481</b> Badge,
+                            <p><b>481</b> Badges,
                             <b>185 400</b> Points</p>
                         </div>
                     </div>
