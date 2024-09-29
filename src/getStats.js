@@ -104,11 +104,12 @@ async function fetchData(
   maxPage = 1000 // maximum number of pages to fetch
 ) {
   if (maxPage <= 0) {
+    const { dataModel } = extractData(profileData, allEdges, pageInfo)
     return {
       data: {
         profile: {
           ...profileData,
-          earnedAwards: { edges: allEdges, pageInfo }
+          ...dataModel
         }
       }
     }
