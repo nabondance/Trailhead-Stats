@@ -100,73 +100,57 @@ async function fetchData(
   extractData,
   profileData = null,
   allEdges = [],
-  pageInfo = null,
-  maxPage = 1000 // maximum number of pages to fetch
+  pageInfo = null
 ) {
-  if (maxPage <= 0) {
-    const { dataModel } = extractData(profileData, allEdges, pageInfo)
-    console.log('fetchData: maxPage reached')
-    console.log('dataModel:' + dataModel)
+  try {
+    const response = await axios.post(endpoint, graphqlQuery, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    const { newProfileData, newAllEdges, newPageInfo } = extractData(
+      response,
+      profileData,
+      allEdges,
+      pageInfo
+    )
+
+    if (newPageInfo != undefined && !newPageInfo.hasNextPage) {
+      console.log('newPageInfo: ', newPageInfo)
+      return {
+        data: {
+          profile: {
+            ...newProfileData,
+            earnedAwards: { edges: newAllEdges, pageInfo: newPageInfo }
+          }
+        }
+      }
+    }
+
+    return await fetchData(
+      endpoint,
+      graphqlQuery,
+      extractData,
+      newProfileData,
+      newAllEdges,
+      newPageInfo
+    )
+  } catch (error) {
+    console.error('Error fetching data: ', error)
     return {
       data: {
         profile: {
           ...profileData,
-          ...dataModel
+          earnedAwards: { edges: allEdges, pageInfo }
         }
       }
     }
   }
-
-  let response
-  let retries = 5
-
-  while (retries > 0) {
-    try {
-      response = await axios.post(endpoint, graphqlQuery, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      break
-    } catch (error) {
-      if (error.response && error.response.status === 429 && retries > 0) {
-        await new Promise(resolve => setTimeout(resolve, 1000)) // wait for 1 second
-        retries--
-      } else {
-        throw error
-      }
-    }
-  }
-
-  const {
-    data: { profile },
-    errors
-  } = response.data
-  const { newProfileData, newAllEdges, newPageInfo } = extractData(
-    profile,
-    allEdges,
-    pageInfo
-  )
-
-  if (errors) {
-    console.error(errors)
-    throw new Error('Error fetching data')
-  }
-
-  return await fetchData(
-    endpoint,
-    graphqlQuery,
-    extractData,
-    newProfileData,
-    newAllEdges,
-    newPageInfo,
-    maxPage - 1
-  )
 }
 
 // Use the fetchData function in each specific function
 async function fetchTrailblazerRankInfo(trailheadUsername) {
-  console.log('fetchTrailblazerRankInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_RANK,
@@ -179,11 +163,10 @@ async function fetchTrailblazerRankInfo(trailheadUsername) {
     }
   }
 
-  return await fetchData(endpoint, graphqlQuery, extractRankData, (maxPage = 1))
+  return await fetchData(endpoint, graphqlQuery, extractRankData)
 }
 
 async function fetchTrailblazerBadgesInfo(trailheadUsername) {
-  console.log('fetchTrailblazerBadgesInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_BADGES,
@@ -200,7 +183,6 @@ async function fetchTrailblazerBadgesInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerSuperBadgesInfo(trailheadUsername) {
-  console.log('fetchTrailblazerSuperBadgesInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_BADGES,
@@ -217,7 +199,6 @@ async function fetchTrailblazerSuperBadgesInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerEventBadgesInfo(trailheadUsername) {
-  console.log('fetchTrailblazerEventBadgesInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_BADGES,
@@ -234,7 +215,6 @@ async function fetchTrailblazerEventBadgesInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerCertifsInfo(trailheadUsername) {
-  console.log('fetchTrailblazerCertifsInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_CERTIFS,
@@ -249,7 +229,6 @@ async function fetchTrailblazerCertifsInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerSkillsInfo(trailheadUsername) {
-  console.log('fetchTrailblazerSkillsInfo')
   const endpoint = 'https://profile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_SKILLS,
@@ -263,7 +242,6 @@ async function fetchTrailblazerSkillsInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerEarnedStampsInfo(trailheadUsername) {
-  console.log('fetchTrailblazerEarnedStampsInfo')
   const endpoint = 'https://mobile.api.trailhead.com/graphql'
   const graphqlQuery = {
     query: GET_TRAILBLAZER_EARNED_STAMPS,
