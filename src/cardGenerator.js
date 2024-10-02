@@ -154,11 +154,9 @@ function generateHtmlContent(data, inputs, styleTheme) {
             <body>
                 <div class="card">
                     <div class="card-header">
-                        <img src="${
-                          data.rankIcon
-                        }" alt="Rank Logo" class="rank-logo">
+                        <img src="${data.rankIcon}" alt="Rank Logo" class="rank-logo">
                         <div>
-                            <h2>${data.rank}</h2>
+                            <h1>${data.rank}</h1>
                             <p><b>${data.nbBadges?.toLocaleString('fr')}</b> Badge${data.nbBadges > 1 ? 's' : ''},
                             <b>${data.points?.toLocaleString('fr')}</b> Points</p>
                         </div>

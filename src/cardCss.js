@@ -33,6 +33,7 @@ function generateCss(styleTheme) {
   }
   body {
     font-family: Arial, sans-serif;
+    font-size: 20px;
     background-color: var(--color-background);
     color: var(--color-text);
     display: flex;
@@ -45,18 +46,22 @@ function generateCss(styleTheme) {
     background-color: var(--color-background);
     border-radius: 10px;
     padding: 20px;
-    width: 600px;
+    width: 1000px;
   }
   .card-header {
     display: flex;
+    font-size: 30px;
     align-items: center;
     border-bottom: 1px solid var(--color-line);
     padding-bottom: 10px;
     margin-bottom: 10px;
   }
+  .card-header h1 {
+    font-size: 40px;
+  }
   .rank-logo {
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 200px;
+    max-height: 200px;
     margin-right: 10px;
   }
   .card-content {
@@ -73,20 +78,20 @@ function generateCss(styleTheme) {
   .badge {
     background-color: var(--color-block);
     padding: 5px;
-    border-radius: 5px;
+    border-radius: 10px;
     margin: 5px 0;
   }
   .skill-container {
-    border-radius: 2px;
+    border-radius: 10px;
   }
   .skill-bar {
     display: flex;
     justify-content: space-between;
     align-items: left;
-    line-height: 30px;
-    border-radius: 2px;
-    height: 30px;
-    max-width: 600px;
+    line-height: 40px;
+    border-radius: 6px;
+    height: 40px;
+    max-width: 1000px;
     overflow: hidden;
     color: var(--color-text-skill);
     font-weight: bold;
@@ -101,8 +106,8 @@ function generateCss(styleTheme) {
     visibility: visible;
   }
   .icon-container {
-    max-width: 550px;
-    width: 550px;
+    max-width: 950px;
+    width: 950px;
     display: flex;
     flex-wrap: wrap;
     overflow: visible;
@@ -110,17 +115,17 @@ function generateCss(styleTheme) {
   .icon {
     position: relative;
     flex-shrink: 0;
-    margin-right: -30px;
+    margin-right: -40px;
   }
   .icon-logo {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     object-fit: contain;
   }
   .detail {
     background-color: var(--color-block);
     padding: 5px;
-    border-radius: 5px;
+    border-radius: 10px;
     margin: 5px 0;
     display: flex;
     align-items: center; /* This will vertically align the logo with the text */
@@ -134,8 +139,8 @@ function generateCss(styleTheme) {
     vertical-align: middle; /* This aligns the image nicely with the text */
   }
   .table-container {
-    max-width: 600px;
-    width: 600px;
+    max-width: 900px;
+    width: 900px;
     display: flex;
     flex-wrap: wrap;
     overflow: visible;
@@ -144,11 +149,11 @@ function generateCss(styleTheme) {
     position: relative;
     flex-shrink: 0;
     margin-right: 0px;
-    margin-bottom: 2px;
+    margin-bottom: 5px;
   }
   .table-logo {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     object-fit: contain;
   }
   </style>
