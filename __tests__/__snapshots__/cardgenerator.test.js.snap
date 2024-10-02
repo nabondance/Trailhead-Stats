@@ -136,13 +136,6 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     height: 80px;
     object-fit: contain;
   }
-  .stamp-container {
-    max-width: 600px;
-    width: 600px;
-    display: flex;
-    flex-wrap: wrap;
-    overflow: visible;
-  }
   </style>
   
             </head>

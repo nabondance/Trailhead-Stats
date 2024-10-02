@@ -151,13 +151,6 @@ function generateCss(styleTheme) {
     height: 80px;
     object-fit: contain;
   }
-  .stamp-container {
-    max-width: 600px;
-    width: 600px;
-    display: flex;
-    flex-wrap: wrap;
-    overflow: visible;
-  }
   </style>
   `
 
