@@ -163,7 +163,7 @@ describe('cardGenerator Tests', () => {
         const result = generateHtmlContent(mockData, mockInputs, 'light')
 
         expect(result).toContain('<html>')
-        expect(result).toContain('<h2>Triple Star Ranger</h2>')
+        expect(result).toContain('<h1>Triple Star Ranger</h1>')
         expect(result).toContain('Salesforce Certified Platform App Builder')
       })
     })
