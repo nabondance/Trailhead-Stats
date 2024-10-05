@@ -46,7 +46,7 @@ function generateCss(styleTheme) {
     background-color: var(--color-background);
     border-radius: 10px;
     padding: 20px;
-    width: 1000px;
+    width: 800px;
   }
   .card-header {
     display: flex;
@@ -91,7 +91,7 @@ function generateCss(styleTheme) {
     line-height: 40px;
     border-radius: 6px;
     height: 40px;
-    max-width: 1000px;
+    max-width: 800px;
     overflow: hidden;
     color: var(--color-text-skill);
     font-weight: bold;
@@ -106,8 +106,8 @@ function generateCss(styleTheme) {
     visibility: visible;
   }
   .icon-container {
-    max-width: 950px;
-    width: 950px;
+    max-width: 750px;
+    width: 750px;
     display: flex;
     flex-wrap: wrap;
     overflow: visible;
@@ -139,8 +139,8 @@ function generateCss(styleTheme) {
     vertical-align: middle; /* This aligns the image nicely with the text */
   }
   .table-container {
-    max-width: 900px;
-    width: 900px;
+    max-width: 800px;
+    width: 800px;
     display: flex;
     flex-wrap: wrap;
     overflow: visible;

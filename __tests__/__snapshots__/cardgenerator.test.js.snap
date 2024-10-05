@@ -31,7 +31,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     background-color: var(--color-background);
     border-radius: 10px;
     padding: 20px;
-    width: 1000px;
+    width: 800px;
   }
   .card-header {
     display: flex;
@@ -76,7 +76,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     line-height: 40px;
     border-radius: 6px;
     height: 40px;
-    max-width: 1000px;
+    max-width: 800px;
     overflow: hidden;
     color: var(--color-text-skill);
     font-weight: bold;
@@ -91,8 +91,8 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     visibility: visible;
   }
   .icon-container {
-    max-width: 950px;
-    width: 950px;
+    max-width: 750px;
+    width: 750px;
     display: flex;
     flex-wrap: wrap;
     overflow: visible;
@@ -124,8 +124,8 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     vertical-align: middle; /* This aligns the image nicely with the text */
   }
   .table-container {
-    max-width: 900px;
-    width: 900px;
+    max-width: 800px;
+    width: 800px;
     display: flex;
     flex-wrap: wrap;
     overflow: visible;
