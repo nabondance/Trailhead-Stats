@@ -110,7 +110,12 @@ function prepareData(
   const earnedStampsDetails = trailheadEarnedStamps?.edges.map(edge => ({
     title: edge.node.name,
     eventDate: edge.node.eventDate,
-    kind: edge.node.kind,
+    kind:
+      edge.node.kind === 'EVENT_IN_PERSON'
+        ? 'In Person'
+        : edge.node.kind === 'EVENT_VIRTUAL'
+          ? 'Virtual'
+          : edge.node.kind,
     iconUrl: edge.node.iconUrl
   }))
   const sortedEarnedStamps = earnedStampsDetails
