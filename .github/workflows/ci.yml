@@ -85,6 +85,7 @@ jobs:
           show-skill-number: 8
           show-event-badge: 'number'
           show-badge: 'icon'
+          show-stamp: 'detail'
 
       - name: Print Output
         id: output
