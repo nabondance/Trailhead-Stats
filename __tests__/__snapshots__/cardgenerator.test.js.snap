@@ -77,6 +77,7 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
     border-radius: 6px;
     height: 40px;
     max-width: 800px;
+    min-width: 200px;
     overflow: hidden;
     color: var(--color-text-skill);
     font-weight: bold;
@@ -163,18 +164,18 @@ exports[`cardGenerator Tests Snapshot testing should match the snapshot 1`] = `
                         <p>Last Stamp: Salesforce stamp</p>
 
                         <h2>Top 123 Skills:</h2><div class="skills-bar-chart">
-            <div class="skill-container">
-            <div class="skill-bar" style="width: 100%; background-color: #7A2048;">
-                <span class="skill-name">CRM</span>
-                <span class="skill-points">30 325</span>
-            </div>
+      <div class="skill-container">
+        <div class="skill-bar" style="width: 800px; background-color: #7A2048;">
+          <span class="skill-name">CRM</span>
+          <span class="skill-points">30 325</span>
         </div>
-            <div class="skill-container">
-            <div class="skill-bar" style="width: 4.122011541632316%; background-color: #1E2761;">
-                <span class="skill-name">Chatter</span>
-                <span class="skill-points"></span>
-            </div>
-        </div></div>
+      </div>
+      <div class="skill-container">
+        <div class="skill-bar" style="width: 200px; background-color: #1E2761;">
+          <span class="skill-name">Chatter</span>
+          <span class="skill-points">1 250</span>
+        </div>
+      </div></div>
                         <h2>1 Certification:</h2>
       <div class="detail">
         <img src="https://drm.file.force.com/servlet/servlet.ImageServer?id=0153k00000A5Mtl&oid=00DF0000000gZsu&lastMod=1617268490000" alt="Salesforce Certified Platform App Builder" class="detail-logo">

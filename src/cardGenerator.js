@@ -58,10 +58,6 @@ function generateHtmlContent(data, inputs, styleTheme) {
   // Generate the skills bar chart HTML
   let skillsBarChartHtml = ``
   if (inputs.showSkill == 'visible' && data.skillPointsDetails) {
-    const maxSkillPoints = Math.max(
-      ...data.skillPointsDetails.map(skill => skill.points)
-    )
-
     // Ensure skills are sorted by points in descending order
     const sortedSkills = data.skillPointsDetails.sort(
       (a, b) => b.points - a.points
@@ -70,29 +66,40 @@ function generateHtmlContent(data, inputs, styleTheme) {
     // Slice to get top N skills
     const topSkills = sortedSkills.slice(0, numberTopSkills)
 
+    // Find the maximum and minimum skill points in the selected top skills
+    const maxSkillPoints = Math.max(...topSkills.map(skill => skill.points))
+    const minSkillPoints = Math.min(...topSkills.map(skill => skill.points))
+
     // Dynamically calculate thresholds
-    const thresholds = calculateThresholds(data.skillPointsDetails)
+    const thresholds = calculateThresholds(topSkills)
+
+    // Calculate logarithmic values and normalize them
+    const logMin = Math.log(minSkillPoints)
+    const logMax = Math.log(maxSkillPoints)
+    const minWidth = 200
+    const maxWidth = 800
 
     // Generate the HTML for the skills bar chart
     skillsBarChartHtml = `<h2>Top ${numberTopSkills?.toLocaleString('fr')} Skill${numberTopSkills > 1 ? 's' : ''}:</h2>`
     skillsBarChartHtml += '<div class="skills-bar-chart">'
     skillsBarChartHtml += topSkills
       .map(skill => {
-        const barWidth = (skill.points / maxSkillPoints) * 100 // Normalize to 100%
+        const logValue = Math.log(skill.points)
+        const normalizedWidth =
+          minWidth +
+          ((logValue - logMin) / (logMax - logMin)) * (maxWidth - minWidth)
+
         const skillColor = getSkillColor(skill.points, thresholds, styleTheme) // Use dynamic color based on thresholds
-        const skillPoints = getSkillPoints(
-          skill.points,
-          barWidth
-        )?.toLocaleString('fr') // Display or not the skill points
         return `
-            <div class="skill-container">
-            <div class="skill-bar" style="width: ${barWidth}%; background-color: ${skillColor};">
-                <span class="skill-name">${skill.name}</span>
-                <span class="skill-points">${skillPoints}</span>
-            </div>
-        </div>`
+      <div class="skill-container">
+        <div class="skill-bar" style="width: ${normalizedWidth}px; background-color: ${skillColor};">
+          <span class="skill-name">${skill.name}</span>
+          <span class="skill-points">${skill.points.toLocaleString('fr')}</span>
+        </div>
+      </div>`
       })
       .join('')
+
     skillsBarChartHtml += '</div>'
   }
 
@@ -186,22 +193,15 @@ function generateHtmlContent(data, inputs, styleTheme) {
   return htmlContent
 }
 
-function calculateThresholds(skillPointsDetails) {
-  const points = skillPointsDetails.map(skill => skill.points)
-  const maxPoints = Math.max(...points)
-  const minPoints = Math.min(...points)
-  const range = maxPoints - minPoints
-  const threshold1 = minPoints + range / 3
-  const threshold2 = minPoints + (2 * range) / 3
+function calculateThresholds(topSkills) {
+  const points = topSkills.map(skill => skill.points)
+  const logPoints = points.map(point => Math.log(point))
+  const maxLogPoints = Math.max(...logPoints)
+  const minLogPoints = Math.min(...logPoints)
+  const logRange = maxLogPoints - minLogPoints
+  const threshold1 = Math.exp(minLogPoints + logRange / 3)
+  const threshold2 = Math.exp(minLogPoints + (2 * logRange) / 3)
   return { threshold1, threshold2 }
-}
-
-function getSkillPoints(points, barWidth) {
-  if (barWidth <= 20) {
-    return ''
-  } else {
-    return points
-  }
 }
 
 function makeIconDisplay(details, name) {

@@ -110,6 +110,7 @@ function generateCss(styleTheme, darkStyle) {
     border-radius: 6px;
     height: 40px;
     max-width: 800px;
+    min-width: 200px;
     overflow: hidden;
     color: var(--color-text-skill);
     font-weight: bold;
