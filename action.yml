@@ -28,6 +28,10 @@ inputs:
     description: Folder path to save the card
     required: false
     default: 'images'
+  dark-style:
+    description: 'The dark theme style: dimmed|dark|high-contrast'
+    required: false
+    default: 'dimmed'
   output-only:
     description: Only output, do not modify file
     required: false

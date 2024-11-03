@@ -7,6 +7,7 @@ const {
   validateStringInListField
 } = require('./validators')
 
+const validDarkStyle = ['dimmed', 'dark', 'high-contrast']
 const validHiddenVisible = ['hidden', 'visible']
 const validDisplayChoice = ['hidden', 'icon', 'table', 'detail', 'number']
 
@@ -24,6 +25,7 @@ class ActionInputs {
     })
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
+    this.darkStyle = core.getInput('dark-style', { required: false })
     this.showSkill = core.getInput('show-skill', { required: false })
     this.showCertification = core.getInput('show-certification', {
       required: false
@@ -66,6 +68,7 @@ class ActionInputs {
       this.validateshowSkillNumber()
       this.validateOutputOnly()
       this.validateNoCommit()
+      this.validateDarkStyle()
       this.validateShowSkill()
       this.validateShowCertification()
       this.validateShowCertificationLatest()
@@ -140,6 +143,11 @@ class ActionInputs {
 
   validateNoCommit() {
     validateBooleanField(this.noCommit, 'no-commit')
+  }
+
+  validateDarkStyle() {
+    validateStringField(this.darkStyle, 'dark-style')
+    validateStringInListField(this.darkStyle, 'dark-style', validDarkStyle)
   }
 
   validateShowSkill() {

@@ -5,16 +5,32 @@ describe('cardCss Tests', () => {
     it('should return correct style string for light', () => {
       const expectedStyleString = '--color-background: white;'
 
-      const result = generateCss('light')
+      const result = generateCss('light', '')
 
       expect(result).toContain(expectedStyleString)
     })
   })
 
-  it('should return correct style string for dark', () => {
+  it('should return correct style string for dark dimmed', () => {
     const expectedStyleString = '--color-background: #202830;'
 
-    const result = generateCss('dark')
+    const result = generateCss('dark', 'dimmed')
+
+    expect(result).toContain(expectedStyleString)
+  })
+
+  it('should return correct style string for dark dark', () => {
+    const expectedStyleString = '--color-background: #0E1117;'
+
+    const result = generateCss('dark', 'dark')
+
+    expect(result).toContain(expectedStyleString)
+  })
+
+  it('should return correct style string for dark high-contrast', () => {
+    const expectedStyleString = '--color-background: #02040A;'
+
+    const result = generateCss('dark', 'high-contrast')
 
     expect(result).toContain(expectedStyleString)
   })

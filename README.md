@@ -85,15 +85,17 @@ daily.
 
 ## Inputs
 
-| Input Name           | Kind       | Description                                                       | Default     |
-| -------------------- | ---------- | ----------------------------------------------------------------- | ----------- |
-| `trailhead-username` | Required   | The username on Trailhead.                                        | `username`  |
-| `display-file`       | Config     | The file to update for displaying the Trailhead stats.            | `README.md` |
-| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                        | `md`        |
-| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.    | `text`      |
-| `show-*`             | Preference | On a card, customize the element. See Card Display customization. |             |
-| `output-only`        | Debug      | Set to true to only output without modifying the file.            | `false`     |
-| `no-commit`          | Debug      | Set to true to not commit the modification.                       | `false`     |
+| Input Name           | Kind       | Description                                                        | Default     |
+| -------------------- | ---------- | ------------------------------------------------------------------ | ----------- |
+| `trailhead-username` | Required   | The username on Trailhead.                                         | `username`  |
+| `display-file`       | Config     | The file to update for displaying the Trailhead stats.             | `README.md` |
+| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                         | `md`        |
+| `card-path`          | Config     | Folder path to save the card                                       | `images`    |
+| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.     | `text`      |
+| `dark-style`         | Preference | The kind of dark theme. Options: `dimmed`, `dark`, `high-contrast` | `dimmed`    |
+| `show-*`             | Preference | On a card, customize the element. See Card Display customization.  |             |
+| `output-only`        | Debug      | Set to true to only output without modifying the file.             | `false`     |
+| `no-commit`          | Debug      | Set to true to not commit the modification.                        | `false`     |
 
 ## Outputs
 
@@ -140,6 +142,19 @@ You can see how the stat will look depending on the display option:
 | `table`                 | ![table](images/readme/display_table.png)     |
 | `detail`                | ![detail](images/readme/display_detail.png)   |
 | `number`                | ![number](images/readme/display_number.png)   |
+
+### Card theme
+
+#### Dark Theme Styles
+
+According to GitHub, there is different dark themes styles that you can also
+select using the input `dark-style`:
+
+| Dark Style      | Example                                                      |
+| --------------- | ------------------------------------------------------------ |
+| `dimmed`        | ![dimmed](images/readme/theme-dark_dimmed.png)               |
+| `dark`          | ![dark](images/readme/theme-dark_dark.png)                   |
+| `high-contrast` | ![high-contrast](images/readme/theme-dark_high-contrast.png) |
 
 ### Card automatism
 
