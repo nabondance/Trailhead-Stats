@@ -18,6 +18,7 @@ describe('Input Validation Tests', () => {
     inputs.showSkillNumber = 123
     inputs.outputOnly = false
     inputs.noCommit = false
+    inputs.darkStyle = 'dimmed'
     inputs.showSkill = 'visible'
     inputs.showCertification = 'detail'
     inputs.showCertificationLatest = 'visible'
@@ -241,6 +242,27 @@ describe('Input Validation Tests', () => {
 
       expect(() => {
         inputs.validateNoCommit()
+      }).not.toThrow()
+    })
+  })
+
+  // Tests for darkStyle
+  describe('validateDarkStyle', () => {
+    it('should throw an error if darkStyle is not a valid value', () => {
+      inputs.darkStyle = 'invalidValue'
+
+      expect(() => {
+        inputs.validateDarkStyle()
+      }).toThrow(
+        'dark-style must be one of [dimmed, dark, high-contrast], got: invalidValue'
+      )
+    })
+
+    it('should not throw an error for a valid darkStyle', () => {
+      inputs.darkStyle = 'dimmed'
+
+      expect(() => {
+        inputs.validateDarkStyle()
       }).not.toThrow()
     })
   })

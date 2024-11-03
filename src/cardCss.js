@@ -1,4 +1,4 @@
-function generateCss(styleTheme) {
+function generateCss(styleTheme, darkStyle) {
   let colorBackground
   let colorText
   let colorTextSkill
@@ -14,11 +14,29 @@ function generateCss(styleTheme) {
       colorLine = '#1C2128'
       break
     case 'dark':
-      colorBackground = '#202830'
-      colorText = 'white'
-      colorTextSkill = 'white'
-      colorBlock = '#1C2128'
-      colorLine = '#F5F8FA'
+      switch (darkStyle) {
+        case 'dimmed':
+          colorBackground = '#202830'
+          colorText = 'white'
+          colorTextSkill = 'white'
+          colorBlock = '#1C2128'
+          colorLine = '#F5F8FA'
+          break
+        case 'dark':
+          colorBackground = '#0E1117'
+          colorText = 'white'
+          colorTextSkill = 'white'
+          colorBlock = '#161A21'
+          colorLine = '#F5F8FA'
+          break
+        case 'high-contrast':
+          colorBackground = '#02040A'
+          colorText = 'white'
+          colorTextSkill = 'white'
+          colorBlock = '#2F3742'
+          colorLine = '#F5F8FA'
+          break
+      }
       break
   }
 
