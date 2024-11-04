@@ -90,6 +90,7 @@ describe('cardGenerator Tests', () => {
       {
         name: 'Salesforce stamp',
         kind: 'EVENT_IN_PERSON',
+        eventLocation: 'San Francisco, CA',
         iconUrl:
           'https://res.cloudinary.com/hy4kyit2a/f_auto,q_85,w_200/trailblazer-stamps/dreamforce-2023.png',
         eventDate: '2023-09-12T07:00:00.000+0000'

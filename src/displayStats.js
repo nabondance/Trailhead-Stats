@@ -112,7 +112,7 @@ function prepareData(
     eventDate: edge.node.eventDate,
     kind:
       edge.node.kind === 'EVENT_IN_PERSON'
-        ? 'In Person'
+        ? edge.node?.eventLocation
         : edge.node.kind === 'EVENT_VIRTUAL'
           ? 'Virtual'
           : edge.node.kind,
