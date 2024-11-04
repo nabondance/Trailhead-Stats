@@ -89,7 +89,7 @@ Be consistent with the existing coding style.
 Common type:
 `feat, fix, docs, ci, style, refactor, perf, test, build, chore, revert`
 
-Common scope: `core, ui, config, release, util, auth`
+Common scope: `core, deps, ui, config, release, util, auth`
 
 ## License
 
