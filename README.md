@@ -2,6 +2,8 @@
 
 [![MegaLinter](https://github.com/nabondance/Trailhead-Stats/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/nabondance/Trailhead-Stats/actions/workflows/mega-linter.yml)![CI](https://github.com/nabondance/Trailhead-Stats/actions/workflows/ci.yml/badge.svg)[![codecov](https://codecov.io/gh/nabondance/Trailhead-Stats/branch/main/graph/badge.svg)](https://codecov.io/gh/nabondance/Trailhead-Stats)
 
+<img src="images/readme/THS_logo.svg" alt="Trailhead Stats Logo" width="200">
+
 ## Description
 
 **Trailhead Stats** is a GitHub Action created to dynamically display Trailhead
