@@ -31,7 +31,7 @@ To use this action in your workflow, add the following step:
     contents: write
   with:
     trailhead-username: 'your_trailhead_username'
-    display-type: 'text' # Optional
+    display-type: 'card' # Optional
     display-file: 'README.md' # Optional
     file-format: 'md' # Optional
 ```
