@@ -126,6 +126,7 @@ Theses inputs allows you to select what is displayed and how.
 | --------------------------- | ------------------------------------------------ | --------------------------------------------- | --------- |
 | `show-skill`                | Display or hide the skill bar.                   | `hidden`, `visible`                           | `visible` |
 | `show-skill-number`         | The max number of skills to display in the card. | any number                                    | `5`       |
+| `show-skill-theme`          | Color theme for the skills in the card.          | see Card skill theme                          | `default` |
 | `show-certification-latest` | Display or hide the latest certification.        | `hidden`, `visible`                           | `visible` |
 | `show-badge-latest`         | Display or hide the latest badge.                | `hidden`, `visible`                           | `visible` |
 | `show-superbadge-latest`    | Display or hide the latest superbadge.           | `hidden`, `visible`                           | `visible` |
@@ -160,6 +161,21 @@ select using the input `dark-style`:
 | `dimmed`        | ![dimmed](images/readme/theme-dark_dimmed.png)               |
 | `dark`          | ![dark](images/readme/theme-dark_dark.png)                   |
 | `high-contrast` | ![high-contrast](images/readme/theme-dark_high-contrast.png) |
+
+#### Skill Themes
+
+You can select the colors of the skills by specifying a theme using the input
+`show-skill-theme`:
+
+| Skill Theme | Example                                                |
+| ----------- | ------------------------------------------------------ |
+| `default`   | ![dimmed](images/readme/skill-theme-default-light.png) |
+| `default`   | ![dimmed](images/readme/skill-theme-default-dark.png)  |
+| `olympic`   | ![dimmed](images/readme/skill-theme-default-dark.png)  |
+| `halloween` | ![dimmed](images/readme/skill-theme-halloween.png)     |
+| `winter`    | ![dimmed](images/readme/skill-theme-winter.png)        |
+| `spring`    | ![dimmed](images/readme/skill-theme-spring.png)        |
+| `summer`    | ![dimmed](images/readme/skill-theme-summer.png)        |
 
 ### Card automatism
 

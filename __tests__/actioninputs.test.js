@@ -16,6 +16,7 @@ describe('Input Validation Tests', () => {
     inputs.fileFormat = 'md'
     inputs.cardPath = './images'
     inputs.showSkillNumber = 123
+    inputs.showSkillTheme = 'winter'
     inputs.outputOnly = false
     inputs.noCommit = false
     inputs.darkStyle = 'dimmed'
@@ -187,23 +188,40 @@ describe('Input Validation Tests', () => {
     })
   })
 
-  // Tests for validateCardPath
-  describe('validateshowSkillNumber', () => {
+  // Tests for validateShowSkillNumber
+  describe('validateShowSkillNumber', () => {
     it('should throw an error if showSkillNumber is not an integer', () => {
       inputs.showSkillNumber = 'notAnInteger'
 
       expect(() => {
-        inputs.validateshowSkillNumber()
+        inputs.validateShowSkillNumber()
       }).toThrow(
         'show-skill-number must be an integer, got string: notAnInteger'
       )
     })
 
     it('should not throw an error for a valid showSkillNumber', () => {
-      inputs.cardPath = './images'
+      expect(() => {
+        inputs.validateShowSkillNumber()
+      }).not.toThrow()
+    })
+  })
+
+  // Tests for validateShowSkillTheme
+  describe('validateShowSkillTheme', () => {
+    it('should throw an error if showSkillTheme is not a valid value', () => {
+      inputs.showSkillTheme = 'invalidValue'
 
       expect(() => {
-        inputs.validateshowSkillNumber()
+        inputs.validateShowSkillTheme()
+      }).toThrow(
+        'show-skill-theme must be one of [default, olympic, halloween, winter, spring, summer], got: invalidValue'
+      )
+    })
+
+    it('should not throw an error for a valid showSkillTheme', () => {
+      expect(() => {
+        inputs.validateShowSkillTheme()
       }).not.toThrow()
     })
   })
@@ -372,13 +390,13 @@ describe('Input Validation Tests', () => {
     })
   })
 
-  // Tests for validateshowSuperBadge
-  describe('validateshowSuperBadge', () => {
+  // Tests for validateShowSuperBadge
+  describe('validateShowSuperBadge', () => {
     it('should throw an error if show-superbadge is not a valid value', () => {
       inputs.showSuperBadge = 'invalidValue'
 
       expect(() => {
-        inputs.validateshowSuperBadge()
+        inputs.validateShowSuperBadge()
       }).toThrow(
         'show-superbadge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
@@ -388,18 +406,18 @@ describe('Input Validation Tests', () => {
       inputs.showSuperBadge = 'icon'
 
       expect(() => {
-        inputs.validateshowSuperBadge()
+        inputs.validateShowSuperBadge()
       }).not.toThrow()
     })
   })
 
-  // Tests for validateshowSuperBadgeLatest
-  describe('validateshowSuperBadgeLatest', () => {
+  // Tests for validateShowSuperBadgeLatest
+  describe('validateShowSuperBadgeLatest', () => {
     it('should throw an error if show-superbadge-latest is not a valid value', () => {
       inputs.showSuperBadgeLatest = 'invalidValue'
 
       expect(() => {
-        inputs.validateshowSuperBadgeLatest()
+        inputs.validateShowSuperBadgeLatest()
       }).toThrow(
         'show-superbadge-latest must be one of [hidden, visible], got: invalidValue'
       )
@@ -409,7 +427,7 @@ describe('Input Validation Tests', () => {
       inputs.showSuperBadgeLatest = 'visible'
 
       expect(() => {
-        inputs.validateshowSuperBadgeLatest()
+        inputs.validateShowSuperBadgeLatest()
       }).not.toThrow()
     })
   })

@@ -181,20 +181,49 @@ function generateCss(styleTheme, darkStyle) {
   return style
 }
 
-function getSkillColor(points, thresholds, styleTheme) {
+function getSkillColor(points, thresholds, styleTheme, skillTheme) {
   let colorSkillLow
   let colorSkillMedium
   let colorSkillHigh
-  switch (styleTheme) {
-    case 'light':
-      colorSkillLow = '#1E2761'
-      colorSkillMedium = '#408EC6'
-      colorSkillHigh = '#7A2048'
+  switch (skillTheme) {
+    case 'olympic':
+      colorSkillHigh = '#d6af36'
+      colorSkillMedium = '#a7a7ad'
+      colorSkillLow = '#a77044'
       break
-    case 'dark':
-      colorSkillLow = '#4078c0'
-      colorSkillMedium = '#c9510c'
-      colorSkillHigh = '#6e5494'
+    case 'halloween':
+      colorSkillHigh = '#fa7a18'
+      colorSkillMedium = '#bd561d'
+      colorSkillLow = '#631c03'
+      break
+    case 'winter':
+      colorSkillHigh = '#54AEFF'
+      colorSkillMedium = '#0969DA'
+      colorSkillLow = '#0A3069'
+      break
+    case 'spring':
+      colorSkillHigh = '#f4649e'
+      colorSkillMedium = '#49e5aa'
+      colorSkillLow = '#229fa9'
+      break
+    case 'summer':
+      colorSkillHigh = '#39d353'
+      colorSkillMedium = '#006d32'
+      colorSkillLow = '#0e4429'
+      break
+    default:
+      switch (styleTheme) {
+        case 'light':
+          colorSkillHigh = '#7A2048'
+          colorSkillMedium = '#408EC6'
+          colorSkillLow = '#1E2761'
+          break
+        case 'dark':
+          colorSkillHigh = '#6e5494'
+          colorSkillMedium = '#c9510c'
+          colorSkillLow = '#4078c0'
+          break
+      }
       break
   }
 

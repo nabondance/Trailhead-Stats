@@ -89,7 +89,12 @@ function generateHtmlContent(data, inputs, styleTheme) {
           minWidth +
           ((logValue - logMin) / (logMax - logMin)) * (maxWidth - minWidth)
 
-        const skillColor = getSkillColor(skill.points, thresholds, styleTheme) // Use dynamic color based on thresholds
+        const skillColor = getSkillColor(
+          skill.points,
+          thresholds,
+          styleTheme,
+          inputs.showSkillTheme
+        ) // Use dynamic color based on thresholds
         return `
       <div class="skill-container">
         <div class="skill-bar" style="width: ${normalizedWidth}px; background-color: ${skillColor};">
