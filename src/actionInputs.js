@@ -4,7 +4,8 @@ const {
   validateStringField,
   validateIntegerField,
   validateBooleanField,
-  validateStringInListField
+  validateStringInListField,
+  validateHexadecimalField
 } = require('./validators')
 
 const validDarkStyle = ['dimmed', 'dark', 'high-contrast']
@@ -31,6 +32,24 @@ class ActionInputs {
     this.showSkillNumber = core.getInput('show-skill-number', {
       required: false
     })
+    this.showSkillCustomColorHigh = core.getInput(
+      'show-skill-custom-color-high',
+      {
+        required: false
+      }
+    )
+    this.showSkillCustomColorMedium = core.getInput(
+      'show-skill-custom-color-medium',
+      {
+        required: false
+      }
+    )
+    this.showSkillCustomColorLow = core.getInput(
+      'show-skill-custom-color-low',
+      {
+        required: false
+      }
+    )
     this.showSkillTheme = core.getInput('show-skill-theme', { required: false })
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
@@ -76,6 +95,9 @@ class ActionInputs {
       this.validateCardPath()
       this.validateShowSkillNumber()
       this.validateShowSkillTheme()
+      this.validateShowSkillCustomColorHigh()
+      this.validateShowSkillCustomColorMedium()
+      this.validateShowSkillCustomColorLow()
       this.validateOutputOnly()
       this.validateNoCommit()
       this.validateDarkStyle()
@@ -153,6 +175,39 @@ class ActionInputs {
       this.showSkillTheme,
       'show-skill-theme',
       validSkillTheme
+    )
+  }
+
+  validateShowSkillCustomColorHigh() {
+    validateStringField(
+      this.showSkillCustomColorHigh,
+      'show-skill-custom-color-high'
+    )
+    validateHexadecimalField(
+      this.showSkillCustomColorHigh,
+      'show-skill-custom-color-high'
+    )
+  }
+
+  validateShowSkillCustomColorMedium() {
+    validateStringField(
+      this.showSkillCustomColorMedium,
+      'show-skill-custom-color-medium'
+    )
+    validateHexadecimalField(
+      this.showSkillCustomColorMedium,
+      'show-skill-custom-color-medium'
+    )
+  }
+
+  validateShowSkillCustomColorLow() {
+    validateStringField(
+      this.showSkillCustomColorLow,
+      'show-skill-custom-color-low'
+    )
+    validateHexadecimalField(
+      this.showSkillCustomColorLow,
+      'show-skill-custom-color-low'
     )
   }
 

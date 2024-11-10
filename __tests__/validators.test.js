@@ -163,4 +163,68 @@ describe('Validators', () => {
       )
     })
   })
+
+  describe('validateHexadecimalField', () => {
+    it('should not throw an error for valid hexadecimal input', () => {
+      expect(() =>
+        validators.validateHexadecimalField('#FFFFFF', 'Test Field')
+      ).not.toThrow()
+    })
+
+    it('should not throw an error for valid shorthand hexadecimal input', () => {
+      expect(() =>
+        validators.validateHexadecimalField('#FFF', 'Test Field')
+      ).not.toThrow()
+    })
+
+    it('should not throw an error if the input is empty', () => {
+      expect(() =>
+        validators.validateHexadecimalField('', 'Test Field')
+      ).not.toThrow()
+    })
+
+    it('should add # if the input does not start with it', () => {
+      expect(() =>
+        validators.validateHexadecimalField('FFFFFF', 'Test Field')
+      ).not.toThrow()
+    })
+
+    it('should throw an error for invalid hexadecimal input (too long)', () => {
+      expect(() =>
+        validators.validateHexadecimalField('#FFFFFFF', 'Test Field')
+      ).toThrow('Test Field must be a valid hexadecimal color, got: #FFFFFFF')
+    })
+
+    it('should throw an error for invalid hexadecimal input (too short)', () => {
+      expect(() =>
+        validators.validateHexadecimalField('#FF', 'Test Field')
+      ).toThrow('Test Field must be a valid hexadecimal color, got: #FF')
+    })
+
+    it('should throw an error for invalid hexadecimal input (invalid characters)', () => {
+      expect(() =>
+        validators.validateHexadecimalField('#FFFGGG', 'Test Field')
+      ).toThrow('Test Field must be a valid hexadecimal color, got: #FFFGGG')
+    })
+
+    it('should throw an error for non-string input (number)', () => {
+      expect(() =>
+        validators.validateHexadecimalField(7, 'Test Field')
+      ).toThrow('Test Field must be a valid hexadecimal color, got: #7')
+    })
+
+    it('should throw an error for non-string input (boolean)', () => {
+      expect(() =>
+        validators.validateHexadecimalField(true, 'Test Field')
+      ).toThrow('Test Field must be a valid hexadecimal color, got: #true')
+    })
+
+    it('should throw an error for non-string input (object)', () => {
+      expect(() =>
+        validators.validateHexadecimalField({}, 'Test Field')
+      ).toThrow(
+        'Test Field must be a valid hexadecimal color, got: #[object Object]'
+      )
+    })
+  })
 })

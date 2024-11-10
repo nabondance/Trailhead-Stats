@@ -53,6 +53,18 @@ inputs:
       'Skill color theme : default|olympic|halloween|winter|spring|summer'
     required: false
     default: 'default'
+  show-skill-custom-color-high:
+    description: 'Custom hexadecimal code of the high threshold color'
+    required: false
+    default: ''
+  show-skill-custom-color-medium:
+    description: 'Custom hexadecimal code of the medium threshold color'
+    required: false
+    default: ''
+  show-skill-custom-color-low:
+    description: 'Custom hexadecimal code of the low threshold color'
+    required: false
+    default: ''
   show-certification:
     description: 'Show the certification: hidden|icon|table|detail|number'
     required: false

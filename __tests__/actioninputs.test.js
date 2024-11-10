@@ -17,6 +17,9 @@ describe('Input Validation Tests', () => {
     inputs.cardPath = './images'
     inputs.showSkillNumber = 123
     inputs.showSkillTheme = 'winter'
+    inputs.showSkillCustomColorHigh = '#FFFFFF'
+    inputs.showSkillCustomColorMedium = '#FFFFFF'
+    inputs.showSkillCustomColorLow = '#FFFFFF'
     inputs.outputOnly = false
     inputs.noCommit = false
     inputs.darkStyle = 'dimmed'
@@ -222,6 +225,69 @@ describe('Input Validation Tests', () => {
     it('should not throw an error for a valid showSkillTheme', () => {
       expect(() => {
         inputs.validateShowSkillTheme()
+      }).not.toThrow()
+    })
+  })
+
+  // Tests for validateShowSkillCustomColorLow
+  describe('validateShowSkillCustomColorHigh', () => {
+    it('should throw an error if showSkillCustomColorHigh is not a valid hexadecimal color', () => {
+      inputs.showSkillCustomColorHigh = '#invalidColor'
+
+      expect(() => {
+        inputs.validateShowSkillCustomColorHigh()
+      }).toThrow(
+        'show-skill-custom-color-high must be a valid hexadecimal color, got: #invalidColor'
+      )
+    })
+
+    it('should not throw an error for a valid showSkillCustomColorHigh', () => {
+      inputs.showSkillCustomColorHigh = '#FFFFFF'
+
+      expect(() => {
+        inputs.validateShowSkillCustomColorHigh()
+      }).not.toThrow()
+    })
+  })
+
+  // Test for validateShowSkillCustomColorMedium
+  describe('validateShowSkillCustomColorMedium', () => {
+    it('should throw an error if showSkillCustomColorMedium is not a valid hexadecimal color', () => {
+      inputs.showSkillCustomColorMedium = '#invalidColor'
+
+      expect(() => {
+        inputs.validateShowSkillCustomColorMedium()
+      }).toThrow(
+        'show-skill-custom-color-medium must be a valid hexadecimal color, got: #invalidColor'
+      )
+    })
+
+    it('should not throw an error for a valid showSkillCustomColorMedium', () => {
+      inputs.showSkillCustomColorMedium = '#FFFFFF'
+
+      expect(() => {
+        inputs.validateShowSkillCustomColorMedium()
+      }).not.toThrow()
+    })
+  })
+
+  // Tests for validateShowSkillCustomColorLow
+  describe('validateShowSkillCustomColorLow', () => {
+    it('should throw an error if showSkillCustomColorLow is not a valid hexadecimal color', () => {
+      inputs.showSkillCustomColorLow = '#invalidColor'
+
+      expect(() => {
+        inputs.validateShowSkillCustomColorLow()
+      }).toThrow(
+        'show-skill-custom-color-low must be a valid hexadecimal color, got: #invalidColor'
+      )
+    })
+
+    it('should not throw an error for a valid showSkillCustomColorLow', () => {
+      inputs.showSkillCustomColorLow = '#FFFFFF'
+
+      expect(() => {
+        inputs.validateShowSkillCustomColorLow()
       }).not.toThrow()
     })
   })
