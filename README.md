@@ -126,6 +126,7 @@ Theses inputs allows you to select what is displayed and how.
 | --------------------------- | ------------------------------------------------ | --------------------------------------------- | --------- |
 | `show-skill`                | Display or hide the skill bar.                   | `hidden`, `visible`                           | `visible` |
 | `show-skill-number`         | The max number of skills to display in the card. | any number                                    | `5`       |
+| `show-skill-theme`          | Color theme for the skills in the card.          | see Card skill theme                          | `default` |
 | `show-certification-latest` | Display or hide the latest certification.        | `hidden`, `visible`                           | `visible` |
 | `show-badge-latest`         | Display or hide the latest badge.                | `hidden`, `visible`                           | `visible` |
 | `show-superbadge-latest`    | Display or hide the latest superbadge.           | `hidden`, `visible`                           | `visible` |
@@ -160,6 +161,21 @@ select using the input `dark-style`:
 | `dimmed`        | ![dimmed](images/readme/theme-dark_dimmed.png)               |
 | `dark`          | ![dark](images/readme/theme-dark_dark.png)                   |
 | `high-contrast` | ![high-contrast](images/readme/theme-dark_high-contrast.png) |
+
+#### Skill Themes
+
+You can select the colors of the skills by specifying a theme using the input
+`show-skill-theme`:
+
+| Skill Theme             | Example                                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------------------- |
+| `default` (light theme) | <img src="images/readme/skill-theme-default-light.png" alt="Skill Theme default" width="50"/> |
+| `default` (dark theme)  | <img src="images/readme/skill-theme-default-dark.png" alt="Skill Theme default" width="50"/>  |
+| `olympic`               | <img src="images/readme/skill-theme-default-dark.png" alt="Skill Theme olympic" width="50"/>  |
+| `halloween`             | <img src="images/readme/skill-theme-halloween.png" alt="Skill Theme halloween" width="50"/>   |
+| `winter`                | <img src="images/readme/skill-theme-winter.png" alt="Skill Theme winter" width="50"/>         |
+| `spring`                | <img src="images/readme/skill-theme-spring.png" alt="Skill Theme spring" width="50"/>         |
+| `summer`                | <img src="images/readme/skill-theme-summer.png" alt="Skill Theme summer" width="50"/>         |
 
 ### Card automatism
 

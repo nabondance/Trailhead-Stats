@@ -1,4 +1,8 @@
-const { generateCss, getSkillColor } = require('../src/cardCss')
+const {
+  generateCss,
+  getSkillThemeColors,
+  getSkillColor
+} = require('../src/cardCss')
 
 describe('cardCss Tests', () => {
   describe('getStyle function', () => {
@@ -35,29 +39,80 @@ describe('cardCss Tests', () => {
     expect(result).toContain(expectedStyleString)
   })
 
-  describe('getSkillColor function', () => {
-    it('should return correct skill colors for light theme', () => {
-      const thresholds = { threshold1: 10, threshold2: 20 }
+  describe('getSkillThemeColors function', () => {
+    it('should return correct skill color map if the theme is default light', () => {
+      const resultMap = getSkillThemeColors('light', 'default')
 
-      const resultThreshold1 = getSkillColor(1, thresholds, 'light')
-      const resultThreshold2 = getSkillColor(11, thresholds, 'light')
-      const resultThreshold3 = getSkillColor(21, thresholds, 'light')
-
-      expect(resultThreshold1).toContain('#1E2761')
-      expect(resultThreshold2).toContain('#408EC6')
-      expect(resultThreshold3).toContain('#7A2048')
+      expect(resultMap.get('high')).toEqual('#7A2048')
+      expect(resultMap.get('medium')).toEqual('#408EC6')
+      expect(resultMap.get('low')).toEqual('#1E2761')
     })
 
-    it('should return correct skill colors for dark theme', () => {
+    it('should return correct skill color map if the theme is default dark', () => {
+      const resultMap = getSkillThemeColors('dark', 'default')
+
+      expect(resultMap.get('high')).toEqual('#6e5494')
+      expect(resultMap.get('medium')).toEqual('#c9510c')
+      expect(resultMap.get('low')).toEqual('#4078c0')
+    })
+
+    it('should return correct skill color map if the theme is olympic', () => {
+      const resultMap = getSkillThemeColors('light', 'olympic')
+
+      expect(resultMap.get('high')).toEqual('#d6af36')
+      expect(resultMap.get('medium')).toEqual('#a7a7ad')
+      expect(resultMap.get('low')).toEqual('#a77044')
+    })
+
+    it('should return correct skill color map if the theme is halloween', () => {
+      const resultMap = getSkillThemeColors('light', 'halloween')
+
+      expect(resultMap.get('high')).toEqual('#fa7a18')
+      expect(resultMap.get('medium')).toEqual('#bd561d')
+      expect(resultMap.get('low')).toEqual('#631c03')
+    })
+
+    it('should return correct skill color map if the theme is winter', () => {
+      const resultMap = getSkillThemeColors('light', 'winter')
+
+      expect(resultMap.get('high')).toEqual('#54AEFF')
+      expect(resultMap.get('medium')).toEqual('#0969DA')
+      expect(resultMap.get('low')).toEqual('#0A3069')
+    })
+
+    it('should return correct skill color map if the theme is spring', () => {
+      const resultMap = getSkillThemeColors('light', 'spring')
+
+      expect(resultMap.get('high')).toEqual('#f4649e')
+      expect(resultMap.get('medium')).toEqual('#49e5aa')
+      expect(resultMap.get('low')).toEqual('#229fa9')
+    })
+
+    it('should return correct skill color map if the theme is summer', () => {
+      const resultMap = getSkillThemeColors('light', 'summer')
+
+      expect(resultMap.get('high')).toEqual('#39d353')
+      expect(resultMap.get('medium')).toEqual('#006d32')
+      expect(resultMap.get('low')).toEqual('#0e4429')
+    })
+  })
+
+  describe('getSkillColor function', () => {
+    it('should return correct skill colors based on the color map', () => {
       const thresholds = { threshold1: 10, threshold2: 20 }
+      const skillColorsMap = new Map([
+        ['low', '#LOW'],
+        ['medium', '#MEDIUM'],
+        ['high', '#HIGH']
+      ])
 
-      const resultThreshold1 = getSkillColor(1, thresholds, 'dark')
-      const resultThreshold2 = getSkillColor(11, thresholds, 'dark')
-      const resultThreshold3 = getSkillColor(21, thresholds, 'dark')
+      const resultLow = getSkillColor(1, thresholds, skillColorsMap)
+      const resultMedium = getSkillColor(11, thresholds, skillColorsMap)
+      const resultHigh = getSkillColor(21, thresholds, skillColorsMap)
 
-      expect(resultThreshold1).toContain('#4078c0')
-      expect(resultThreshold2).toContain('#c9510c')
-      expect(resultThreshold3).toContain('#6e5494')
+      expect(resultLow).toContain('#LOW')
+      expect(resultMedium).toContain('#MEDIUM')
+      expect(resultHigh).toContain('#HIGH')
     })
   })
 })

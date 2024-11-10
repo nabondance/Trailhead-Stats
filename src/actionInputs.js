@@ -8,6 +8,14 @@ const {
 } = require('./validators')
 
 const validDarkStyle = ['dimmed', 'dark', 'high-contrast']
+const validSkillTheme = [
+  'default',
+  'olympic',
+  'halloween',
+  'winter',
+  'spring',
+  'summer'
+]
 const validHiddenVisible = ['hidden', 'visible']
 const validDisplayChoice = ['hidden', 'icon', 'table', 'detail', 'number']
 
@@ -23,6 +31,7 @@ class ActionInputs {
     this.showSkillNumber = core.getInput('show-skill-number', {
       required: false
     })
+    this.showSkillTheme = core.getInput('show-skill-theme', { required: false })
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
     this.darkStyle = core.getInput('dark-style', { required: false })
@@ -65,7 +74,8 @@ class ActionInputs {
       this.validateDisplayType()
       this.validateFileFormat()
       this.validateCardPath()
-      this.validateshowSkillNumber()
+      this.validateShowSkillNumber()
+      this.validateShowSkillTheme()
       this.validateOutputOnly()
       this.validateNoCommit()
       this.validateDarkStyle()
@@ -74,8 +84,8 @@ class ActionInputs {
       this.validateShowCertificationLatest()
       this.validateShowBadge()
       this.validateShowBadgeLatest()
-      this.validateshowSuperBadge()
-      this.validateshowSuperBadgeLatest()
+      this.validateShowSuperBadge()
+      this.validateShowSuperBadgeLatest()
       this.validateShowEventBadge()
       this.validateShowEventBadgeLatest()
       this.validateShowStamp()
@@ -129,12 +139,21 @@ class ActionInputs {
     validateStringField(this.cardPath, 'card-path')
   }
 
-  validateshowSkillNumber() {
+  validateShowSkillNumber() {
     const parsed = parseInt(this.showSkillNumber)
     if (!isNaN(parsed)) {
       this.showSkillNumber = parsed
     }
     validateIntegerField(this.showSkillNumber, 'show-skill-number')
+  }
+
+  validateShowSkillTheme() {
+    validateStringField(this.showSkillTheme, 'show-skill-theme')
+    validateStringInListField(
+      this.showSkillTheme,
+      'show-skill-theme',
+      validSkillTheme
+    )
   }
 
   validateOutputOnly() {
@@ -190,7 +209,7 @@ class ActionInputs {
     )
   }
 
-  validateshowSuperBadge() {
+  validateShowSuperBadge() {
     validateStringField(this.showSuperBadge, 'show-superbadge')
     validateStringInListField(
       this.showSuperBadge,
@@ -199,7 +218,7 @@ class ActionInputs {
     )
   }
 
-  validateshowSuperBadgeLatest() {
+  validateShowSuperBadgeLatest() {
     validateStringField(this.showSuperBadgeLatest, 'show-superbadge-latest')
     validateStringInListField(
       this.showSuperBadgeLatest,

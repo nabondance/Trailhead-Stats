@@ -181,29 +181,60 @@ function generateCss(styleTheme, darkStyle) {
   return style
 }
 
-function getSkillColor(points, thresholds, styleTheme) {
-  let colorSkillLow
-  let colorSkillMedium
-  let colorSkillHigh
-  switch (styleTheme) {
-    case 'light':
-      colorSkillLow = '#1E2761'
-      colorSkillMedium = '#408EC6'
-      colorSkillHigh = '#7A2048'
+function getSkillThemeColors(styleTheme, skillTheme) {
+  const skillColorsMap = new Map()
+  switch (skillTheme) {
+    case 'olympic':
+      skillColorsMap.set('high', '#d6af36')
+      skillColorsMap.set('medium', '#a7a7ad')
+      skillColorsMap.set('low', '#a77044')
       break
-    case 'dark':
-      colorSkillLow = '#4078c0'
-      colorSkillMedium = '#c9510c'
-      colorSkillHigh = '#6e5494'
+    case 'halloween':
+      skillColorsMap.set('high', '#fa7a18')
+      skillColorsMap.set('medium', '#bd561d')
+      skillColorsMap.set('low', '#631c03')
+      break
+    case 'winter':
+      skillColorsMap.set('high', '#54AEFF')
+      skillColorsMap.set('medium', '#0969DA')
+      skillColorsMap.set('low', '#0A3069')
+      break
+    case 'spring':
+      skillColorsMap.set('high', '#f4649e')
+      skillColorsMap.set('medium', '#49e5aa')
+      skillColorsMap.set('low', '#229fa9')
+      break
+    case 'summer':
+      skillColorsMap.set('high', '#39d353')
+      skillColorsMap.set('medium', '#006d32')
+      skillColorsMap.set('low', '#0e4429')
+      break
+    default:
+      switch (styleTheme) {
+        case 'light':
+          skillColorsMap.set('high', '#7A2048')
+          skillColorsMap.set('medium', '#408EC6')
+          skillColorsMap.set('low', '#1E2761')
+          break
+        case 'dark':
+          skillColorsMap.set('high', '#6e5494')
+          skillColorsMap.set('medium', '#c9510c')
+          skillColorsMap.set('low', '#4078c0')
+          break
+      }
       break
   }
+  return skillColorsMap
+}
 
-  if (points <= thresholds.threshold1) return `${colorSkillLow}` // Low level color
-  if (points <= thresholds.threshold2) return `${colorSkillMedium}` // Medium level color
-  return `${colorSkillHigh}` // High level color
+function getSkillColor(points, thresholds, skillColorsMap) {
+  if (points <= thresholds.threshold1) return `${skillColorsMap.get('low')}` // Low level color
+  if (points <= thresholds.threshold2) return `${skillColorsMap.get('medium')}` // Medium level color
+  return `${skillColorsMap.get('high')}` // High level color
 }
 
 module.exports = {
   generateCss,
+  getSkillThemeColors,
   getSkillColor
 }
