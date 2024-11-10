@@ -181,6 +181,24 @@ function generateCss(styleTheme, darkStyle) {
   return style
 }
 
+function getSkillColorMap(styleTheme, inputs) {
+  let skillColorsMap = new Map()
+  // Take custom colors if they are defined
+  if (
+    inputs.showSkillCustomColorHigh &&
+    inputs.showSkillCustomColorMedium &&
+    inputs.showSkillCustomColorLow
+  ) {
+    skillColorsMap.set('high', inputs.showSkillCustomColorHigh)
+    skillColorsMap.set('medium', inputs.showSkillCustomColorMedium)
+    skillColorsMap.set('low', inputs.showSkillCustomColorLow)
+  } else {
+    // Get the theme colors
+    skillColorsMap = getSkillThemeColors(styleTheme, inputs.showSkillTheme)
+  }
+  return skillColorsMap
+}
+
 function getSkillThemeColors(styleTheme, skillTheme) {
   const skillColorsMap = new Map()
   switch (skillTheme) {
@@ -227,7 +245,7 @@ function getSkillThemeColors(styleTheme, skillTheme) {
   return skillColorsMap
 }
 
-function getSkillColor(points, thresholds, skillColorsMap) {
+function getSkillBackgroundColor(points, thresholds, skillColorsMap) {
   if (points <= thresholds.threshold1) return `${skillColorsMap.get('low')}` // Low level color
   if (points <= thresholds.threshold2) return `${skillColorsMap.get('medium')}` // Medium level color
   return `${skillColorsMap.get('high')}` // High level color
@@ -235,6 +253,7 @@ function getSkillColor(points, thresholds, skillColorsMap) {
 
 module.exports = {
   generateCss,
+  getSkillColorMap,
   getSkillThemeColors,
-  getSkillColor
+  getSkillBackgroundColor
 }

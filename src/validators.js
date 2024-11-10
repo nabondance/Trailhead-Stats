@@ -44,10 +44,31 @@ function validateStringInListField(field, fieldName, validValues) {
   }
 }
 
+function validateHexadecimalField(field, fieldName) {
+  // Ensure field is a string
+  field = String(field)
+
+  // Return if the field is empty
+  if (field.trim() === '') {
+    return
+  }
+
+  // Add # if doesn't start with it
+  if (!field.startsWith('#')) {
+    field = `#${field}`
+  }
+  if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(field)) {
+    throw new Error(
+      `${fieldName} must be a valid hexadecimal color, got: ${field}`
+    )
+  }
+}
+
 module.exports = {
   validateRequiredField,
   validateStringField,
   validateIntegerField,
   validateBooleanField,
-  validateStringInListField
+  validateStringInListField,
+  validateHexadecimalField
 }

@@ -1,7 +1,8 @@
 const {
   generateCss,
+  getSkillColorMap,
   getSkillThemeColors,
-  getSkillColor
+  getSkillBackgroundColor
 } = require('../src/cardCss')
 
 describe('cardCss Tests', () => {
@@ -37,6 +38,39 @@ describe('cardCss Tests', () => {
     const result = generateCss('dark', 'high-contrast')
 
     expect(result).toContain(expectedStyleString)
+  })
+
+  describe('getSkillColorMap function', () => {
+    it('should return correct skill color map with custom colors', () => {
+      const inputs = {
+        showSkillCustomColorHigh: '#HIGH',
+        showSkillCustomColorMedium: '#MEDIUM',
+        showSkillCustomColorLow: '#LOW'
+      }
+      const resultMap = getSkillColorMap('light', inputs)
+
+      expect(resultMap.get('high')).toContain('#HIGH')
+      expect(resultMap.get('medium')).toContain('#MEDIUM')
+      expect(resultMap.get('low')).toContain('#LOW')
+    })
+
+    it('should return correct skill color map with default theme', () => {
+      const inputs = {}
+      const resultMap = getSkillColorMap('light', inputs)
+
+      expect(resultMap.get('high')).toEqual('#7A2048')
+      expect(resultMap.get('medium')).toEqual('#408EC6')
+      expect(resultMap.get('low')).toEqual('#1E2761')
+    })
+
+    it('should return correct skill color map with specified theme', () => {
+      const inputs = { showSkillTheme: 'olympic' }
+      const resultMap = getSkillColorMap('light', inputs)
+
+      expect(resultMap.get('high')).toEqual('#d6af36')
+      expect(resultMap.get('medium')).toEqual('#a7a7ad')
+      expect(resultMap.get('low')).toEqual('#a77044')
+    })
   })
 
   describe('getSkillThemeColors function', () => {
@@ -97,7 +131,7 @@ describe('cardCss Tests', () => {
     })
   })
 
-  describe('getSkillColor function', () => {
+  describe('getSkillBackgroundColor function', () => {
     it('should return correct skill colors based on the color map', () => {
       const thresholds = { threshold1: 10, threshold2: 20 }
       const skillColorsMap = new Map([
@@ -106,9 +140,13 @@ describe('cardCss Tests', () => {
         ['high', '#HIGH']
       ])
 
-      const resultLow = getSkillColor(1, thresholds, skillColorsMap)
-      const resultMedium = getSkillColor(11, thresholds, skillColorsMap)
-      const resultHigh = getSkillColor(21, thresholds, skillColorsMap)
+      const resultLow = getSkillBackgroundColor(1, thresholds, skillColorsMap)
+      const resultMedium = getSkillBackgroundColor(
+        11,
+        thresholds,
+        skillColorsMap
+      )
+      const resultHigh = getSkillBackgroundColor(21, thresholds, skillColorsMap)
 
       expect(resultLow).toContain('#LOW')
       expect(resultMedium).toContain('#MEDIUM')
