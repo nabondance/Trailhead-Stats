@@ -110,11 +110,11 @@ The fetched Trailhead stats.
 
 ## Visual display in your file
 
-| Display Type | Example Light Theme                         | Example Dark Theme                        |
-| ------------ | ------------------------------------------- | ----------------------------------------- |
-| `text`       | ![Text Light](images/readme/text_light.png) | ![Text Dark](images/readme/text_dark.png) |
-| `card`       | ![Card Light](images/readme/card_light.png) | ![Card Dark](images/readme/card_dark.png) |
-| `output`     | Object to use in a GitHub Action            | Object to use in a GitHub Action          |
+| Display Type | Example Light Theme                                                    | Example Dark Theme                                                   |
+| ------------ | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `text`       | <img src="images/readme/text_light.png" alt="Text Light" width="300"/> | <img src="images/readme/text_dark.png" alt="Text Dark" width="300"/> |
+| `card`       | <img src="images/readme/card_light.png" alt="Card Light" width="300"/> | <img src="images/readme/card_dark.png" alt="Card Dark" width="300"/> |
+| `output`     | Object to use in a GitHub Action                                       | Object to use in a GitHub Action                                     |
 
 ## Card features
 
@@ -143,14 +143,14 @@ Theses inputs allows you to select what is displayed and how.
 
 You can see how the stat will look depending on the display option:
 
-| Selected Display Option | Example                                       |
-| ----------------------- | --------------------------------------------- |
-| `hidden`                | ![hidden](images/readme/display_hidden.png)   |
-| `visible`               | ![visible](images/readme/display_visible.png) |
-| `icon`                  | ![icon](images/readme/display_icon.png)       |
-| `table`                 | ![table](images/readme/display_table.png)     |
-| `detail`                | ![detail](images/readme/display_detail.png)   |
-| `number`                | ![number](images/readme/display_number.png)   |
+| Selected Display Option | Example                                                                  |
+| ----------------------- | ------------------------------------------------------------------------ |
+| `hidden`                | <img src="images/readme/display_hidden.png" alt="hidden" width="300"/>   |
+| `visible`               | <img src="images/readme/display_visible.png" alt="visible" width="300"/> |
+| `icon`                  | <img src="images/readme/display_icon.png" alt="icon" width="300"/>       |
+| `table`                 | <img src="images/readme/display_table.png" alt="table" width="300"/>     |
+| `detail`                | <img src="images/readme/display_detail.png" alt="detail" width="300"/>   |
+| `number`                | <img src="images/readme/display_number.png" alt="number" width="300"/>   |
 
 ### Card theme
 
@@ -159,26 +159,26 @@ You can see how the stat will look depending on the display option:
 According to GitHub, there is different dark themes styles that you can also
 select using the input `dark-style`:
 
-| Dark Style      | Example                                                      |
-| --------------- | ------------------------------------------------------------ |
-| `dimmed`        | ![dimmed](images/readme/theme-dark_dimmed.png)               |
-| `dark`          | ![dark](images/readme/theme-dark_dark.png)                   |
-| `high-contrast` | ![high-contrast](images/readme/theme-dark_high-contrast.png) |
+| Dark Style      | Example                                                                                  |
+| --------------- | ---------------------------------------------------------------------------------------- |
+| `dimmed`        | <img src="images/readme/theme-dark_dimmed.png" alt="dimmed" height="100"/>               |
+| `dark`          | <img src="images/readme/theme-dark_dark.png" alt="dark" height="100"/>                   |
+| `high-contrast` | <img src="images/readme/theme-dark_high-contrast.png" alt="high-contrast" height="100"/> |
 
 #### Skill Themes
 
 You can select the colors of the skills by specifying a theme using the input
 `show-skill-theme`:
 
-| Skill Theme             | Example                                                                                       |
-| ----------------------- | --------------------------------------------------------------------------------------------- |
-| `default` (light theme) | <img src="images/readme/skill-theme-default-light.png" alt="Skill Theme default" width="50"/> |
-| `default` (dark theme)  | <img src="images/readme/skill-theme-default-dark.png" alt="Skill Theme default" width="50"/>  |
-| `olympic`               | <img src="images/readme/skill-theme-default-dark.png" alt="Skill Theme olympic" width="50"/>  |
-| `halloween`             | <img src="images/readme/skill-theme-halloween.png" alt="Skill Theme halloween" width="50"/>   |
-| `winter`                | <img src="images/readme/skill-theme-winter.png" alt="Skill Theme winter" width="50"/>         |
-| `spring`                | <img src="images/readme/skill-theme-spring.png" alt="Skill Theme spring" width="50"/>         |
-| `summer`                | <img src="images/readme/skill-theme-summer.png" alt="Skill Theme summer" width="50"/>         |
+| Skill Theme             | Example                                                                                                   |
+| ----------------------- | --------------------------------------------------------------------------------------------------------- |
+| `default` (light theme) | <img src="images/readme/skill-theme-default-light.png" alt="Skill Theme default" height="50" width="50"/> |
+| `default` (dark theme)  | <img src="images/readme/skill-theme-default-dark.png" alt="Skill Theme default" height="50" width="50"/>  |
+| `olympic`               | <img src="images/readme/skill-theme-olympic.png" alt="Skill Theme olympic" height="50" width="50"/>       |
+| `halloween`             | <img src="images/readme/skill-theme-halloween.png" alt="Skill Theme halloween" height="50" width="50"/>   |
+| `winter`                | <img src="images/readme/skill-theme-winter.png" alt="Skill Theme winter" height="50" width="50"/>         |
+| `spring`                | <img src="images/readme/skill-theme-spring.png" alt="Skill Theme spring" height="50" width="50"/>         |
+| `summer`                | <img src="images/readme/skill-theme-summer.png" alt="Skill Theme summer" height="50" width="50"/>         |
 
 ### Card automatism
 
@@ -190,6 +190,8 @@ Theses features doesn't require any configuration, they are fully automatic
 - The card won't display empty blocs (Certifications, Superbadges, Stamps).
 - The Card will be displayed on light or dark theme based on the GitHub theme of
   the user.
+- If all the custom skill colors aren't set, it will use the specified theme or
+  default theme if none.
 
 ## Versions
 
