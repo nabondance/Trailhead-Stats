@@ -167,15 +167,15 @@ select using the input `dark-style`:
 You can select the colors of the skills by specifying a theme using the input
 `show-skill-theme`:
 
-| Skill Theme | Example                                                |
-| ----------- | ------------------------------------------------------ |
-| `default`   | ![dimmed](images/readme/skill-theme-default-light.png) |
-| `default`   | ![dimmed](images/readme/skill-theme-default-dark.png)  |
-| `olympic`   | ![dimmed](images/readme/skill-theme-default-dark.png)  |
-| `halloween` | ![dimmed](images/readme/skill-theme-halloween.png)     |
-| `winter`    | ![dimmed](images/readme/skill-theme-winter.png)        |
-| `spring`    | ![dimmed](images/readme/skill-theme-spring.png)        |
-| `summer`    | ![dimmed](images/readme/skill-theme-summer.png)        |
+| Skill Theme             | Example                                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------------------- |
+| `default` (light theme) | <img src="images/readme/skill-theme-default-light.png" alt="Skill Theme default" width="50"/> |
+| `default` (dark theme)  | <img src="images/readme/skill-theme-default-dark.png" alt="Skill Theme default" width="50"/>  |
+| `olympic`               | <img src="images/readme/skill-theme-default-dark.png" alt="Skill Theme olympic" width="50"/>  |
+| `halloween`             | <img src="images/readme/skill-theme-halloween.png" alt="Skill Theme halloween" width="50"/>   |
+| `winter`                | <img src="images/readme/skill-theme-winter.png" alt="Skill Theme winter" width="50"/>         |
+| `spring`                | <img src="images/readme/skill-theme-spring.png" alt="Skill Theme spring" width="50"/>         |
+| `summer`                | <img src="images/readme/skill-theme-summer.png" alt="Skill Theme summer" width="50"/>         |
 
 ### Card automatism
 

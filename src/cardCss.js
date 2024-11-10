@@ -181,58 +181,60 @@ function generateCss(styleTheme, darkStyle) {
   return style
 }
 
-function getSkillColor(points, thresholds, styleTheme, skillTheme) {
-  let colorSkillLow
-  let colorSkillMedium
-  let colorSkillHigh
+function getSkillThemeColors(styleTheme, skillTheme) {
+  const skillColorsMap = new Map()
   switch (skillTheme) {
     case 'olympic':
-      colorSkillHigh = '#d6af36'
-      colorSkillMedium = '#a7a7ad'
-      colorSkillLow = '#a77044'
+      skillColorsMap.set('high', '#d6af36')
+      skillColorsMap.set('medium', '#a7a7ad')
+      skillColorsMap.set('low', '#a77044')
       break
     case 'halloween':
-      colorSkillHigh = '#fa7a18'
-      colorSkillMedium = '#bd561d'
-      colorSkillLow = '#631c03'
+      skillColorsMap.set('high', '#fa7a18')
+      skillColorsMap.set('medium', '#bd561d')
+      skillColorsMap.set('low', '#631c03')
       break
     case 'winter':
-      colorSkillHigh = '#54AEFF'
-      colorSkillMedium = '#0969DA'
-      colorSkillLow = '#0A3069'
+      skillColorsMap.set('high', '#54AEFF')
+      skillColorsMap.set('medium', '#0969DA')
+      skillColorsMap.set('low', '#0A3069')
       break
     case 'spring':
-      colorSkillHigh = '#f4649e'
-      colorSkillMedium = '#49e5aa'
-      colorSkillLow = '#229fa9'
+      skillColorsMap.set('high', '#f4649e')
+      skillColorsMap.set('medium', '#49e5aa')
+      skillColorsMap.set('low', '#229fa9')
       break
     case 'summer':
-      colorSkillHigh = '#39d353'
-      colorSkillMedium = '#006d32'
-      colorSkillLow = '#0e4429'
+      skillColorsMap.set('high', '#39d353')
+      skillColorsMap.set('medium', '#006d32')
+      skillColorsMap.set('low', '#0e4429')
       break
     default:
       switch (styleTheme) {
         case 'light':
-          colorSkillHigh = '#7A2048'
-          colorSkillMedium = '#408EC6'
-          colorSkillLow = '#1E2761'
+          skillColorsMap.set('high', '#7A2048')
+          skillColorsMap.set('medium', '#408EC6')
+          skillColorsMap.set('low', '#1E2761')
           break
         case 'dark':
-          colorSkillHigh = '#6e5494'
-          colorSkillMedium = '#c9510c'
-          colorSkillLow = '#4078c0'
+          skillColorsMap.set('high', '#6e5494')
+          skillColorsMap.set('medium', '#c9510c')
+          skillColorsMap.set('low', '#4078c0')
           break
       }
       break
   }
+  return skillColorsMap
+}
 
-  if (points <= thresholds.threshold1) return `${colorSkillLow}` // Low level color
-  if (points <= thresholds.threshold2) return `${colorSkillMedium}` // Medium level color
-  return `${colorSkillHigh}` // High level color
+function getSkillColor(points, thresholds, skillColorsMap) {
+  if (points <= thresholds.threshold1) return `${skillColorsMap.get('low')}` // Low level color
+  if (points <= thresholds.threshold2) return `${skillColorsMap.get('medium')}` // Medium level color
+  return `${skillColorsMap.get('high')}` // High level color
 }
 
 module.exports = {
   generateCss,
+  getSkillThemeColors,
   getSkillColor
 }

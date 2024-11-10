@@ -2,7 +2,7 @@ const core = require('@actions/core')
 const puppeteer = require('puppeteer')
 const path = require('path')
 const crypto = require('crypto')
-const { generateCss, getSkillColor } = require('./cardCss')
+const { generateCss, getSkillThemeColors, getSkillColor } = require('./cardCss')
 
 async function generateCard(dataToFormat, inputs, styleTheme) {
   const cardFullPath = path.join(inputs.cardPath, `TScard-${styleTheme}.png`)
@@ -79,6 +79,12 @@ function generateHtmlContent(data, inputs, styleTheme) {
     const minWidth = 200
     const maxWidth = 800
 
+    // Get the skill color map
+    const skillColorsMap = getSkillThemeColors(
+      styleTheme,
+      inputs.showSkillTheme
+    )
+
     // Generate the HTML for the skills bar chart
     skillsBarChartHtml = `<h2>Top ${numberTopSkills?.toLocaleString('fr')} Skill${numberTopSkills > 1 ? 's' : ''}:</h2>`
     skillsBarChartHtml += '<div class="skills-bar-chart">'
@@ -92,8 +98,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
         const skillColor = getSkillColor(
           skill.points,
           thresholds,
-          styleTheme,
-          inputs.showSkillTheme
+          skillColorsMap
         ) // Use dynamic color based on thresholds
         return `
       <div class="skill-container">
