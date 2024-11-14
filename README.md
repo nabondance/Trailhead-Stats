@@ -207,6 +207,14 @@ If you want a specific version, you can specify it:
 
 `uses: nabondance/trailhead-stats@v1.2.3`
 
+## How it Works
+
+1. Query the trailhead information of the specified username
+1. Generate an html/css page depending on the show-\* inputs
+1. Screenshot the html/css page
+1. Update the specified display-file with the screenshots links
+1. Commit and push the changes to the repo
+
 ## Troubleshooting
 
 Having issues with the Trailhead Stats GitHub Action? Here are some common
