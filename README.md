@@ -193,6 +193,11 @@ Theses features doesn't require any configuration, they are fully automatic
 - If all the custom skill colors aren't set, it will use the specified theme or
   default theme if none.
 
+### Card UI display examples
+
+There are countless permutations possible.
+[Here are some examples with inputs and card results](card-examples.md).
+
 ## Versions
 
 Consider using a
@@ -277,22 +282,6 @@ requirement.
 
 Contributions to the Trailhead Stats GitHub Action are welcome. Please feel free
 to fork the repository, make changes, and create a pull request.
-
-## Real world uses
-
-Feel free to create a PR to add your personal example
-
-- [nabondance README.md](https://github.com/nabondance/nabondance/blob/master/README.md#--my-trailhead-stats)
-
-## Future Features
-
-Ideas I have in mind, in no particular order:
-
-- Select the language
-- More data
-- Add more options to select what to display
-- Find a way to remove the required permission
-- Dynamic card and not static PNG
 
 ## Abandoned Features
 
