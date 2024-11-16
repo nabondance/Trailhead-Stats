@@ -86,7 +86,7 @@
     "@vercel/ncc": "^0.38.2",
     "babel-jest": "^29.7.0",
     "babel-preset-jest": "^29.6.3",
-    "eslint": "^8.57.1",
+    "eslint": "^9.15.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-github": "^5.0.2",
     "eslint-plugin-jest": "^28.9.0",
