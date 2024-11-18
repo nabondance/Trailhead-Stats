@@ -1,15 +1,17 @@
 ---
 name: Crush images
-on:
-  pull_request
+on: pull_request
 jobs:
   crush:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Make commits
+      pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Crush images
-        uses: crush-pics/crush-pics-github-action@master
+        uses: crush-pics/crush-pics-github-action@v1.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           api-key: ${{ secrets.CRUSH_API_KEY }}
