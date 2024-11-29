@@ -148,4 +148,3 @@ ignore:
   # Ignored by default; disputed and unwarranted CVE that causes Megalinter to fail
   # @link https://nvd.nist.gov/vuln/detail/CVE-2018-20225
   - vulnerability: CVE-2018-20225
-  - vulnerability: GHSA-3xgq-45jj-v275 # Is ok, not a vulnerability
