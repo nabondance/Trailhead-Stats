@@ -28,6 +28,7 @@ DISABLE_LINTERS:
   - REPOSITORY_TRIVY # Disable because of low warning on deps
   - REPOSITORY_DEVSKIM # Disable because
   - JAVASCRIPT_STANDARD # Disable because of conflict with prettier
+  - REPOSITORY_TRUFFLEHOG # Disable because of symlink issues
 
 # JavaScript configuration
 JAVASCRIPT_ES_FILTER_REGEX_EXCLUDE: '(dist)' # Filter out files to lint
