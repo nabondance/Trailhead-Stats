@@ -4,13 +4,32 @@ name: Dependabot Build Dependencies
 on: # yamllint disable-line
   pull_request:
     branches:
-      - disabled_for_now
+      - main
 
 permissions:
+  pull-requests: write
   contents: write
 
 jobs:
-  dependabot:
+  fetch-dependabot-metadata:
+    runs-on: ubuntu-latest
+    # We only want to check the metadata on pull_request events from Dependabot itself,
+    # any subsequent pushes to the PR should just skip this step so we don't go into
+    # a loop on commits created by the `build-dependabot-changes` job
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    # Map the step output to a job output for subsequent jobs
+    outputs:
+      dependency-type: ${{ steps.dependabot-metadata.outputs.dependency-type }}
+      package-ecosystem:
+        ${{ steps.dependabot-metadata.outputs.package-ecosystem }}
+    steps:
+      - name: Fetch dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@dbb049abf0d677abbd7f7eee0375145b417fdd34 # v2.2.0
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+
+  build-deps:
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
 
@@ -32,18 +51,10 @@ jobs:
       - name: Rebuild CJS modules
         run: pnpm bundle
 
-      - name: Commit & Push changes
-        env:
-          github_token: ${{ secrets.PAT }} # trufflehog:ignore
-          persist-credentials: false
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      - name: Commit & Push changes to dist/
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git add -A
-          if ! git diff-index --quiet HEAD; then
-            git commit -m "chore(deps): rebuild cjs"
-            git push origin "$HEAD_REF"
-          else
-            echo "No changes to commit"
-          fi
+          git add dist/
+          git commit -m "[dependabot skip] Update dist/ with build changes" || exit 0
+          git push
