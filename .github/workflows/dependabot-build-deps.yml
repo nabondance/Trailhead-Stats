@@ -34,11 +34,18 @@ jobs:
     if: github.actor == 'dependabot[bot]'
 
     steps:
-      - name: Checkout
+      - name: Checkout with PAT_TS
         uses: actions/checkout@v4
+        if: github.event.pull_request.head.repo.full_name == github.repository
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.PAT_TS }}
+
+      - name: Checkout without PAT_TS
+        uses: actions/checkout@v4
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
