@@ -32,10 +32,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        if: github.event.pull_request.head.repo.full_name == github.repository
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-          token: ${{ secrets.PAT_TS }}
+          token: ${{ secrets.GH_PAT }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
