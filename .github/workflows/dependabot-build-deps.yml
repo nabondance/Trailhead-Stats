@@ -31,9 +31,7 @@ jobs:
   build-deps-dependabot:
     runs-on: ubuntu-latest
     needs: [fetch-dependabot-metadata]
-    if:
-      github.actor == 'dependabot[bot]' &&
-      needs.fetch-dependabot-metadata.outputs.package-ecosystem == 'npm'
+    if: github.actor == 'dependabot[bot]'
 
     steps:
       - name: Checkout
