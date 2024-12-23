@@ -4,7 +4,7 @@ name: Dependabot Build Dependencies
 on: # yamllint disable-line
   pull_request:
     branches:
-      - main
+      - disabled_for_now
 
 permissions:
   contents: write
