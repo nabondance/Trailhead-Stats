@@ -644,6 +644,73 @@ describe('displayStats Function', () => {
     ).toBe(false)
   })
 
+  // As read from the action inputs: a run that commits.
+  const committing = () => ({
+    ...mockInputs,
+    outputOnly: 'false',
+    noCommit: 'false'
+  })
+
+  it('checks both cards before replacing either', async () => {
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'th-outside-'))
+    fs.mkdirSync(path.join(workspace, 'images'))
+    fs.writeFileSync(path.join(workspace, 'images', 'TScard-light.png'), 'old')
+    fs.symlinkSync(
+      path.join(outside, 'target.png'),
+      path.join(workspace, 'images', 'TScard-dark.png')
+    )
+
+    await expect(
+      displayStats(
+        { ...committing(), displayType: 'card', cardPath: 'images' },
+        mockTrailheadRankData,
+        mockTrailheadBadgesData,
+        mockTrailheadSuperBadgesData,
+        mockTrailheadEventBadgesData,
+        mockTrailheadCertifsData,
+        mockTrailheadSkillsData,
+        mockTrailheadEarnedStampsData
+      )
+    ).rejects.toThrow('card-path must stay inside the repository')
+
+    expect(
+      fs.readFileSync(
+        path.join(workspace, 'images', 'TScard-light.png'),
+        'utf8'
+      )
+    ).toBe('old')
+    expect(fs.existsSync(path.join(outside, 'target.png'))).toBe(false)
+    fs.rmSync(outside, { recursive: true, force: true })
+  })
+
+  it('allows a card-path outside the repository when nothing is committed', async () => {
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'th-artifact-'))
+
+    const result = await displayStats(
+      {
+        ...mockInputs,
+        outputOnly: 'true',
+        noCommit: 'false',
+        displayType: 'card',
+        fileFormat: 'md',
+        cardPath: outside
+      },
+      mockTrailheadRankData,
+      mockTrailheadBadgesData,
+      mockTrailheadSuperBadgesData,
+      mockTrailheadEventBadgesData,
+      mockTrailheadCertifsData,
+      mockTrailheadSkillsData,
+      mockTrailheadEarnedStampsData
+    )
+
+    expect(result).toContain(path.join(outside, 'TScard-light.png'))
+    expect(fs.readFileSync(path.join(outside, 'TScard-dark.png'), 'utf8')).toBe(
+      'dark png'
+    )
+    fs.rmSync(outside, { recursive: true, force: true })
+  })
+
   it('replaces a symlinked card instead of writing through it', async () => {
     const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'th-outside-'))
     fs.writeFileSync(path.join(outside, 'target.png'), 'precious')
@@ -655,7 +722,7 @@ describe('displayStats Function', () => {
 
     await expect(
       displayStats(
-        { ...mockInputs, displayType: 'card', cardPath: 'images' },
+        { ...committing(), displayType: 'card', cardPath: 'images' },
         mockTrailheadRankData,
         mockTrailheadBadgesData,
         mockTrailheadSuperBadgesData,

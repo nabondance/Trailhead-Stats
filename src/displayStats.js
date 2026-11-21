@@ -1,11 +1,19 @@
 const core = require('@actions/core')
 const os = require('os')
 const path = require('path')
-const { generateCard, cardFilePath } = require('./cardGenerator')
+const { generateCard, cardFilePath, CARD_THEMES } = require('./cardGenerator')
 const { copyFileSync, mkdirSync, mkdtempSync, rmSync } = require('fs')
-const { workspacePath } = require('./updateFile')
+const { workspacePath, workspaceRoot } = require('./updateFile')
 
-const THEMES = ['light', 'dark']
+// Cards that get committed must stay in the repository. Without a commit
+// (output-only or no-commit), any folder works, e.g. runner.temp for an
+// artifact upload.
+function cardTarget(inputs, file) {
+  const commits = inputs.outputOnly === 'false' && inputs.noCommit === 'false'
+  return commits
+    ? workspacePath(file, 'card-path')
+    : path.resolve(workspaceRoot(), file)
+}
 
 async function displayStats(
   inputs,
@@ -251,12 +259,12 @@ async function displayStatsCard(inputs, dataToFormat) {
   const staging = mkdtempSync(path.join(os.tmpdir(), 'th-cards-'))
   try {
     // Create the card path if it doesn't exist. It must be in the repository.
-    mkdirSync(workspacePath(inputs.cardPath, 'card-path'), { recursive: true })
+    mkdirSync(cardTarget(inputs, inputs.cardPath), { recursive: true })
 
     // Render both cards aside first, so a failed render leaves the existing
     // cards untouched.
     const staged = {}
-    for (const theme of THEMES) {
+    for (const theme of CARD_THEMES) {
       staged[theme] = await generateCard(
         dataToFormat,
         { ...inputs, cardPath: staging },
@@ -264,14 +272,18 @@ async function displayStatsCard(inputs, dataToFormat) {
       )
     }
 
-    // Then replace each card. Removing it first means an existing symlink is
-    // replaced, never written through.
+    // Check every target before replacing any, then replace each card.
+    // Removing it first means an existing symlink is replaced, never written
+    // through.
     const cardPaths = {}
-    for (const theme of THEMES) {
+    const targets = {}
+    for (const theme of CARD_THEMES) {
       cardPaths[theme] = cardFilePath(inputs.cardPath, theme)
-      const target = workspacePath(cardPaths[theme], 'card-path')
-      rmSync(target, { force: true })
-      copyFileSync(staged[theme], target)
+      targets[theme] = cardTarget(inputs, cardPaths[theme])
+    }
+    for (const theme of CARD_THEMES) {
+      rmSync(targets[theme], { force: true })
+      copyFileSync(staged[theme], targets[theme])
       core.debug(`Card image ${theme} saved at ${cardPaths[theme]}`)
     }
     const fullPathLight = cardPaths.light

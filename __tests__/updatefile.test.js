@@ -15,6 +15,9 @@ const {
 
 jest.mock('@actions/core')
 
+// Captured before any spy, to call through to the real git.
+const realExecFileSync = childProcess.execFileSync
+
 const TAGGED = 'Intro\n<!--TH_Stats:start-->\nold\n<!--TH_Stats:end-->\nOutro\n'
 const ENV_KEYS = [
   'GITHUB_WORKSPACE',
@@ -24,7 +27,8 @@ const ENV_KEYS = [
   'GIT_CONFIG_NOSYSTEM',
   'GIT_CONFIG_COUNT',
   'GIT_CONFIG_KEY_0',
-  'GIT_CONFIG_VALUE_0'
+  'GIT_CONFIG_VALUE_0',
+  'GITHUB_TOKEN'
 ]
 const savedEnv = Object.fromEntries(ENV_KEYS.map(k => [k, process.env[k]]))
 
@@ -51,6 +55,7 @@ beforeEach(() => {
   process.env.GIT_CONFIG_GLOBAL = globalConfig
   process.env.GIT_CONFIG_NOSYSTEM = '1'
   delete process.env.GIT_CONFIG_COUNT
+  delete process.env.GITHUB_TOKEN
 
   run(tmp, 'init', '-q', '--bare', '-b', 'main', remote)
   run(tmp, 'init', '-q', '-b', 'main', ws)
@@ -289,7 +294,14 @@ describe('pushUpdatedFile', () => {
       pushUpdatedFile('README.md', [], token)
 
       const [, args, options] = pushCall()
-      expect(args).toEqual(['push', 'origin', 'HEAD:refs/heads/main'])
+      // Hooks are off for this push: they would inherit the token.
+      expect(args).toEqual([
+        '-c',
+        'core.hooksPath=/dev/null',
+        'push',
+        'origin',
+        'HEAD:refs/heads/main'
+      ])
       expect(
         JSON.stringify(execFileSync.mock.calls.map(c => c[1]))
       ).not.toContain(basic)
@@ -318,6 +330,81 @@ describe('pushUpdatedFile', () => {
         GIT_CONFIG_KEY_1: 'http.https://github.com/.extraheader',
         GIT_CONFIG_KEY_2: 'http.https://github.com/.extraheader'
       })
+    })
+
+    it('does not run hooks that could read the token', () => {
+      const hooks = path.join(ws, '.git', 'hooks')
+      fs.writeFileSync(
+        path.join(hooks, 'pre-push'),
+        `#!/bin/sh\nenv > "${path.join(tmp, 'leak')}"\n`,
+        { mode: 0o755 }
+      )
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], token)
+
+      expect(fs.existsSync(path.join(tmp, 'leak'))).toBe(false)
+      expect(remoteFiles()).toEqual(['README.md'])
+    })
+
+    it('keeps hooks when no token is injected (e.g. Git LFS pre-push)', () => {
+      const hooks = path.join(ws, '.git', 'hooks')
+      fs.writeFileSync(
+        path.join(hooks, 'pre-push'),
+        `#!/bin/sh\ntouch "${path.join(tmp, 'ran')}"\n`,
+        { mode: 0o755 }
+      )
+      run(
+        ws,
+        'config',
+        'http.https://github.com/.extraheader',
+        'AUTHORIZATION: basic x'
+      )
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], '')
+
+      expect(fs.existsSync(path.join(tmp, 'ran'))).toBe(true)
+    })
+
+    it('falls back to a GITHUB_TOKEN in the env when checkout persisted nothing', () => {
+      process.env.GITHUB_TOKEN = token
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], '')
+
+      expect(pushCall()[2].env.GIT_CONFIG_VALUE_1).toBe(
+        `AUTHORIZATION: basic ${basic}`
+      )
+    })
+
+    it('keeps the persisted credentials over a GITHUB_TOKEN in the env', () => {
+      process.env.GITHUB_TOKEN = token
+      run(
+        ws,
+        'config',
+        'http.https://github.com/.extraheader',
+        'AUTHORIZATION: basic x'
+      )
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], '')
+
+      expect(pushCall()[2].env.GIT_CONFIG_COUNT).toBeUndefined()
+    })
+
+    it('refuses a token with a git too old for env config', () => {
+      execFileSync.mockImplementation((cmd, args, options) =>
+        args[0] === '--version'
+          ? 'git version 2.30.2\n'
+          : realExecFileSync(cmd, args, options)
+      )
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'the token input needs git 2.31 or newer, found 2.30'
+      )
+      expect(remoteLog()).toBe('t|init')
     })
 
     it('uses the persisted credentials when the token is empty', () => {

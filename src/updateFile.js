@@ -83,19 +83,53 @@ function git(label, args, { env, secrets = [] } = {}) {
   }
 }
 
-// Without a token, the push uses the credentials actions/checkout persisted
-// (including a PAT given to checkout). A token replaces them: an empty value
-// resets git's header list, then ours is added. Passed through the
-// environment, so it never shows up in a command line or an error.
-function pushEnv(token) {
-  if (!token) return { env: process.env, secrets: [] }
-  const basic = Buffer.from(`x-access-token:${token}`).toString('base64')
-  core.setSecret(token)
-  core.setSecret(basic)
+function extraHeaderKey() {
   const server = (
     process.env.GITHUB_SERVER_URL || 'https://github.com'
   ).replace(/\/+$/, '')
-  const key = `http.${server}/.extraheader`
+  return `http.${server}/.extraheader`
+}
+
+function hasPersistedAuth() {
+  try {
+    return git('config', ['config', '--get-all', extraHeaderKey()]) !== ''
+  } catch {
+    return false // `git config --get-all` exits 1 when the key is unset
+  }
+}
+
+// GIT_CONFIG_COUNT/KEY/VALUE need git 2.31. Older versions ignore them
+// silently and would push with other credentials.
+function assertEnvConfigSupported() {
+  const version = git('version', ['--version']).match(/(\d+)\.(\d+)/)
+  const [major, minor] = version ? version.slice(1).map(Number) : [0, 0]
+  if (major < 2 || (major === 2 && minor < 31)) {
+    throw new Error(
+      `the token input needs git 2.31 or newer, found ${version ? version[0] : 'unknown'}`
+    )
+  }
+}
+
+// Which token to push with, in order: the `token` input; else nothing, when
+// actions/checkout persisted credentials (including a PAT given to checkout);
+// else a GITHUB_TOKEN set in the step env, as v2 used it.
+function pushToken(token) {
+  if (token) return token
+  if (hasPersistedAuth()) return ''
+  return process.env.GITHUB_TOKEN || ''
+}
+
+// A token replaces any persisted Authorization header: an empty value resets
+// git's header list, then ours is added. Passed through the environment, so it
+// never shows up in a command line or an error. Hooks are disabled for that
+// push, since they would inherit the token.
+function pushEnv(token) {
+  if (!token) return { env: process.env, secrets: [], hooks: [] }
+  assertEnvConfigSupported()
+  const basic = Buffer.from(`x-access-token:${token}`).toString('base64')
+  core.setSecret(token)
+  core.setSecret(basic)
+  const key = extraHeaderKey()
   const n = Number(process.env.GIT_CONFIG_COUNT) || 0
   return {
     env: {
@@ -106,7 +140,8 @@ function pushEnv(token) {
       [`GIT_CONFIG_KEY_${n + 1}`]: key,
       [`GIT_CONFIG_VALUE_${n + 1}`]: `AUTHORIZATION: basic ${basic}`
     },
-    secrets: [token, basic]
+    secrets: [token, basic],
+    hooks: ['-c', 'core.hooksPath=/dev/null']
   }
 }
 
@@ -185,7 +220,12 @@ function pushUpdatedFile(displayFile, cardFiles = [], token = '') {
       '--',
       ...paths
     ])
-    git('push', ['push', 'origin', `HEAD:refs/heads/${branch}`], pushEnv(token))
+    const auth = pushEnv(pushToken(token))
+    git(
+      'push',
+      [...auth.hooks, 'push', 'origin', `HEAD:refs/heads/${branch}`],
+      auth
+    )
 
     core.debug(`Changes pushed to branch: ${branch}`)
   } catch (error) {
@@ -193,4 +233,9 @@ function pushUpdatedFile(displayFile, cardFiles = [], token = '') {
   }
 }
 
-module.exports = { updateStatsOnFile, pushUpdatedFile, workspacePath }
+module.exports = {
+  updateStatsOnFile,
+  pushUpdatedFile,
+  workspacePath,
+  workspaceRoot
+}

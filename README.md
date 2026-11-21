@@ -242,8 +242,18 @@ between these tags.
 
 **Problem:** The Git commands fails during execution.
 
-**Solution:** Check that you granted the content:write permission for the job in
-your workflow.
+**Solution:** Check the error message:
+
+- **Permission denied (403):** grant `contents: write` to the job in your
+  workflow.
+- **Protected branch:** the workflow token cannot push there. Set the `token`
+  input to a PAT that can.
+- **Detached HEAD:** the workflow checked out a pull request or a tag. Run it on
+  a branch (`schedule`, `push` or `workflow_dispatch`), or set
+  `no-commit: true`.
+- **Must stay inside the repository:** `display-file` and `card-path` must point
+  inside the checked-out repository. Without a commit (`output-only` or
+  `no-commit`), `card-path` can be any folder.
 
 ---
 
