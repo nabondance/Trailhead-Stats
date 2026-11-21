@@ -1,6 +1,4 @@
 // eslint.config.js
-const babelParser = require('@babel/eslint-parser')
-
 module.exports = [
   {
     rules: {
@@ -15,17 +13,7 @@ module.exports = [
       semi: 'off'
     },
     languageOptions: {
-      parser: babelParser,
-      parserOptions: {
-        requireConfigFile: false,
-        sourceType: 'script',
-        babelOptions: {
-          babelrc: false,
-          configFile: false,
-          // your babel options
-          presets: ['@babel/preset-env']
-        }
-      }
+      sourceType: 'commonjs'
     }
   },
   {
