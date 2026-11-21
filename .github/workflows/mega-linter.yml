@@ -74,6 +74,8 @@ jobs:
 
         # You can override MegaLinter flavor used to have faster performances
         # More info at https://megalinter.io/latest/flavors/
+        # Dependabot skips docker:// references, so update the tag and digest
+        # by hand.
         uses: docker://ghcr.io/oxsecurity/megalinter-javascript:v10.2.0@sha256:0fde748d739c85248c033fba141e482f1a3e9053905f2959efbcbd6dcd1d631f
 
         id: ml
