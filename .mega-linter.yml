@@ -24,7 +24,6 @@ DISABLE:
 DISABLE_LINTERS:
   - MARKDOWN_MARKDOWN_TABLE_FORMATTER # Disable because of conflict with prettier way to handle tables
   - REPOSITORY_SECRETLINT # Disable checks of secrets in repository
-  - REPOSITORY_KICS # Disable because of GHA sha required
   - REPOSITORY_TRIVY # Disable because of low warning on deps
   - REPOSITORY_DEVSKIM # Disable because
   - JAVASCRIPT_STANDARD # Disable because of conflict with prettier

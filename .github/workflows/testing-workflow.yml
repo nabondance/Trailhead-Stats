@@ -34,6 +34,7 @@ on: # yamllint disable-line
       card-path:
         description: Folder path to save the card
         required: false
+        type: string
         default: 'images'
       output-only:
         description: Only output, do not modify file
