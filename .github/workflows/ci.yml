@@ -73,6 +73,23 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      # dist/ on main is the last released build, so build the PR code here
+      # (never committed) to test what the PR actually changes.
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+          cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: Build dist/
+        run: pnpm install && pnpm run package
+
       - name: Test Local Action
         id: test-action
         uses: ./
