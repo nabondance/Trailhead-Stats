@@ -114,3 +114,8 @@ zzz_todo
 
 # Local scripts
 local/scripts/**/*
+
+# Agent setup
+.claude/settings.local.json
+.claude/worktrees/
+.agent-output/

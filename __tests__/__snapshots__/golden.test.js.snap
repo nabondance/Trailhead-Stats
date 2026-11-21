@@ -1,0 +1,949 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`golden output: empty profile renders html text 1`] = `
+"<ul><li>Rank: Scout</li>
+<li>Badges: 0</li>
+<li>Points: 0</li>
+<li>Number of trails completed: 0</li>
+<li>Number of Certification: 0</li>
+<li>Number of Superbadges: 0</li>
+<li>Number of Event Badges: 0</li>
+</ul>"
+`;
+
+exports[`golden output: empty profile renders markdown text 1`] = `
+" Rank: Scout  
+ Badges: 0  
+ Points: 0  
+ Number of trails completed: 0  
+ Number of Certification: 0  
+ Number of Superbadges: 0  
+ Number of Event Badges: 0  
+"
+`;
+
+exports[`golden output: empty profile renders the dark card html 1`] = `
+"
+        <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Trailhead Stats Card</title>
+                
+  <style>
+  :root {
+    --color-background: #202830;
+    --color-text: white;
+    --color-text-skill: white;
+    --color-block: #1C2128;
+    --color-line: #F5F8FA;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .card {
+    background-color: var(--color-background);
+    border-radius: 10px;
+    padding: 20px;
+    width: 800px;
+  }
+  .card-header {
+    display: flex;
+    font-size: 30px;
+    align-items: center;
+    border-bottom: 1px solid var(--color-line);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .card-header h1 {
+    font-size: 40px;
+  }
+  .rank-logo {
+    max-width: 200px;
+    max-height: 200px;
+    margin-right: 10px;
+  }
+  .card-content {
+    line-height: 1.6;
+  }
+  .card-content h2 {
+    margin: 5px 0;
+    color: var(--color-text);
+  }
+  .card-content p {
+    margin: 5px 0;
+    color: var(--color-text);
+  }
+  .badge {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 10px;
+    margin: 5px 0;
+  }
+  .skill-container {
+    border-radius: 10px;
+  }
+  .skill-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    line-height: 40px;
+    border-radius: 6px;
+    height: 40px;
+    max-width: 800px;
+    min-width: 200px;
+    overflow: hidden;
+    color: var(--color-text-skill);
+    font-weight: bold;
+  }
+  .skill-name {
+    text-align: left;
+    padding-left: 5px;
+  }
+  .skill-points {
+    text-align: right;
+    padding-right: 5px;
+    visibility: visible;
+  }
+  .icon-container {
+    max-width: 750px;
+    width: 750px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .icon {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: -40px;
+  }
+  .icon-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  .detail {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 10px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center; /* This will vertically align the logo with the text */
+    margin-bottom: 10px;
+  }
+  .detail-logo {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
+    object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
+    vertical-align: middle; /* This aligns the image nicely with the text */
+  }
+  .table-container {
+    max-width: 800px;
+    width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .table {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: 0px;
+    margin-bottom: 5px;
+  }
+  .table-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  </style>
+  
+            </head>
+            <body>
+                <div class="card">
+                    <div class="card-header">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231b96ff'/%3E%3C/svg%3E" alt="Rank Logo" class="rank-logo">
+                        <div>
+                            <h1>Scout</h1>
+                            <p><b>0</b> Badge,
+                            <b>0</b> Points</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h2>Latest Achievements:</h2>
+                        
+                        
+                        
+                        
+                        
+
+                        <h2>Top 5 Skills:</h2><div class="skills-bar-chart"></div>
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </body>
+        </html>
+    "
+`;
+
+exports[`golden output: empty profile renders the light card html 1`] = `
+"
+        <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Trailhead Stats Card</title>
+                
+  <style>
+  :root {
+    --color-background: white;
+    --color-text: #1F2328;
+    --color-text-skill: white;
+    --color-block: #F5F8FA;
+    --color-line: #1C2128;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .card {
+    background-color: var(--color-background);
+    border-radius: 10px;
+    padding: 20px;
+    width: 800px;
+  }
+  .card-header {
+    display: flex;
+    font-size: 30px;
+    align-items: center;
+    border-bottom: 1px solid var(--color-line);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .card-header h1 {
+    font-size: 40px;
+  }
+  .rank-logo {
+    max-width: 200px;
+    max-height: 200px;
+    margin-right: 10px;
+  }
+  .card-content {
+    line-height: 1.6;
+  }
+  .card-content h2 {
+    margin: 5px 0;
+    color: var(--color-text);
+  }
+  .card-content p {
+    margin: 5px 0;
+    color: var(--color-text);
+  }
+  .badge {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 10px;
+    margin: 5px 0;
+  }
+  .skill-container {
+    border-radius: 10px;
+  }
+  .skill-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    line-height: 40px;
+    border-radius: 6px;
+    height: 40px;
+    max-width: 800px;
+    min-width: 200px;
+    overflow: hidden;
+    color: var(--color-text-skill);
+    font-weight: bold;
+  }
+  .skill-name {
+    text-align: left;
+    padding-left: 5px;
+  }
+  .skill-points {
+    text-align: right;
+    padding-right: 5px;
+    visibility: visible;
+  }
+  .icon-container {
+    max-width: 750px;
+    width: 750px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .icon {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: -40px;
+  }
+  .icon-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  .detail {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 10px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center; /* This will vertically align the logo with the text */
+    margin-bottom: 10px;
+  }
+  .detail-logo {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
+    object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
+    vertical-align: middle; /* This aligns the image nicely with the text */
+  }
+  .table-container {
+    max-width: 800px;
+    width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .table {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: 0px;
+    margin-bottom: 5px;
+  }
+  .table-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  </style>
+  
+            </head>
+            <body>
+                <div class="card">
+                    <div class="card-header">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231b96ff'/%3E%3C/svg%3E" alt="Rank Logo" class="rank-logo">
+                        <div>
+                            <h1>Scout</h1>
+                            <p><b>0</b> Badge,
+                            <b>0</b> Points</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h2>Latest Achievements:</h2>
+                        
+                        
+                        
+                        
+                        
+
+                        <h2>Top 5 Skills:</h2><div class="skills-bar-chart"></div>
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </body>
+        </html>
+    "
+`;
+
+exports[`golden output: empty profile returns the output object 1`] = `
+{
+  "badgeDetails": [],
+  "certificationsDetails": [],
+  "earnedStampsDetails": [],
+  "eventBadgeDetails": [],
+  "lastBadge": undefined,
+  "lastCertif": undefined,
+  "lastEarnedStamp": undefined,
+  "lastEventBadge": undefined,
+  "lastSuperBadge": undefined,
+  "nbBadges": 0,
+  "nbCertifs": 0,
+  "nbEarnedStamps": undefined,
+  "nbEventBadges": 0,
+  "nbSuperBadges": 0,
+  "points": 0,
+  "rank": "Scout",
+  "rankIcon": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231b96ff'/%3E%3C/svg%3E",
+  "skillPointsDetails": [],
+  "superBadgeDetails": [],
+  "trails": 0,
+}
+`;
+
+exports[`golden output: full profile renders html text 1`] = `
+"<ul><li>Rank: Ranger</li>
+<li>Badges: 321</li>
+<li>Points: 123456</li>
+<li>Number of trails completed: 42</li>
+<li>Number of Certification: 2</li>
+<li>Last Certification earned: Platform Developer</li>
+<li>Number of Superbadges: 1</li>
+<li>Last Superbadge earned: Security Specialist</li>
+<li>Number of Event Badges: 1</li>
+<li>Last Event Badge earned: World Tour Paris</li>
+<li>Main skill: Apex</li>
+<li>Last Stamp earned: Community Live</li>
+</ul>"
+`;
+
+exports[`golden output: full profile renders markdown text 1`] = `
+" Rank: Ranger  
+ Badges: 321  
+ Points: 123456  
+ Number of trails completed: 42  
+ Number of Certification: 2  
+ Last Certification earned: Platform Developer  
+ Number of Superbadges: 1  
+ Last Superbadge earned: Security Specialist  
+ Number of Event Badges: 1  
+ Last Event Badge earned: World Tour Paris  
+ Main skill: Apex  
+ Last Stamp earned: Community Live  
+"
+`;
+
+exports[`golden output: full profile renders the dark card html 1`] = `
+"
+        <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Trailhead Stats Card</title>
+                
+  <style>
+  :root {
+    --color-background: #202830;
+    --color-text: white;
+    --color-text-skill: white;
+    --color-block: #1C2128;
+    --color-line: #F5F8FA;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .card {
+    background-color: var(--color-background);
+    border-radius: 10px;
+    padding: 20px;
+    width: 800px;
+  }
+  .card-header {
+    display: flex;
+    font-size: 30px;
+    align-items: center;
+    border-bottom: 1px solid var(--color-line);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .card-header h1 {
+    font-size: 40px;
+  }
+  .rank-logo {
+    max-width: 200px;
+    max-height: 200px;
+    margin-right: 10px;
+  }
+  .card-content {
+    line-height: 1.6;
+  }
+  .card-content h2 {
+    margin: 5px 0;
+    color: var(--color-text);
+  }
+  .card-content p {
+    margin: 5px 0;
+    color: var(--color-text);
+  }
+  .badge {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 10px;
+    margin: 5px 0;
+  }
+  .skill-container {
+    border-radius: 10px;
+  }
+  .skill-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    line-height: 40px;
+    border-radius: 6px;
+    height: 40px;
+    max-width: 800px;
+    min-width: 200px;
+    overflow: hidden;
+    color: var(--color-text-skill);
+    font-weight: bold;
+  }
+  .skill-name {
+    text-align: left;
+    padding-left: 5px;
+  }
+  .skill-points {
+    text-align: right;
+    padding-right: 5px;
+    visibility: visible;
+  }
+  .icon-container {
+    max-width: 750px;
+    width: 750px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .icon {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: -40px;
+  }
+  .icon-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  .detail {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 10px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center; /* This will vertically align the logo with the text */
+    margin-bottom: 10px;
+  }
+  .detail-logo {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
+    object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
+    vertical-align: middle; /* This aligns the image nicely with the text */
+  }
+  .table-container {
+    max-width: 800px;
+    width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .table {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: 0px;
+    margin-bottom: 5px;
+  }
+  .table-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  </style>
+  
+            </head>
+            <body>
+                <div class="card">
+                    <div class="card-header">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231b96ff'/%3E%3C/svg%3E" alt="Rank Logo" class="rank-logo">
+                        <div>
+                            <h1>Ranger</h1>
+                            <p><b>321</b> Badges,
+                            <b>123 456</b> Points</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h2>Latest Achievements:</h2>
+                        <p>Last Certification: Platform Developer</p>
+                        <p>Last Badge: Apex Basics</p>
+                        <p>Last Superbadge: Security Specialist</p>
+                        <p>Last Event Badge: World Tour Paris</p>
+                        
+
+                        <h2>Top 5 Skills:</h2><div class="skills-bar-chart">
+      <div class="skill-container">
+        <div class="skill-bar" style="width: 800px; background-color: #6e5494;">
+          <span class="skill-name">Apex</span>
+          <span class="skill-points">50 000</span>
+        </div>
+      </div>
+      <div class="skill-container">
+        <div class="skill-bar" style="width: 495.6470634439823px; background-color: #c9510c;">
+          <span class="skill-name">Flow</span>
+          <span class="skill-points">12 000</span>
+        </div>
+      </div>
+      <div class="skill-container">
+        <div class="skill-bar" style="width: 200px; background-color: #4078c0;">
+          <span class="skill-name">Security</span>
+          <span class="skill-points">3 000</span>
+        </div>
+      </div></div>
+                        <h2>2 Certifications:</h2>
+      <div class="detail">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230176d3'/%3E%3C/svg%3E" alt="Platform Administrator" class="detail-logo">
+        <b>Platform Administrator</b>&nbsp;-&nbsp;Active
+      </div>
+      <div class="detail">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23706e6b'/%3E%3C/svg%3E" alt="Platform Developer" class="detail-logo">
+        <b>Platform Developer</b>&nbsp;-&nbsp;Expired
+      </div>
+                        <h2>2 Badges</h2>
+                        <h2>1 Superbadge:</h2><div class="icon-container">
+          <div class="icon">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%239050e9'/%3E%3C/svg%3E" alt="Security Specialist" class="icon-logo">
+          </div></div>
+                        <h2>1 Event Badge:</h2>
+      <div class="detail">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ba0517'/%3E%3C/svg%3E" alt="World Tour Paris" class="detail-logo">
+        <b>World Tour Paris</b>
+      </div>
+                        <h2>2 Stamps:</h2><div class="table-container">
+          <div class="table">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23fe9339'/%3E%3C/svg%3E" alt="Dreamforce" class="table-logo">
+          </div>
+          <div class="table">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2306a59a'/%3E%3C/svg%3E" alt="Community Live" class="table-logo">
+          </div></div>
+                    </div>
+                </div>
+            </body>
+        </html>
+    "
+`;
+
+exports[`golden output: full profile renders the light card html 1`] = `
+"
+        <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Trailhead Stats Card</title>
+                
+  <style>
+  :root {
+    --color-background: white;
+    --color-text: #1F2328;
+    --color-text-skill: white;
+    --color-block: #F5F8FA;
+    --color-line: #1C2128;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .card {
+    background-color: var(--color-background);
+    border-radius: 10px;
+    padding: 20px;
+    width: 800px;
+  }
+  .card-header {
+    display: flex;
+    font-size: 30px;
+    align-items: center;
+    border-bottom: 1px solid var(--color-line);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .card-header h1 {
+    font-size: 40px;
+  }
+  .rank-logo {
+    max-width: 200px;
+    max-height: 200px;
+    margin-right: 10px;
+  }
+  .card-content {
+    line-height: 1.6;
+  }
+  .card-content h2 {
+    margin: 5px 0;
+    color: var(--color-text);
+  }
+  .card-content p {
+    margin: 5px 0;
+    color: var(--color-text);
+  }
+  .badge {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 10px;
+    margin: 5px 0;
+  }
+  .skill-container {
+    border-radius: 10px;
+  }
+  .skill-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    line-height: 40px;
+    border-radius: 6px;
+    height: 40px;
+    max-width: 800px;
+    min-width: 200px;
+    overflow: hidden;
+    color: var(--color-text-skill);
+    font-weight: bold;
+  }
+  .skill-name {
+    text-align: left;
+    padding-left: 5px;
+  }
+  .skill-points {
+    text-align: right;
+    padding-right: 5px;
+    visibility: visible;
+  }
+  .icon-container {
+    max-width: 750px;
+    width: 750px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .icon {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: -40px;
+  }
+  .icon-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  .detail {
+    background-color: var(--color-block);
+    padding: 5px;
+    border-radius: 10px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center; /* This will vertically align the logo with the text */
+    margin-bottom: 10px;
+  }
+  .detail-logo {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
+    object-fit: contain; /* This ensures the image is scaled correctly while maintaining its aspect ratio */
+    vertical-align: middle; /* This aligns the image nicely with the text */
+  }
+  .table-container {
+    max-width: 800px;
+    width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .table {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: 0px;
+    margin-bottom: 5px;
+  }
+  .table-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  </style>
+  
+            </head>
+            <body>
+                <div class="card">
+                    <div class="card-header">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231b96ff'/%3E%3C/svg%3E" alt="Rank Logo" class="rank-logo">
+                        <div>
+                            <h1>Ranger</h1>
+                            <p><b>321</b> Badges,
+                            <b>123 456</b> Points</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h2>Latest Achievements:</h2>
+                        <p>Last Certification: Platform Developer</p>
+                        <p>Last Badge: Apex Basics</p>
+                        <p>Last Superbadge: Security Specialist</p>
+                        <p>Last Event Badge: World Tour Paris</p>
+                        
+
+                        <h2>Top 5 Skills:</h2><div class="skills-bar-chart">
+      <div class="skill-container">
+        <div class="skill-bar" style="width: 800px; background-color: #7A2048;">
+          <span class="skill-name">Apex</span>
+          <span class="skill-points">50 000</span>
+        </div>
+      </div>
+      <div class="skill-container">
+        <div class="skill-bar" style="width: 495.6470634439823px; background-color: #408EC6;">
+          <span class="skill-name">Flow</span>
+          <span class="skill-points">12 000</span>
+        </div>
+      </div>
+      <div class="skill-container">
+        <div class="skill-bar" style="width: 200px; background-color: #1E2761;">
+          <span class="skill-name">Security</span>
+          <span class="skill-points">3 000</span>
+        </div>
+      </div></div>
+                        <h2>2 Certifications:</h2>
+      <div class="detail">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230176d3'/%3E%3C/svg%3E" alt="Platform Administrator" class="detail-logo">
+        <b>Platform Administrator</b>&nbsp;-&nbsp;Active
+      </div>
+      <div class="detail">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23706e6b'/%3E%3C/svg%3E" alt="Platform Developer" class="detail-logo">
+        <b>Platform Developer</b>&nbsp;-&nbsp;Expired
+      </div>
+                        <h2>2 Badges</h2>
+                        <h2>1 Superbadge:</h2><div class="icon-container">
+          <div class="icon">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%239050e9'/%3E%3C/svg%3E" alt="Security Specialist" class="icon-logo">
+          </div></div>
+                        <h2>1 Event Badge:</h2>
+      <div class="detail">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ba0517'/%3E%3C/svg%3E" alt="World Tour Paris" class="detail-logo">
+        <b>World Tour Paris</b>
+      </div>
+                        <h2>2 Stamps:</h2><div class="table-container">
+          <div class="table">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23fe9339'/%3E%3C/svg%3E" alt="Dreamforce" class="table-logo">
+          </div>
+          <div class="table">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2306a59a'/%3E%3C/svg%3E" alt="Community Live" class="table-logo">
+          </div></div>
+                    </div>
+                </div>
+            </body>
+        </html>
+    "
+`;
+
+exports[`golden output: full profile returns the output object 1`] = `
+{
+  "badgeDetails": [
+    {
+      "iconUrl": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%232e844a'/%3E%3C/svg%3E",
+      "title": "Apex Basics",
+      "webUrl": "https://example.com/Apex-Basics",
+    },
+    {
+      "iconUrl": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23dd7a01'/%3E%3C/svg%3E",
+      "title": "Flow Fundamentals",
+      "webUrl": "https://example.com/Flow-Fundamentals",
+    },
+  ],
+  "certificationsDetails": [
+    {
+      "dateCompleted": "2023-03-15",
+      "iconUrl": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230176d3'/%3E%3C/svg%3E",
+      "status": "Active",
+      "title": "Platform Administrator",
+    },
+    {
+      "dateCompleted": "2024-06-20",
+      "iconUrl": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23706e6b'/%3E%3C/svg%3E",
+      "status": "Expired",
+      "title": "Platform Developer",
+    },
+  ],
+  "earnedStampsDetails": [
+    {
+      "eventDate": "2024-09-17",
+      "iconUrl": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23fe9339'/%3E%3C/svg%3E",
+      "kind": "San Francisco",
+      "title": "Dreamforce",
+    },
+    {
+      "eventDate": "2025-01-10",
+      "iconUrl": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2306a59a'/%3E%3C/svg%3E",
+      "kind": "Virtual",
+      "title": "Community Live",
+    },
+  ],
+  "eventBadgeDetails": [
+    {
+      "iconUrl": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ba0517'/%3E%3C/svg%3E",
+      "title": "World Tour Paris",
+      "webUrl": "https://example.com/World-Tour-Paris",
+    },
+  ],
+  "lastBadge": "Apex Basics",
+  "lastCertif": "Platform Developer",
+  "lastEarnedStamp": "Community Live",
+  "lastEventBadge": "World Tour Paris",
+  "lastSuperBadge": "Security Specialist",
+  "nbBadges": 321,
+  "nbCertifs": 2,
+  "nbEarnedStamps": undefined,
+  "nbEventBadges": 1,
+  "nbSuperBadges": 1,
+  "points": 123456,
+  "rank": "Ranger",
+  "rankIcon": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231b96ff'/%3E%3C/svg%3E",
+  "skillPointsDetails": [
+    {
+      "name": "Apex",
+      "points": 50000,
+    },
+    {
+      "name": "Flow",
+      "points": 12000,
+    },
+    {
+      "name": "Security",
+      "points": 3000,
+    },
+  ],
+  "superBadgeDetails": [
+    {
+      "iconUrl": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%239050e9'/%3E%3C/svg%3E",
+      "title": "Security Specialist",
+      "webUrl": "https://example.com/Security-Specialist",
+    },
+  ],
+  "trails": 42,
+}
+`;
