@@ -1,7 +1,7 @@
 ---
 name: v3-next
 description:
-  'Take the next [v3.0] item from the private GitHub Project #1 through branch,
+  'Take the next v3.0 item from the private GitHub Project #1 through branch,
   implementation, verification, review and a draft PR. Use when the user asks to
   work on the next v3 item.'
 argument-hint: '[item title]'
@@ -12,12 +12,16 @@ disable-model-invocation: true
 
 Never create repo issues, labels or milestones. Never touch `dist/`.
 
-1. **List** the roadmap:
-   `gh project item-list 1 --owner nabondance --format json --limit 100`. Keep
-   titles starting with `[v3.0]`.
+1. **List** the roadmap: the open items whose `Version` field is `v3.0`. Older
+   items keep their original titles, so never filter on the `[v3.0]` prefix.
+   ```bash
+   gh project item-list 1 --owner nabondance --format json --limit 500 \
+     --jq '.items[] | select(.version == "v3.0" and .status != "Done")
+       | {id, title, status, type}'
+   ```
 2. **Pick** the item named by the user, else the first with status `Ready Prio`.
    If there is none, show the `Todo` items with a recommended next one and ask.
-   Leave `[v3.0][Release]` for last.
+   Leave `[v3.0][Release] Cut v3.0.0` for last.
 3. **Start:** set the item to `In Progress` with `gh project item-edit`, using
    IDs from `gh project field-list 1 --owner nabondance --format json`. Create a
    worktree on a new `type/short-name` branch from `origin/main`, then run
