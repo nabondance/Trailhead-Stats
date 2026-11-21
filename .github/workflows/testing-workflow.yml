@@ -71,7 +71,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: 'pnpm-lock.yaml'
       - name: Build dist/
-        run: pnpm install && pnpm run package
+        run: pnpm install --frozen-lockfile --ignore-scripts && pnpm run package
       - name: Check Chromium Version
         run: chromium-browser --version || echo "Chromium is not installed"
       - name: Find Chromium Path
