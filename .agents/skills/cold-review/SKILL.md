@@ -24,15 +24,20 @@ GitHub.
    - No PR: the current branch against `main`. If `git status --porcelain` is
      not empty, say that uncommitted changes are not part of the review.
 
-2. **Diff and tree**, in one Bash call. The first output line is the work folder
-   `<dir>`, printed before anything can fail; the diff is `<dir>/change.diff`
-   and the tree `<dir>/tree`. Each Bash call is a fresh shell, so later steps
-   use that printed path, never `$d`.
+2. **Diff and tree**, one plain Bash call per command, because worktree-isolated
+   sessions refuse compound git commands. Run `mktemp -d` first. It prints the
+   work folder `<dir>`, which every later command spells out literally. The diff
+   is `<dir>/change.diff` and the tree `<dir>/tree`.
 
    - PR:
-     `d=$(mktemp -d) && echo "$d" && gh pr diff <pr> > "$d/change.diff" && git fetch -q origin "pull/<pr>/head" && git worktree add -q --detach "$d/tree" FETCH_HEAD`
+     1. `gh pr diff <pr> > "<dir>/change.diff"`
+     2. `git fetch -q origin "pull/<pr>/head"`
+     3. `git worktree add -q --detach "<dir>/tree" FETCH_HEAD`
    - Branch:
-     `d=$(mktemp -d) && echo "$d" && git fetch -q origin main && git diff "$(git merge-base origin/main HEAD)" HEAD > "$d/change.diff" && git worktree add -q --detach "$d/tree" HEAD`
+     1. `git fetch -q origin main`
+     2. `git merge-base origin/main HEAD`, which prints `<base>`
+     3. `git diff <base> HEAD > "<dir>/change.diff"`
+     4. `git worktree add -q --detach "<dir>/tree" HEAD`
 
    An empty diff → say so and go to step 5. Any other failure → report its
    stderr and go to step 5.
@@ -62,9 +67,9 @@ GitHub.
      A review in this context is not a cold review.
 
 5. **Clean up, always**, even after a failure, with the `<dir>` printed in step
-   2 written out literally:
-   `git worktree remove --force "<dir>/tree"; rm -rf "<dir>"`. No `<dir>` was
-   printed → nothing to clean.
+   2 written out literally, as two Bash calls:
+   `git worktree remove --force "<dir>/tree"`, then `rm -rf "<dir>"`. No `<dir>`
+   was printed → nothing to clean.
 
 ## Output
 

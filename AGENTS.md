@@ -16,8 +16,7 @@ file of the user's repository.
    it commits and pushes. Use `bash scripts/agent/smoke.sh`, which cannot write.
 5. **Everything ships as v3.0.0.** v2 is frozen, so never propose a v2.x
    release.
-6. **Track work in the private
-   [GitHub Project #1](https://github.com/users/nabondance/projects/1).** Never
+6. **Track work in the private GitHub Project #1** (owner `nabondance`). Never
    create repo issues, labels or milestones. `[v3.0]` items are the roadmap.
 7. **Commits** follow `type(scope): description`. Common scopes: `core`, `deps`,
    `ui`, `config`, `release`, `util`, `auth`.
@@ -60,9 +59,13 @@ file of the user's repository.
 ### Design work (EGM plugin)
 
 The [Elephant-Goldfish Model](https://github.com/google/elephant-goldfish-model)
-plugin (`egm@egm`) is enabled in `.claude/settings.json`. Codex users install it
-once:
-`codex plugin marketplace add google/elephant-goldfish-model && codex plugin add egm@egm`.
+plugin (`egm@egm`) is enabled in `.claude/settings.json`. If its skills are
+missing, install it once:
+
+- Claude Code:
+  `claude plugin marketplace add google/elephant-goldfish-model && claude plugin install egm@egm`
+- Codex:
+  `codex plugin marketplace add google/elephant-goldfish-model && codex plugin add egm@egm`
 
 Its skills are user-only, so the repo wraps them in skills agents can pick on
 their own:

@@ -1,6 +1,9 @@
 ---
 name: v3-next
-description: Take the next [v3.0] item from the private GitHub Project #1 through branch, implementation, verification, review and a draft PR. Use when the user asks to work on the next v3 item.
+description:
+  'Take the next [v3.0] item from the private GitHub Project #1 through branch,
+  implementation, verification, review and a draft PR. Use when the user asks to
+  work on the next v3 item.'
 argument-hint: '[item title]'
 disable-model-invocation: true
 ---

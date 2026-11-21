@@ -1,4 +1,5 @@
 // Live read-only run: fetches and renders, never calls updateFile.
+const axios = require('axios')
 const { loadInputs } = require('./lib/inputs')
 const { findRenderIssues } = require('./lib/render-issues')
 const {
@@ -19,17 +20,36 @@ function fail(problems) {
   process.exit(1)
 }
 
+// The fetchers catch their own errors and return partial data, so a failed
+// query is only visible in the response or in what they log.
+function watchFetchFailures() {
+  const failures = []
+  axios.interceptors.response.use(response => {
+    if (response.data?.errors?.length) {
+      failures.push(`GraphQL errors: ${JSON.stringify(response.data.errors)}`)
+    }
+    return response
+  })
+  const logError = console.error
+  console.error = (...args) => {
+    if (String(args[0]).startsWith('Error fetching data')) {
+      failures.push(`fetch failed: ${args[1]?.message ?? args[1]}`)
+    } else {
+      logError(...args)
+    }
+  }
+  return failures
+}
+
 async function main() {
   const username = process.argv[2] || 'nabondance'
   const base = { 'trailhead-username': username, 'output-only': 'true' }
   const inputs = loadInputs({ ...base, 'no-commit': 'true' })
+  const failures = watchFetchFailures()
 
   const rank = await fetchTrailblazerRankInfo(username)
   const profile = rank?.data?.profile
-  const problems = []
-  if (rank?.errors?.length) {
-    problems.push(`GraphQL errors: ${JSON.stringify(rank.errors)}`)
-  }
+  const problems = [...failures]
   if (profile?.__typename === 'PrivateProfile') {
     problems.push(`${username} has a private profile`)
   }
@@ -45,6 +65,7 @@ async function main() {
     await fetchTrailblazerSkillsInfo(username),
     await fetchTrailblazerEarnedStampsInfo(username)
   ]
+  if (failures.length > 0) fail(failures)
 
   const render = (displayType, fileFormat) =>
     displayStats({ ...inputs, displayType, fileFormat }, ...stats)

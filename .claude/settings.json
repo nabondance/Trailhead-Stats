@@ -32,8 +32,7 @@
       "Bash(pnpm install)",
       "Bash(pnpm run lint)",
       "Bash(pnpm run format:check)",
-      "Bash(pnpm run ci-test)",
-      "Bash(pnpm exec jest*)"
+      "Bash(pnpm run ci-test)"
     ],
     "deny": [
       "Read(./.env*)",
