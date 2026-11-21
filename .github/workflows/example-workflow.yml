@@ -12,8 +12,11 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - uses: nabondance/trailhead-stats@v1
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: true
+      # Disabled sample for users to copy, so it keeps a readable version.
+      - uses: nabondance/trailhead-stats@v1 # zizmor: ignore[unpinned-uses]
         with:
           trailhead-username: 'your_trailhead_username'
           display-type: 'card'
