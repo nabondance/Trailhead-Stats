@@ -1,4 +1,5 @@
 const axios = require('axios')
+const core = require('@actions/core')
 const {
   GET_TRAILBLAZER_RANK,
   GET_TRAILBLAZER_BADGES,
@@ -7,262 +8,220 @@ const {
   GET_TRAILBLAZER_EARNED_STAMPS
 } = require('./queries')
 
-async function fetchTrailblazerRankInfo(trailheadUsername) {
-  const endpoint = 'https://profile.api.trailhead.com/graphql'
+const PROFILE_ENDPOINT = 'https://profile.api.trailhead.com/graphql'
+const MOBILE_ENDPOINT = 'https://mobile.api.trailhead.com/graphql'
+const PAGE_SIZE = 100
 
-  const graphqlQuery = {
-    query: GET_TRAILBLAZER_RANK,
-    variables: {
-      hasSlug: true,
-      slug: trailheadUsername
-    }
+// Every fetch fails closed: an error or an incomplete response is retried, then
+// thrown, so a broken card is never rendered or committed. Mutable so tests can
+// run without waiting.
+const retryConfig = {
+  delaysMs: [2000, 5000],
+  timeoutMs: 30000
+}
+
+class TrailheadApiError extends Error {
+  constructor(message, { retryable = true } = {}) {
+    super(message)
+    this.name = 'TrailheadApiError'
+    this.retryable = retryable
+  }
+}
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+async function postGraphql(endpoint, query, variables) {
+  let response
+  try {
+    response = await axios.post(
+      endpoint,
+      { query, variables },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: retryConfig.timeoutMs
+      }
+    )
+  } catch (error) {
+    const status = error.response?.status
+    // Other 4xx answers will not change on a retry.
+    const retryable =
+      status === undefined || status >= 500 || status === 408 || status === 429
+    throw new TrailheadApiError(`request failed: ${error.message}`, {
+      retryable
+    })
   }
 
-  try {
-    const response = await axios.post(endpoint, graphqlQuery, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+  // GraphQL errors come back with HTTP 200, so axios does not throw on them.
+  const errors = response.data?.errors
+  if (Array.isArray(errors) && errors.length > 0) {
+    const notFound = errors.some(e => e.extensions?.code === 'NOT_FOUND')
+    const messages = errors.map(e => e.message).join('; ')
+    throw new TrailheadApiError(
+      notFound
+        ? `profile not found (${messages})`
+        : `GraphQL error: ${messages}`,
+      { retryable: !notFound }
+    )
+  }
+  if (!response.data?.data) {
+    throw new TrailheadApiError('response has no data')
+  }
+  return response.data.data
+}
 
-    return response.data
-  } catch (error) {
-    console.error('Error fetching data: ', error)
-    return null
+// One request, retried with backoff. `validate` throws when the payload is
+// incomplete (for example `trailheadStats: null`) and returns what to keep.
+async function request(label, username, endpoint, query, variables, validate) {
+  const attempts = retryConfig.delaysMs.length + 1
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return validate(await postGraphql(endpoint, query, variables))
+    } catch (error) {
+      if (error.retryable === false || attempt >= attempts) {
+        const tries = attempt > 1 ? ` after ${attempt} attempts` : ''
+        throw new Error(
+          `Could not fetch Trailhead ${label} for "${username}"${tries}: ${error.message}`
+        )
+      }
+      const delay = retryConfig.delaysMs[attempt - 1]
+      core.warning(
+        `Trailhead ${label} for "${username}": ${error.message}. Retrying in ${delay} ms (${attempt + 1}/${attempts}).`
+      )
+      await sleep(delay)
+    }
+  }
+}
+
+function incomplete(what) {
+  return new TrailheadApiError(`incomplete response, ${what} is missing`)
+}
+
+function publicProfile(data) {
+  const profile = data.profile
+  if (!profile) throw incomplete('profile')
+  if (profile.__typename === 'PrivateProfile') {
+    throw new TrailheadApiError(
+      'the profile is private, make it public on Trailhead',
+      { retryable: false }
+    )
+  }
+  return profile
+}
+
+function hasPage(connection) {
+  return Array.isArray(connection?.edges) && connection.pageInfo
+}
+
+// Follows `pageInfo` until the last page. Any failed page fails the whole
+// fetch, so counts are never silently low.
+async function fetchAllPages(fetchPage) {
+  let edges = []
+  let pageInfo = null
+  let first = null
+  const seen = new Set()
+  do {
+    const after = pageInfo ? pageInfo.endCursor : null
+    const page = await fetchPage(after)
+    first = first || page
+    edges = edges.concat(page.connection.edges)
+    pageInfo = page.connection.pageInfo
+    if (pageInfo.hasNextPage) {
+      if (!pageInfo.endCursor || seen.has(pageInfo.endCursor)) {
+        throw new Error('Trailhead pagination did not advance')
+      }
+      seen.add(pageInfo.endCursor)
+    }
+  } while (pageInfo.hasNextPage)
+  return { first, edges, pageInfo }
+}
+
+async function fetchTrailblazerRankInfo(trailheadUsername) {
+  const data = await request(
+    'rank',
+    trailheadUsername,
+    PROFILE_ENDPOINT,
+    GET_TRAILBLAZER_RANK,
+    { hasSlug: true, slug: trailheadUsername },
+    payload => {
+      const stats = publicProfile(payload).trailheadStats
+      if (!stats) throw incomplete('trailheadStats')
+      if (!stats.rank?.title) throw incomplete('trailheadStats.rank')
+      return payload
+    }
+  )
+  return { data }
+}
+
+async function fetchAwards(trailheadUsername, label, filter) {
+  const { first, edges, pageInfo } = await fetchAllPages(after =>
+    request(
+      label,
+      trailheadUsername,
+      PROFILE_ENDPOINT,
+      GET_TRAILBLAZER_BADGES,
+      {
+        count: PAGE_SIZE,
+        after,
+        ...(filter ? { filter } : {}),
+        hasSlug: true,
+        slug: trailheadUsername
+      },
+      payload => {
+        const profile = publicProfile(payload)
+        if (!profile.trailheadStats) throw incomplete('trailheadStats')
+        if (!hasPage(profile.earnedAwards)) throw incomplete('earnedAwards')
+        return { profile, connection: profile.earnedAwards }
+      }
+    )
+  )
+  return {
+    data: {
+      profile: {
+        __typename: first.profile.__typename,
+        trailheadStats: first.profile.trailheadStats,
+        earnedAwards: { edges, pageInfo }
+      }
+    }
   }
 }
 
 async function fetchTrailblazerBadgesInfo(trailheadUsername) {
-  const endpoint = 'https://profile.api.trailhead.com/graphql'
-  let allEdges = []
-  let pageInfo = null
-  let profileData = null
-
-  while (true) {
-    const graphqlQuery = {
-      query: GET_TRAILBLAZER_BADGES,
-      variables: {
-        count: 100,
-        after: pageInfo ? pageInfo.endCursor : null,
-        hasSlug: true,
-        slug: trailheadUsername
-      }
-    }
-
-    try {
-      const response = await axios.post(endpoint, graphqlQuery, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (!profileData) {
-        profileData = {
-          __typename: response.data.data.profile.__typename,
-          trailheadStats: response.data.data.profile.trailheadStats
-        }
-      }
-
-      allEdges = allEdges.concat(response.data.data.profile.earnedAwards.edges)
-      pageInfo = response.data.data.profile.earnedAwards.pageInfo
-
-      if (!pageInfo.hasNextPage) {
-        break
-      }
-    } catch (error) {
-      console.error('Error fetching data: ', error)
-      return {
-        data: {
-          profile: {
-            ...profileData,
-            earnedAwards: { edges: allEdges, pageInfo }
-          }
-        }
-      }
-    }
-  }
-
-  return {
-    data: {
-      profile: { ...profileData, earnedAwards: { edges: allEdges, pageInfo } }
-    }
-  }
+  return fetchAwards(trailheadUsername, 'badges')
 }
 
 async function fetchTrailblazerSuperBadgesInfo(trailheadUsername) {
-  const endpoint = 'https://profile.api.trailhead.com/graphql'
-  let allEdges = []
-  let pageInfo = null
-  let profileData = null
-
-  while (true) {
-    const graphqlQuery = {
-      query: GET_TRAILBLAZER_BADGES,
-      variables: {
-        count: 100,
-        after: pageInfo ? pageInfo.endCursor : null,
-        filter: 'SUPERBADGE',
-        hasSlug: true,
-        slug: trailheadUsername
-      }
-    }
-
-    try {
-      const response = await axios.post(endpoint, graphqlQuery, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (!profileData) {
-        profileData = {
-          __typename: response.data.data.profile.__typename,
-          trailheadStats: response.data.data.profile.trailheadStats
-        }
-      }
-
-      allEdges = allEdges.concat(response.data.data.profile.earnedAwards.edges)
-      pageInfo = response.data.data.profile.earnedAwards.pageInfo
-
-      if (!pageInfo.hasNextPage) {
-        break
-      }
-    } catch (error) {
-      console.error('Error fetching data: ', error)
-      return {
-        data: {
-          profile: {
-            ...profileData,
-            earnedAwards: { edges: allEdges, pageInfo }
-          }
-        }
-      }
-    }
-  }
-
-  return {
-    data: {
-      profile: { ...profileData, earnedAwards: { edges: allEdges, pageInfo } }
-    }
-  }
+  return fetchAwards(trailheadUsername, 'superbadges', 'SUPERBADGE')
 }
 
 async function fetchTrailblazerEventBadgesInfo(trailheadUsername) {
-  const endpoint = 'https://profile.api.trailhead.com/graphql'
-  let allEdges = []
-  let pageInfo = null
-  let profileData = null
-
-  while (true) {
-    const graphqlQuery = {
-      query: GET_TRAILBLAZER_BADGES,
-      variables: {
-        count: 100,
-        after: pageInfo ? pageInfo.endCursor : null,
-        filter: 'EVENT',
-        hasSlug: true,
-        slug: trailheadUsername
-      }
-    }
-
-    try {
-      const response = await axios.post(endpoint, graphqlQuery, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (!profileData) {
-        profileData = {
-          __typename: response.data.data.profile.__typename,
-          trailheadStats: response.data.data.profile.trailheadStats
-        }
-      }
-
-      allEdges = allEdges.concat(response.data.data.profile.earnedAwards.edges)
-      pageInfo = response.data.data.profile.earnedAwards.pageInfo
-
-      if (!pageInfo.hasNextPage) {
-        break
-      }
-    } catch (error) {
-      console.error('Error fetching data: ', error)
-      return {
-        data: {
-          profile: {
-            ...profileData,
-            earnedAwards: { edges: allEdges, pageInfo }
-          }
-        }
-      }
-    }
-  }
-
-  return {
-    data: {
-      profile: { ...profileData, earnedAwards: { edges: allEdges, pageInfo } }
-    }
-  }
+  return fetchAwards(trailheadUsername, 'event badges', 'EVENT')
 }
 
 async function fetchTrailblazerCertifsInfo(trailheadUsername) {
-  const endpoint = 'https://profile.api.trailhead.com/graphql'
-  let allCertifications = []
-  let profileData = null
-
-  const graphqlQuery = {
-    query: GET_TRAILBLAZER_CERTIFS,
-    variables: {
-      hasSlug: true,
-      slug: trailheadUsername,
-      count: 100
-    }
-  }
-
-  try {
-    const response = await axios.post(endpoint, graphqlQuery, {
-      headers: {
-        'Content-Type': 'application/json'
+  const profile = await request(
+    'certifications',
+    trailheadUsername,
+    PROFILE_ENDPOINT,
+    GET_TRAILBLAZER_CERTIFS,
+    { hasSlug: true, slug: trailheadUsername, count: PAGE_SIZE },
+    payload => {
+      const p = publicProfile(payload)
+      if (!Array.isArray(p.credential?.certifications)) {
+        throw incomplete('credential.certifications')
       }
-    })
-
-    profileData = {
-      __typename: response.data.data.profile.__typename,
-      id: response.data.data.profile.id,
-      credential: {
-        messages: response.data.data.profile.credential.messages,
-        messagesOnly: response.data.data.profile.credential.messagesOnly,
-        brands: response.data.data.profile.credential.brands
-      }
+      return p
     }
-
-    allCertifications = allCertifications.concat(
-      response.data.data.profile.credential.certifications
-    )
-  } catch (error) {
-    console.error('Error fetching data: ', error)
-    profileData = profileData || {}
-    profileData.credential = profileData.credential || {}
-    return {
-      data: {
-        profile: {
-          ...profileData,
-          credential: {
-            ...profileData.credential,
-            certifications: allCertifications
-          }
-        }
-      }
-    }
-  }
-
+  )
   return {
     data: {
       profile: {
-        ...profileData,
+        __typename: profile.__typename,
+        id: profile.id,
         credential: {
-          ...profileData.credential,
-          certifications: allCertifications
+          messages: profile.credential.messages,
+          messagesOnly: profile.credential.messagesOnly,
+          brands: profile.credential.brands,
+          certifications: profile.credential.certifications
         }
       }
     }
@@ -270,101 +229,54 @@ async function fetchTrailblazerCertifsInfo(trailheadUsername) {
 }
 
 async function fetchTrailblazerSkillsInfo(trailheadUsername) {
-  const endpoint = 'https://profile.api.trailhead.com/graphql'
-  let allSkills = []
-  let profileData = null
-
-  const graphqlQuery = {
-    query: GET_TRAILBLAZER_SKILLS,
-    variables: {
-      hasSlug: true,
-      slug: trailheadUsername
+  const profile = await request(
+    'skills',
+    trailheadUsername,
+    PROFILE_ENDPOINT,
+    GET_TRAILBLAZER_SKILLS,
+    { hasSlug: true, slug: trailheadUsername },
+    payload => {
+      const p = publicProfile(payload)
+      if (!Array.isArray(p.earnedSkills)) throw incomplete('earnedSkills')
+      return p
     }
-  }
-
-  try {
-    const response = await axios.post(endpoint, graphqlQuery, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-
-    profileData = {
-      __typename: response.data.data.profile.__typename,
-      id: response.data.data.profile.id
-    }
-
-    allSkills = allSkills.concat(response.data.data.profile.earnedSkills)
-  } catch (error) {
-    console.error('Error fetching data: ', error)
-    return {
-      data: {
-        profile: {
-          ...profileData,
-          earnedSkills: allSkills
-        }
-      }
-    }
-  }
-
+  )
   return {
     data: {
       profile: {
-        ...profileData,
-        earnedSkills: allSkills
+        __typename: profile.__typename,
+        id: profile.id,
+        earnedSkills: profile.earnedSkills
       }
     }
   }
 }
 
 async function fetchTrailblazerEarnedStampsInfo(trailheadUsername) {
-  const endpoint = 'https://mobile.api.trailhead.com/graphql'
-  let allEdges = []
-  let pageInfo = null
-
-  while (true) {
-    const graphqlQuery = {
-      query: GET_TRAILBLAZER_EARNED_STAMPS,
-      variables: {
-        first: 100,
-        count: 100,
-        after: pageInfo ? pageInfo.endCursor : null,
+  const { edges, pageInfo } = await fetchAllPages(after =>
+    request(
+      'stamps',
+      trailheadUsername,
+      MOBILE_ENDPOINT,
+      GET_TRAILBLAZER_EARNED_STAMPS,
+      {
+        first: PAGE_SIZE,
+        count: PAGE_SIZE,
+        after,
         hasSlug: true,
         slug: trailheadUsername
+      },
+      payload => {
+        if (!hasPage(payload.earnedStamps)) throw incomplete('earnedStamps')
+        return { connection: payload.earnedStamps }
       }
-    }
-
-    try {
-      const response = await axios.post(endpoint, graphqlQuery, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-
-      allEdges = allEdges.concat(response.data.data.earnedStamps.edges)
-      pageInfo = response.data.data.earnedStamps.pageInfo
-
-      if (!pageInfo.hasNextPage) {
-        break
-      }
-    } catch (error) {
-      console.error('Error fetching data: ', error)
-      return {
-        data: {
-          earnedStamps: { edges: allEdges, pageInfo }
-        }
-      }
-    }
-  }
-
-  return {
-    data: {
-      earnedStamps: { edges: allEdges, pageInfo }
-    }
-  }
+    )
+  )
+  return { data: { earnedStamps: { edges, pageInfo } } }
 }
 
 module.exports = {
+  retryConfig,
   fetchTrailblazerRankInfo,
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,

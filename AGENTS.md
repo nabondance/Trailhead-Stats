@@ -35,8 +35,10 @@ file of the user's repository.
 
 ## Known Pitfalls
 
-- The Trailhead API can return HTTP 200 with `trailheadStats: null`. If a card
-  shows `undefined`, this is missing error handling, not a schema break.
+- The Trailhead API can return HTTP 200 with `trailheadStats: null` or with
+  GraphQL `errors`. `src/getStats.js` validates every response, retries, then
+  throws, so nothing is rendered or committed. Keep new fetches and fields on
+  that path: never fall back to partial data.
 - `createCardAsPng` hardcodes `/usr/bin/chromium-browser`, so use `card-preview`
   to render locally.
 - Changing `action.yml` inputs means updating `actionInputs.js` and the README

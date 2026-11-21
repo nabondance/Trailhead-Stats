@@ -1,6 +1,6 @@
 const core = require('@actions/core')
 const { generateCard } = require('./cardGenerator')
-const { mkdir, existsSync } = require('fs')
+const { mkdirSync } = require('fs')
 
 async function displayStats(
   inputs,
@@ -33,9 +33,14 @@ async function displayStats(
   } else if (inputs.displayType === 'card') {
     dataContent = await displayStatsCard(inputs, dataToFormat)
   } else {
-    core.setFailed(`${inputs.displayType} is not an accepted type`)
+    throw new Error(`${inputs.displayType} is not an accepted type`)
   }
 
+  if (dataContent === undefined || dataContent === null || dataContent === '') {
+    throw new Error(
+      `Nothing was rendered for display-type ${inputs.displayType}`
+    )
+  }
   return dataContent
 }
 
@@ -49,16 +54,30 @@ function prepareData(
   thEarnedStamps
 ) {
   // Prepare dataToFormat
-  const trailheadStats = thRank?.data?.profile.trailheadStats
+  const trailheadStats = thRank?.data?.profile?.trailheadStats
   const trailheadBadges = thBadges?.data?.profile
   const trailheadSuperBadges = thSuperBadges?.data?.profile
   const trailheadEventBadges = thEventBadges?.data?.profile
-  const trailheadCertif = thCertifs?.data?.profile.credential.certifications
-  const trailheadSkills = thSkills?.data?.profile.earnedSkills
+  const trailheadCertif = thCertifs?.data?.profile?.credential?.certifications
+  const trailheadSkills = thSkills?.data?.profile?.earnedSkills
   const trailheadEarnedStamps = thEarnedStamps?.data?.earnedStamps
 
-  if (trailheadStats === undefined) {
-    core.setFailed(trailheadStats)
+  // Refuse to render from incomplete data: it would show `undefined`.
+  const missing = Object.entries({
+    trailheadStats,
+    badges: trailheadBadges?.earnedAwards?.edges,
+    superbadges: trailheadSuperBadges?.earnedAwards?.edges,
+    'event badges': trailheadEventBadges?.earnedAwards?.edges,
+    certifications: trailheadCertif,
+    skills: trailheadSkills,
+    stamps: trailheadEarnedStamps?.edges
+  })
+    .filter(([, value]) => value === undefined || value === null)
+    .map(([name]) => name)
+  if (missing.length > 0) {
+    throw new Error(
+      `Trailhead data is incomplete (missing: ${missing.join(', ')}), nothing was rendered`
+    )
   }
 
   // Work on data
@@ -226,14 +245,7 @@ function displayStatsOutput(dataToFormat) {
 async function displayStatsCard(inputs, dataToFormat) {
   try {
     // Create the card path if it doesn't exist
-    if (!existsSync(inputs.cardPath)) {
-      mkdir(inputs.cardPath, { recursive: true }, err => {
-        if (err) {
-          core.error(`Error creating the card path: ${err}`)
-          core.setFailed(`Error creating the card path: ${err}`)
-        }
-      })
-    }
+    mkdirSync(inputs.cardPath, { recursive: true })
 
     // Await the generation of the card and get the full path
     const fullPathLight = await generateCard(dataToFormat, inputs, 'light')
@@ -262,8 +274,9 @@ async function displayStatsCard(inputs, dataToFormat) {
     }
     return dataContent
   } catch (err) {
-    console.error(`Error generating the card: ${err}`)
-    core.setFailed(`Error generating the card: ${err}`)
+    // A failed or timed-out render must stop the run before any file is
+    // written or committed.
+    throw new Error(`Error generating the card: ${err.message || err}`)
   }
 }
 

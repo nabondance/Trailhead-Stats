@@ -4,7 +4,6 @@ const core = require('@actions/core')
 const { rmSync, existsSync } = require('fs')
 
 jest.mock('@actions/core')
-const setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
 
 // Mock generateCard function
 jest.mock('../src/cardGenerator', () => ({
@@ -230,62 +229,127 @@ describe('displayStats Function', () => {
     }
   })
 
-  it('should fail if there is no rank in md', async () => {
+  it('should throw when stats are null, as the API sometimes returns', async () => {
+    await expect(
+      displayStats(
+        mockInputs,
+        { data: { profile: { trailheadStats: null } } },
+        mockTrailheadBadgesData,
+        mockTrailheadSuperBadgesData,
+        mockTrailheadEventBadgesData,
+        mockTrailheadCertifsData,
+        mockTrailheadSkillsData,
+        mockTrailheadEarnedStampsData
+      )
+    ).rejects.toThrow('missing: trailheadStats')
+  })
+
+  it('should name every missing collection', async () => {
+    await expect(
+      displayStats(
+        mockInputs,
+        mockTrailheadRankData,
+        undefined,
+        mockTrailheadSuperBadgesData,
+        mockTrailheadEventBadgesData,
+        { data: { profile: { credential: null } } },
+        mockTrailheadSkillsData,
+        mockTrailheadEarnedStampsData
+      )
+    ).rejects.toThrow('missing: badges, certifications')
+  })
+
+  it('should throw when the card cannot be generated (e.g. timeout)', async () => {
+    cardGenerator.generateCard.mockRejectedValueOnce(
+      new Error('Navigation timeout of 30000 ms exceeded')
+    )
+    await expect(
+      displayStats(
+        { ...mockInputs, displayType: 'card' },
+        mockTrailheadRankData,
+        mockTrailheadBadgesData,
+        mockTrailheadSuperBadgesData,
+        mockTrailheadEventBadgesData,
+        mockTrailheadCertifsData,
+        mockTrailheadSkillsData,
+        mockTrailheadEarnedStampsData
+      )
+    ).rejects.toThrow(
+      'Error generating the card: Navigation timeout of 30000 ms exceeded'
+    )
+  })
+
+  it('should throw when nothing is rendered', async () => {
+    await expect(
+      displayStats(
+        { ...mockInputs, displayType: 'card', fileFormat: 'pdf' },
+        mockTrailheadRankData,
+        mockTrailheadBadgesData,
+        mockTrailheadSuperBadgesData,
+        mockTrailheadEventBadgesData,
+        mockTrailheadCertifsData,
+        mockTrailheadSkillsData,
+        mockTrailheadEarnedStampsData
+      )
+    ).rejects.toThrow('Nothing was rendered for display-type card')
+  })
+
+  it('should throw if there is no rank in md', async () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
-    const result = await displayStats(
-      mockInputs,
-      undefined, // thRank
-      mockTrailheadBadgesData, // thBadges
-      mockTrailheadSuperBadgesData, // thSuperBadges
-      mockTrailheadEventBadgesData, // thEventBadges
-      mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData, // thSkills
-      mockTrailheadEarnedStampsData // thEarnedStamps
-    )
-
-    expect(setFailedMock).toHaveBeenCalledWith(undefined)
+    await expect(
+      displayStats(
+        mockInputs,
+        undefined, // thRank
+        mockTrailheadBadgesData, // thBadges
+        mockTrailheadSuperBadgesData, // thSuperBadges
+        mockTrailheadEventBadgesData, // thEventBadges
+        mockTrailheadCertifsData, // thCertifs
+        mockTrailheadSkillsData, // thSkills
+        mockTrailheadEarnedStampsData // thEarnedStamps
+      )
+    ).rejects.toThrow('missing: trailheadStats')
   })
 
-  it('should fail if there is no rank in html', async () => {
+  it('should throw if there is no rank in html', async () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
     mockInputs.fileFormat = 'html'
 
-    const result = await displayStats(
-      mockInputs,
-      undefined, // thRank
-      mockTrailheadBadgesData, // thBadges
-      mockTrailheadSuperBadgesData, // thSuperBadges
-      mockTrailheadEventBadgesData, // thEventBadges
-      mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData, // thSkills
-      mockTrailheadEarnedStampsData // thEarnedStamps
-    )
-
-    expect(setFailedMock).toHaveBeenCalledWith(undefined)
+    await expect(
+      displayStats(
+        mockInputs,
+        undefined, // thRank
+        mockTrailheadBadgesData, // thBadges
+        mockTrailheadSuperBadgesData, // thSuperBadges
+        mockTrailheadEventBadgesData, // thEventBadges
+        mockTrailheadCertifsData, // thCertifs
+        mockTrailheadSkillsData, // thSkills
+        mockTrailheadEarnedStampsData // thEarnedStamps
+      )
+    ).rejects.toThrow('missing: trailheadStats')
   })
 
-  it('should fail if there is no rank in card', async () => {
+  it('should throw if there is no rank in card', async () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
 
     mockInputs.fileFormat = 'card'
 
-    const result = await displayStats(
-      mockInputs,
-      undefined, // thRank
-      mockTrailheadBadgesData, // thBadges
-      mockTrailheadSuperBadgesData, // thSuperBadges
-      mockTrailheadEventBadgesData, // thEventBadges
-      mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData, // thSkills
-      mockTrailheadEarnedStampsData // thEarnedStamps
-    )
-
-    expect(setFailedMock).toHaveBeenCalledWith(undefined)
+    await expect(
+      displayStats(
+        mockInputs,
+        undefined, // thRank
+        mockTrailheadBadgesData, // thBadges
+        mockTrailheadSuperBadgesData, // thSuperBadges
+        mockTrailheadEventBadgesData, // thEventBadges
+        mockTrailheadCertifsData, // thCertifs
+        mockTrailheadSkillsData, // thSkills
+        mockTrailheadEarnedStampsData // thEarnedStamps
+      )
+    ).rejects.toThrow('missing: trailheadStats')
   })
 
   it('should fail if the display type is not allowed', async () => {
@@ -294,20 +358,18 @@ describe('displayStats Function', () => {
 
     mockInputs.displayType = 'badType'
 
-    const result = await displayStats(
-      mockInputs,
-      mockTrailheadRankData, // thRank
-      mockTrailheadBadgesData, // thBadges
-      mockTrailheadSuperBadgesData, // thSuperBadges
-      mockTrailheadEventBadgesData, // thEventBadges
-      mockTrailheadCertifsData, // thCertifs
-      mockTrailheadSkillsData, // thSkills
-      mockTrailheadEarnedStampsData // thEarnedStamps
-    )
-
-    expect(setFailedMock).toHaveBeenCalledWith(
-      'badType is not an accepted type'
-    )
+    await expect(
+      displayStats(
+        mockInputs,
+        mockTrailheadRankData, // thRank
+        mockTrailheadBadgesData, // thBadges
+        mockTrailheadSuperBadgesData, // thSuperBadges
+        mockTrailheadEventBadgesData, // thEventBadges
+        mockTrailheadCertifsData, // thCertifs
+        mockTrailheadSkillsData, // thSkills
+        mockTrailheadEarnedStampsData // thEarnedStamps
+      )
+    ).rejects.toThrow('badType is not an accepted type')
   })
 
   it('should correctly format and display rank stats', async () => {

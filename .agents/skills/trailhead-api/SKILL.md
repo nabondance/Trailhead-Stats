@@ -32,14 +32,18 @@ Profile queries use `{ slug, hasSlug: true }`. Paginated queries add `count` and
 
 ## Failure Modes
 
+Every fetch goes through `request()` in `src/getStats.js`: it validates the
+payload, retries with backoff (`retryConfig`), then throws. Nothing partial is
+ever returned.
+
 - **HTTP 200 with `trailheadStats: null`:** intermittent, and usually gone on
-  the next run. It renders as literal `undefined`. Do not treat it as a schema
-  break.
+  the next attempt. Retried. Do not treat it as a schema break.
 - **GraphQL `errors`:** returned with HTTP 200, so axios does not throw.
+  Retried, except `extensions.code: NOT_FOUND` (unknown username).
 - **`PrivateProfile`:** `__typename` is `PrivateProfile` and the stats are
-  absent.
-- **Partial pagination:** a failed page returns the edges fetched so far, so
-  counts can be silently low.
+  absent. Not retried.
+- **Pagination:** a failed page fails the whole fetch, and a cursor that does
+  not advance throws.
 
 ## Debugging
 

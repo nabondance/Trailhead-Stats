@@ -34,8 +34,7 @@ function updateStatsOnFile(displayFile, dataContent) {
     fs.writeFileSync(filePath, fileContent, 'utf8')
     core.debug('File updated successfully.')
   } catch (error) {
-    console.error('Error updating the file:', error)
-    core.setFailed(error.message)
+    throw new Error(`Error updating ${displayFile}: ${error.message}`)
   }
 }
 
@@ -70,10 +69,9 @@ function pushUpdatedFile(displayFile, cardPath) {
     execSync(`git commit -m "Update Trailhead Stats in ${displayFile}"`)
     execSync(`git push origin ${branchName}`)
 
-    core.debug('Changes pushed to branch: ', branchName)
+    core.debug(`Changes pushed to branch: ${branchName}`)
   } catch (error) {
-    console.error('Error pushing changes: ', error)
-    core.setFailed(error.message)
+    throw new Error(`Error pushing changes: ${error.message}`)
   }
 }
 

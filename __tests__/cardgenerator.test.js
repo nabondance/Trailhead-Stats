@@ -142,7 +142,30 @@ describe('cardGenerator Tests', () => {
       // More assertions to verify correct function behavior
     })
 
-    // Additional tests for edge cases and error handling
+    it.each([
+      [
+        'setContent times out',
+        { setContent: 'Navigation timeout of 30000 ms exceeded' }
+      ],
+      ['the card element is missing', { card: null }]
+    ])('closes the browser when %s', async (_label, failure) => {
+      const close = jest.fn().mockResolvedValue(null)
+      puppeteer.launch.mockResolvedValueOnce({
+        newPage: jest.fn().mockResolvedValue({
+          setViewport: jest.fn().mockResolvedValue(null),
+          setContent: failure.setContent
+            ? jest.fn().mockRejectedValue(new Error(failure.setContent))
+            : jest.fn().mockResolvedValue(null),
+          $: jest.fn().mockResolvedValue(failure.card)
+        }),
+        close
+      })
+
+      await expect(generateCard(mockData, mockInputs, 'light')).rejects.toThrow(
+        failure.setContent || '.card not found in the card HTML'
+      )
+      expect(close).toHaveBeenCalledTimes(1)
+    })
   })
 
   // Tests for helper functions

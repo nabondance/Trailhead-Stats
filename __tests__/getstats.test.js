@@ -1,6 +1,9 @@
 jest.mock('axios')
+jest.mock('@actions/core')
 const axios = require('axios')
+const core = require('@actions/core')
 const {
+  retryConfig,
   fetchTrailblazerRankInfo,
   fetchTrailblazerBadgesInfo,
   fetchTrailblazerSuperBadgesInfo,
@@ -10,678 +13,337 @@ const {
   fetchTrailblazerEarnedStampsInfo
 } = require('./../src/getStats')
 
-describe('fetches successfully data from the API', () => {
-  afterEach(() => {
-    jest.clearAllMocks()
+const PROFILE = 'https://profile.api.trailhead.com/graphql'
+const MOBILE = 'https://mobile.api.trailhead.com/graphql'
+const OPTIONS = {
+  headers: { 'Content-Type': 'application/json' },
+  timeout: retryConfig.timeoutMs
+}
+
+// axios resolves with `{ data: <GraphQL body> }`.
+const ok = data => ({ data: { data } })
+const gqlErrors = (...errors) => ({ data: { errors, data: null } })
+const httpError = status =>
+  Object.assign(new Error(`Request failed with status code ${status}`), {
+    response: { status }
   })
 
-  it('fetches successfully data from the API: TrailblazerRank', async () => {
-    const mockData = {
-      data: {
-        profile: {
-          /* mock profile data */
-        }
-      }
+const stats = {
+  earnedPointsSum: 1000,
+  earnedBadgesCount: 10,
+  superbadgeCount: 1,
+  rank: { title: 'Ranger', imageUrl: 'rank.png' }
+}
+const rankData = {
+  profile: { __typename: 'PublicProfile', trailheadStats: stats }
+}
+const page = (edges, hasNextPage = false, endCursor = null) => ({
+  edges,
+  pageInfo: { hasNextPage, endCursor }
+})
+const awardsData = connection => ({
+  profile: {
+    __typename: 'PublicProfile',
+    trailheadStats: stats,
+    earnedAwards: connection
+  }
+})
+const certifsData = {
+  profile: {
+    __typename: 'PublicProfile',
+    id: 'p1',
+    credential: {
+      messages: [],
+      messagesOnly: false,
+      brands: [],
+      certifications: [{ title: 'Admin' }]
     }
-    axios.post.mockResolvedValue(mockData)
+  }
+}
+const skillsData = {
+  profile: {
+    __typename: 'PublicProfile',
+    id: 'p1',
+    earnedSkills: [{ earnedPointsSum: 5 }]
+  }
+}
+const stampsData = connection => ({ earnedStamps: connection })
 
-    const response = await fetchTrailblazerRankInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockData.data)
-  })
-
-  it('fetches successfully data from the API: TrailblazerBadges', async () => {
-    const mockData = {
-      data: {
-        profile: {
-          earnedAwards: {
-            edges: [],
-            pageInfo: null
-          }
-        }
-      }
-    }
-    axios.post.mockResolvedValue(mockData)
-
-    const response = await fetchTrailblazerBadgesInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          count: 100,
-          after: null,
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockData)
-  })
-
-  it('fetches successfully data from the API: TrailblazerSuperBadges', async () => {
-    const mockData = {
-      data: {
-        profile: {
-          earnedAwards: {
-            edges: [],
-            pageInfo: null
-          }
-        }
-      }
-    }
-    axios.post.mockResolvedValue(mockData)
-
-    const response = await fetchTrailblazerSuperBadgesInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          count: 100,
-          after: null,
-          filter: 'SUPERBADGE',
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockData)
-  })
-
-  it('fetches successfully data from the API: TrailblazerEventBadges', async () => {
-    const mockData = {
-      data: {
-        profile: {
-          earnedAwards: {
-            edges: [],
-            pageInfo: null
-          }
-        }
-      }
-    }
-    axios.post.mockResolvedValue(mockData)
-
-    const response = await fetchTrailblazerEventBadgesInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          count: 100,
-          after: null,
-          filter: 'EVENT',
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockData)
-  })
-
-  it('fetches successfully data from the API: TrailblazerCertifs', async () => {
-    const mockData = {
-      data: {
-        data: {
-          profile: {
-            __typename: 'Profile',
-            id: '123',
-            credential: {
-              messages: ['message1', 'message2'],
-              messagesOnly: ['messageOnly1', 'messageOnly2'],
-              brands: ['brand1', 'brand2'],
-              certifications: ['certification1', 'certification2']
-            }
-          }
-        }
-      }
-    }
-    axios.post.mockResolvedValue(mockData)
-
-    const response = await fetchTrailblazerCertifsInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          hasSlug: true,
-          slug: 'testUsername',
-          count: 100
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockData.data)
-  })
-
-  it('fetches successfully data from the API: TrailblazerSkills', async () => {
-    const mockData = {
-      data: {
-        data: {
-          profile: {
-            earnedSkills: []
-          }
-        }
-      }
-    }
-    axios.post.mockResolvedValue(mockData)
-
-    const response = await fetchTrailblazerSkillsInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockData.data)
-  })
-
-  it('fetches successfully data from the API: EarnedStamps', async () => {
-    const mockData = {
-      data: {
-        data: {
-          earnedStamps: {
-            edges: [],
-            pageInfo: null
-          }
-        }
-      }
-    }
-    axios.post.mockResolvedValue(mockData)
-
-    const response = await fetchTrailblazerEarnedStampsInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://mobile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          first: 100,
-          count: 100,
-          after: null,
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockData.data)
-  })
+beforeEach(() => {
+  jest.resetAllMocks()
+  retryConfig.delaysMs = [0, 0]
 })
 
-describe('fetches successfully data from the API in multiple pages', () => {
-  afterEach(() => {
-    jest.clearAllMocks()
+describe('successful fetches keep the v2 return shapes', () => {
+  it('rank', async () => {
+    axios.post.mockResolvedValue(ok(rankData))
+
+    await expect(fetchTrailblazerRankInfo('user')).resolves.toEqual({
+      data: rankData
+    })
+    expect(axios.post).toHaveBeenCalledWith(
+      PROFILE,
+      {
+        query: expect.any(String),
+        variables: { hasSlug: true, slug: 'user' }
+      },
+      OPTIONS
+    )
   })
 
-  it('fetches successfully data in multiple pages from the API: TrailblazerBadges', async () => {
-    const mockDataPage1 = {
-      data: {
-        data: {
-          profile: {
-            earnedAwards: {
-              edges: ['edge1'],
-              pageInfo: {
-                hasNextPage: true,
-                endCursor: 'cursor1'
-              }
-            }
-          }
-        }
-      }
-    }
-
-    const mockDataPage2 = {
-      data: {
-        data: {
-          profile: {
-            earnedAwards: {
-              edges: ['edge2'],
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: 'cursor2'
-              }
-            }
-          }
-        }
-      }
-    }
-
+  it.each([
+    ['badges', fetchTrailblazerBadgesInfo, undefined],
+    ['superbadges', fetchTrailblazerSuperBadgesInfo, 'SUPERBADGE'],
+    ['event badges', fetchTrailblazerEventBadgesInfo, 'EVENT']
+  ])('%s, across pages', async (_label, fetch, filter) => {
     axios.post
-      .mockResolvedValueOnce(mockDataPage1)
-      .mockResolvedValueOnce(mockDataPage2)
+      .mockResolvedValueOnce(ok(awardsData(page([{ id: 1 }], true, 'c1'))))
+      .mockResolvedValueOnce(ok(awardsData(page([{ id: 2 }]))))
 
-    const response = await fetchTrailblazerBadgesInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledTimes(2)
-    expect(response).toEqual({
+    await expect(fetch('user')).resolves.toEqual({
       data: {
         profile: {
+          __typename: 'PublicProfile',
+          trailheadStats: stats,
           earnedAwards: {
-            edges: ['edge1', 'edge2'],
-            pageInfo: mockDataPage2.data.data.profile.earnedAwards.pageInfo
+            edges: [{ id: 1 }, { id: 2 }],
+            pageInfo: { hasNextPage: false, endCursor: null }
           }
         }
       }
     })
+    const variables = after => ({
+      count: 100,
+      after,
+      ...(filter ? { filter } : {}),
+      hasSlug: true,
+      slug: 'user'
+    })
+    expect(axios.post).toHaveBeenNthCalledWith(
+      1,
+      PROFILE,
+      { query: expect.any(String), variables: variables(null) },
+      OPTIONS
+    )
+    expect(axios.post).toHaveBeenNthCalledWith(
+      2,
+      PROFILE,
+      { query: expect.any(String), variables: variables('c1') },
+      OPTIONS
+    )
   })
 
-  it('fetches successfully data in multiple pages from the API: TrailblazerSuperBadges', async () => {
-    const mockDataPage1 = {
-      data: {
-        data: {
-          profile: {
-            earnedAwards: {
-              edges: ['edge1'],
-              pageInfo: {
-                hasNextPage: true,
-                endCursor: 'cursor1'
-              }
-            }
-          }
-        }
-      }
-    }
+  it('certifications', async () => {
+    axios.post.mockResolvedValue(ok(certifsData))
 
-    const mockDataPage2 = {
-      data: {
-        data: {
-          profile: {
-            earnedAwards: {
-              edges: ['edge2'],
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: 'cursor2'
-              }
-            }
-          }
-        }
-      }
-    }
+    await expect(fetchTrailblazerCertifsInfo('user')).resolves.toEqual({
+      data: certifsData
+    })
+    expect(axios.post).toHaveBeenCalledWith(
+      PROFILE,
+      {
+        query: expect.any(String),
+        variables: { hasSlug: true, slug: 'user', count: 100 }
+      },
+      OPTIONS
+    )
+  })
 
-    axios.post
-      .mockResolvedValueOnce(mockDataPage1)
-      .mockResolvedValueOnce(mockDataPage2)
+  it('certifications, none earned', async () => {
+    const none = structuredClone(certifsData)
+    none.profile.credential.certifications = []
+    axios.post.mockResolvedValue(ok(none))
 
-    const response = await fetchTrailblazerSuperBadgesInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledTimes(2)
-    expect(response).toEqual({
-      data: {
-        profile: {
-          earnedAwards: {
-            edges: ['edge1', 'edge2'],
-            pageInfo: mockDataPage2.data.data.profile.earnedAwards.pageInfo
-          }
-        }
-      }
+    await expect(fetchTrailblazerCertifsInfo('user')).resolves.toEqual({
+      data: none
     })
   })
 
-  it('fetches successfully data in multiple pages from the API: TrailblazerEventBadges', async () => {
-    const mockDataPage1 = {
-      data: {
-        data: {
-          profile: {
-            earnedAwards: {
-              edges: ['edge1'],
-              pageInfo: {
-                hasNextPage: true,
-                endCursor: 'cursor1'
-              }
-            }
-          }
-        }
-      }
-    }
+  it('skills', async () => {
+    axios.post.mockResolvedValue(ok(skillsData))
 
-    const mockDataPage2 = {
-      data: {
-        data: {
-          profile: {
-            earnedAwards: {
-              edges: ['edge2'],
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: 'cursor2'
-              }
-            }
-          }
-        }
-      }
-    }
-
-    axios.post
-      .mockResolvedValueOnce(mockDataPage1)
-      .mockResolvedValueOnce(mockDataPage2)
-
-    const response = await fetchTrailblazerEventBadgesInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledTimes(2)
-    expect(response).toEqual({
-      data: {
-        profile: {
-          earnedAwards: {
-            edges: ['edge1', 'edge2'],
-            pageInfo: mockDataPage2.data.data.profile.earnedAwards.pageInfo
-          }
-        }
-      }
+    await expect(fetchTrailblazerSkillsInfo('user')).resolves.toEqual({
+      data: skillsData
     })
   })
 
-  it('fetches successfully data in multiple pages from the API: EarnedStamps', async () => {
-    const mockDataPage1 = {
-      data: {
-        data: {
-          earnedStamps: {
-            edges: ['edge1'],
-            pageInfo: {
-              hasNextPage: true,
-              endCursor: 'cursor1'
-            }
-          }
-        }
-      }
-    }
-
-    const mockDataPage2 = {
-      data: {
-        data: {
-          earnedStamps: {
-            edges: ['edge2'],
-            pageInfo: {
-              hasNextPage: false,
-              endCursor: 'cursor2'
-            }
-          }
-        }
-      }
-    }
-
+  it('stamps, across pages', async () => {
     axios.post
-      .mockResolvedValueOnce(mockDataPage1)
-      .mockResolvedValueOnce(mockDataPage2)
+      .mockResolvedValueOnce(ok(stampsData(page([{ id: 1 }], true, 's1'))))
+      .mockResolvedValueOnce(ok(stampsData(page([{ id: 2 }]))))
 
-    const response = await fetchTrailblazerEarnedStampsInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledTimes(2)
-    expect(response).toEqual({
+    await expect(fetchTrailblazerEarnedStampsInfo('user')).resolves.toEqual({
       data: {
         earnedStamps: {
-          edges: ['edge1', 'edge2'],
-          pageInfo: mockDataPage2.data.data.earnedStamps.pageInfo
+          edges: [{ id: 1 }, { id: 2 }],
+          pageInfo: { hasNextPage: false, endCursor: null }
         }
       }
     })
+    expect(axios.post).toHaveBeenNthCalledWith(
+      2,
+      MOBILE,
+      {
+        query: expect.any(String),
+        variables: {
+          first: 100,
+          count: 100,
+          after: 's1',
+          hasSlug: true,
+          slug: 'user'
+        }
+      },
+      OPTIONS
+    )
   })
 })
 
-describe('handles API error', () => {
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
+describe('fails closed', () => {
+  it('retries null trailheadStats, then succeeds', async () => {
+    axios.post
+      .mockResolvedValueOnce(
+        ok({ profile: { __typename: 'PublicProfile', trailheadStats: null } })
+      )
+      .mockResolvedValueOnce(ok(rankData))
 
-  it('handles API error : TrailblazerRank', async () => {
-    const errorMessage = 'Network Error'
-    axios.post.mockRejectedValue(new Error(errorMessage))
-    console.error = jest.fn()
-
-    const response = await fetchTrailblazerRankInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toBeNull()
-    expect(console.error).toHaveBeenCalledWith(
-      'Error fetching data: ',
-      expect.any(Error)
+    await expect(fetchTrailblazerRankInfo('user')).resolves.toEqual({
+      data: rankData
+    })
+    expect(axios.post).toHaveBeenCalledTimes(2)
+    expect(core.warning).toHaveBeenCalledWith(
+      expect.stringContaining('trailheadStats is missing')
     )
   })
 
-  it('handles API error : TrailblazerBadges', async () => {
-    const errorMessage = 'Network Error'
-    axios.post.mockRejectedValue(new Error(errorMessage))
-    console.error = jest.fn()
-    const mockErrorResponse = {
-      data: { profile: { earnedAwards: { edges: [], pageInfo: null } } }
-    }
-
-    const response = await fetchTrailblazerBadgesInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          count: 100,
-          after: null,
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
+  it('throws when trailheadStats stays null', async () => {
+    axios.post.mockResolvedValue(
+      ok({ profile: { __typename: 'PublicProfile', trailheadStats: null } })
     )
-    expect(response).toEqual(mockErrorResponse)
-    expect(console.error).toHaveBeenCalledWith(
-      'Error fetching data: ',
-      expect.any(Error)
+
+    await expect(fetchTrailblazerRankInfo('user')).rejects.toThrow(
+      'Could not fetch Trailhead rank for "user" after 3 attempts: incomplete response, trailheadStats is missing'
+    )
+    expect(axios.post).toHaveBeenCalledTimes(3)
+  })
+
+  it('throws on GraphQL errors returned with HTTP 200', async () => {
+    axios.post.mockResolvedValue(gqlErrors({ message: 'Internal failure' }))
+
+    await expect(fetchTrailblazerSkillsInfo('user')).rejects.toThrow(
+      'GraphQL error: Internal failure'
+    )
+    expect(axios.post).toHaveBeenCalledTimes(3)
+  })
+
+  it('throws when the body has no data', async () => {
+    axios.post.mockResolvedValue({ data: {} })
+
+    await expect(fetchTrailblazerRankInfo('user')).rejects.toThrow(
+      'response has no data'
+    )
+    expect(axios.post).toHaveBeenCalledTimes(3)
+  })
+
+  it('does not retry an unknown username', async () => {
+    axios.post.mockResolvedValue(
+      gqlErrors({
+        message: 'profile could not be found',
+        extensions: { code: 'NOT_FOUND' }
+      })
+    )
+
+    await expect(fetchTrailblazerRankInfo('nobody')).rejects.toThrow(
+      'Could not fetch Trailhead rank for "nobody": profile not found (profile could not be found)'
+    )
+    expect(axios.post).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not retry a private profile', async () => {
+    axios.post.mockResolvedValue(
+      ok({ profile: { __typename: 'PrivateProfile' } })
+    )
+
+    await expect(fetchTrailblazerBadgesInfo('user')).rejects.toThrow(
+      'the profile is private'
+    )
+    expect(axios.post).toHaveBeenCalledTimes(1)
+  })
+
+  it('retries network errors and timeouts', async () => {
+    axios.post
+      .mockRejectedValueOnce(new Error('timeout of 30000ms exceeded'))
+      .mockRejectedValueOnce(httpError(503))
+      .mockResolvedValueOnce(ok(skillsData))
+
+    await expect(fetchTrailblazerSkillsInfo('user')).resolves.toEqual({
+      data: skillsData
+    })
+    expect(axios.post).toHaveBeenCalledTimes(3)
+  })
+
+  it('does not retry a 400', async () => {
+    axios.post.mockRejectedValue(httpError(400))
+
+    await expect(fetchTrailblazerCertifsInfo('user')).rejects.toThrow(
+      'request failed: Request failed with status code 400'
+    )
+    expect(axios.post).toHaveBeenCalledTimes(1)
+  })
+
+  it('throws when a later page fails instead of returning partial data', async () => {
+    axios.post
+      .mockResolvedValueOnce(ok(awardsData(page([{ id: 1 }], true, 'c1'))))
+      .mockRejectedValue(new Error('socket hang up'))
+
+    await expect(fetchTrailblazerBadgesInfo('user')).rejects.toThrow(
+      'Could not fetch Trailhead badges for "user" after 3 attempts: request failed: socket hang up'
     )
   })
 
-  it('handles API error : TrailblazerSuperBadges', async () => {
-    const errorMessage = 'Network Error'
-    axios.post.mockRejectedValue(new Error(errorMessage))
-    console.error = jest.fn()
-    const mockErrorResponse = {
-      data: { profile: { earnedAwards: { edges: [], pageInfo: null } } }
-    }
+  it('throws when pagination does not advance', async () => {
+    axios.post.mockResolvedValue(ok(stampsData(page([{ id: 1 }], true, null))))
 
-    const response = await fetchTrailblazerSuperBadgesInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          count: 100,
-          after: null,
-          filter: 'SUPERBADGE',
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockErrorResponse)
-    expect(console.error).toHaveBeenCalledWith(
-      'Error fetching data: ',
-      expect.any(Error)
+    await expect(fetchTrailblazerEarnedStampsInfo('user')).rejects.toThrow(
+      'Trailhead pagination did not advance'
     )
   })
 
-  it('handles API error : TrailblazerEventBadges', async () => {
-    const errorMessage = 'Network Error'
-    axios.post.mockRejectedValue(new Error(errorMessage))
-    console.error = jest.fn()
-    const mockErrorResponse = {
-      data: { profile: { earnedAwards: { edges: [], pageInfo: null } } }
-    }
+  it('throws when pagination cycles', async () => {
+    axios.post
+      .mockResolvedValueOnce(ok(stampsData(page([{ id: 1 }], true, 'a'))))
+      .mockResolvedValueOnce(ok(stampsData(page([{ id: 2 }], true, 'b'))))
+      .mockResolvedValueOnce(ok(stampsData(page([{ id: 3 }], true, 'a'))))
 
-    const response = await fetchTrailblazerEventBadgesInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          count: 100,
-          after: null,
-          filter: 'EVENT',
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
+    await expect(fetchTrailblazerEarnedStampsInfo('user')).rejects.toThrow(
+      'Trailhead pagination did not advance'
     )
-    expect(response).toEqual(mockErrorResponse)
-    expect(console.error).toHaveBeenCalledWith(
-      'Error fetching data: ',
-      expect.any(Error)
-    )
+    expect(axios.post).toHaveBeenCalledTimes(3)
   })
 
-  it('handles API error : TrailblazerCertifs', async () => {
-    const errorMessage = 'Network Error'
-    axios.post.mockRejectedValue(new Error(errorMessage))
-    console.error = jest.fn()
-    const mockErrorResponse = {
-      data: {
-        profile: {
-          credential: {
-            certifications: []
-          }
-        }
-      }
-    }
+  it.each([
+    [
+      'certifications',
+      fetchTrailblazerCertifsInfo,
+      { profile: { credential: null } }
+    ],
+    ['skills', fetchTrailblazerSkillsInfo, { profile: { earnedSkills: null } }],
+    ['stamps', fetchTrailblazerEarnedStampsInfo, { earnedStamps: null }],
+    ['badges', fetchTrailblazerBadgesInfo, awardsData(null)],
+    ['rank', fetchTrailblazerRankInfo, { profile: null }]
+  ])('throws on an incomplete %s response', async (_label, fetch, data) => {
+    axios.post.mockResolvedValue(ok(data))
 
-    const response = await fetchTrailblazerCertifsInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          hasSlug: true,
-          slug: 'testUsername',
-          count: 100
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockErrorResponse)
-    expect(console.error).toHaveBeenCalledWith(
-      'Error fetching data: ',
-      expect.any(Error)
-    )
+    await expect(fetch('user')).rejects.toThrow('incomplete response')
   })
 
-  it('handles API error : TrailblazerSkills', async () => {
-    const errorMessage = 'Network Error'
-    axios.post.mockRejectedValue(new Error(errorMessage))
-    console.error = jest.fn()
-    const mockErrorResponse = {
-      data: { profile: { earnedSkills: [] } }
-    }
+  it('waits between attempts', async () => {
+    retryConfig.delaysMs = [20, 20]
+    axios.post
+      .mockRejectedValueOnce(new Error('ECONNRESET'))
+      .mockResolvedValueOnce(ok(skillsData))
 
-    const response = await fetchTrailblazerSkillsInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://profile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockErrorResponse)
-    expect(console.error).toHaveBeenCalledWith(
-      'Error fetching data: ',
-      expect.any(Error)
-    )
-  })
-
-  it('handles API error : TrailblazerEarnedStamps', async () => {
-    const errorMessage = 'Network Error'
-    axios.post.mockRejectedValue(new Error(errorMessage))
-    console.error = jest.fn()
-    const mockErrorResponse = {
-      data: { earnedStamps: { edges: [], pageInfo: null } }
-    }
-
-    const response = await fetchTrailblazerEarnedStampsInfo('testUsername')
-
-    expect(axios.post).toHaveBeenCalledWith(
-      'https://mobile.api.trailhead.com/graphql',
-      {
-        query: expect.any(String),
-        variables: {
-          after: null,
-          count: 100,
-          first: 100,
-          hasSlug: true,
-          slug: 'testUsername'
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-    expect(response).toEqual(mockErrorResponse)
-    expect(console.error).toHaveBeenCalledWith(
-      'Error fetching data: ',
-      expect.any(Error)
-    )
+    const start = Date.now()
+    await fetchTrailblazerSkillsInfo('user')
+    expect(Date.now() - start).toBeGreaterThanOrEqual(15)
   })
 })
