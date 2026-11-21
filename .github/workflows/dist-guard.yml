@@ -1,0 +1,39 @@
+# dist/ on main is the build that `@main` users run. It must only change at
+# release time, so main keeps serving the last released build while new code
+# lands in src/. Release PRs (release-please) are the only ones allowed to
+# touch dist/.
+---
+name: Guard dist/
+
+on: # yamllint disable-line
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  dist-guard:
+    name: dist/ unchanged
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail if dist/ is modified
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD -- dist/)"
+          if [ -n "$changed" ]; then
+            echo "::error::dist/ must only change in a release PR. Modified files:"
+            echo "$changed"
+            exit 1
+          fi
+          echo "dist/ untouched."

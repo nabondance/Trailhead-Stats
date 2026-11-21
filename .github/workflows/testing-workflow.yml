@@ -56,6 +56,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # dist/ on main is the last released build; build the checked-out code
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+          cache-dependency-path: 'pnpm-lock.yaml'
+      - name: Build dist/
+        run: pnpm install && pnpm run package
       - name: Check Chromium Version
         run: chromium-browser --version || echo "Chromium is not installed"
       - name: Find Chromium Path
