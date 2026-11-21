@@ -34,7 +34,7 @@ JAVASCRIPT_ES_FILTER_REGEX_EXCLUDE: '(dist)' # Filter out files to lint
 
 JAVASCRIPT_DEFAULT_STYLE: prettier
 
-# Keep the job's write-capable GITHUB_TOKEN away from zizmor
+# Skip zizmor's online audits, so it does not need a GitHub token
 ACTION_ZIZMOR_ARGUMENTS: --offline
 
 SHOW_ELAPSED_TIME: true

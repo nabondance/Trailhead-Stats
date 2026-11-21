@@ -1,6 +1,7 @@
 name: Dependabot auto-merge
 
-on: pull_request_target
+# Needs the PAT on Dependabot PRs. It never checks out or runs PR code.
+on: pull_request_target # zizmor: ignore[dangerous-triggers]
 
 permissions:
   pull-requests: write
