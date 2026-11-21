@@ -1,0 +1,69 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/scripts/agent/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/scripts/agent/hooks/dist-guard.js"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(bash scripts/agent/verify.sh*)",
+      "Bash(bash scripts/agent/smoke.sh*)",
+      "Bash(bash scripts/agent/golden.sh)",
+      "Bash(bash scripts/agent/card-preview.sh*)",
+      "Bash(bash scripts/agent/action-contract.sh)",
+      "Bash(pnpm install)",
+      "Bash(pnpm run lint)",
+      "Bash(pnpm run format:check)",
+      "Bash(pnpm run ci-test)",
+      "Bash(pnpm exec jest*)"
+    ],
+    "deny": [
+      "Read(./.env*)",
+      "Edit(./.env*)",
+      "Bash(cat .env*)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push origin main)",
+      "Bash(git push origin HEAD:main*)",
+      "Bash(npm install*)",
+      "Bash(npm i *)",
+      "Bash(yarn *)"
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "megalinter": {
+      "source": {
+        "source": "github",
+        "repo": "oxsecurity/megalinter"
+      }
+    },
+    "egm": {
+      "source": {
+        "source": "github",
+        "repo": "google/elephant-goldfish-model"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "megalinter@megalinter": true,
+    "egm@egm": true
+  }
+}

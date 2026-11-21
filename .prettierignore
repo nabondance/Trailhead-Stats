@@ -2,3 +2,5 @@ dist/
 node_modules/
 coverage/
 pnpm-lock.yaml
+.claude/worktrees/
+.agent-output/
