@@ -30,6 +30,7 @@
       "Bash(bash scripts/agent/card-preview.sh*)",
       "Bash(bash scripts/agent/action-contract.sh)",
       "Bash(pnpm install)",
+      "Bash(pnpm install --frozen-lockfile)",
       "Bash(pnpm run lint)",
       "Bash(pnpm run format:check)",
       "Bash(pnpm run ci-test)"

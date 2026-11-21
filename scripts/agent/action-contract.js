@@ -3,23 +3,28 @@ const fs = require('fs')
 const path = require('path')
 const { ROOT, readActionInputs } = require('./lib/action-yml')
 
-function readSourceInputs() {
-  const source = fs.readFileSync(
-    path.join(ROOT, 'src', 'actionInputs.js'),
-    'utf8'
-  )
+function parseSourceInputs(source) {
   const inputs = new Map()
-  const pattern = /getInput\(\s*'([^']+)',\s*\{\s*required:\s*(true|false)/g
-  for (const [, name, required] of source.matchAll(pattern)) {
-    inputs.set(name, required === 'true')
-  }
   const validated = new Set()
+  const pattern =
+    /\bget(Boolean|Multiline)?Input\(\s*'([^']+)'(?:,\s*\{[^}]*?\brequired:\s*(true|false)[^}]*\})?/g
+  for (const [, type, name, required] of source.matchAll(pattern)) {
+    inputs.set(name, required === 'true')
+    // getBooleanInput rejects non-boolean values itself.
+    if (type === 'Boolean') validated.add(name)
+  }
   for (const [, name] of source.matchAll(
     /validate\w+Field\(\s*this\.\w+,\s*'([^']+)'/g
   )) {
     validated.add(name)
   }
   return { inputs, validated }
+}
+
+function readSourceInputs() {
+  return parseSourceInputs(
+    fs.readFileSync(path.join(ROOT, 'src', 'actionInputs.js'), 'utf8')
+  )
 }
 
 function section(text, start, end) {
@@ -91,4 +96,4 @@ if (require.main === module) {
   console.log(`Contract: OK (${count} inputs)`)
 }
 
-module.exports = { checkContract }
+module.exports = { checkContract, parseSourceInputs }

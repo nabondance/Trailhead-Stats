@@ -37,7 +37,14 @@ describe('dist-guard commands', () => {
     'find dist -name "*.js" -exec rm {} +',
     'git rm dist/index.js',
     'git checkout origin/other -- dist',
-    'git restore --source=origin/other dist'
+    'git restore --source=origin/other dist',
+    "# don't keep the old build\nrm -rf dist",
+    '# clean up\nrm -rf dist',
+    'echo a#b; rm -rf dist',
+    'cat x > >(tee dist/a)',
+    'cd src && pnpm all',
+    'cd "$ROOT" && pnpm bundle',
+    'pnpm -C . run package'
   ])('blocks %s', command => {
     expect(blocked(command)).toBe(true)
   })
@@ -65,7 +72,13 @@ describe('dist-guard commands', () => {
     'git checkout origin/main -- dist',
     'git restore dist/',
     '(cd dist && ls); rm index.js',
-    'cd /tmp && rm -rf dist'
+    'cd /tmp && rm -rf dist',
+    'echo hi # note; rm -rf dist',
+    '# pnpm bundle; rm -rf dist\nls',
+    'cd /tmp/other && pnpm run package',
+    'pnpm -C /tmp/other run package',
+    'pnpm --dir=/tmp/other bundle',
+    'pnpm -C /tmp/other exec ncc build src/index.js'
   ])('allows %s', command => {
     expect(blocked(command)).toBe(false)
   })

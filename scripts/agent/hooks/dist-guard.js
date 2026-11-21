@@ -1,5 +1,5 @@
 // PreToolUse hook: blocks agent writes to the frozen dist/ folder.
-// It parses shell commands, so text inside quotes or heredocs never matches.
+// It parses shell commands, so quoted text, comments and heredocs never match.
 // This prevents accidents. CI's dist-guard.yml remains the real enforcement.
 const fs = require('fs')
 const path = require('path')
@@ -11,6 +11,7 @@ const MESSAGE =
 const DIST_SCRIPTS = new Set(['all', 'bundle', 'package', 'package:watch'])
 const PACKAGE_MANAGERS = new Set(['pnpm', 'npm', 'yarn'])
 const VALUE_FLAGS = new Set(['-C', '--dir', '--prefix', '--filter', '-F'])
+const DIRECTORY_FLAGS = new Set(['-C', '--dir', '--prefix'])
 const WRAPPERS = new Set(['command', 'env', 'exec', 'nice', 'nohup', 'sudo'])
 const SHELLS = new Set(['bash', 'sh', 'zsh'])
 const FILE_WRITERS = new Set([
@@ -86,6 +87,7 @@ function parseShell(text) {
     if (argv.length > 0 || redirects.length > 0) steps.push({ argv, redirects })
     argv = []
     redirects = []
+    pending = null
   }
   const dropFileDescriptor = () => {
     if (word !== null && /^\d+$/.test(word)) word = null
@@ -119,6 +121,9 @@ function parseShell(text) {
     } else if (char === "'" || char === '"') {
       quote = char
       word = word ?? ''
+    } else if (char === '#' && word === null) {
+      const end = text.indexOf('\n', i)
+      i = (end === -1 ? text.length : end) - 1
     } else if (char === '\n') {
       endCommand()
       if (heredocs.length > 0) {
@@ -198,24 +203,45 @@ function stripPrefixes(argv) {
   return rest
 }
 
+function isInsideRepo(directory, root) {
+  const relative = path.relative(root, directory)
+  return !(
+    relative === '..' ||
+    relative.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relative)
+  )
+}
+
 function packageWritesDist(args, context) {
   const rest = [...args]
+  let directory = context.cwd
   const skipFlags = () => {
     while (rest[0]?.startsWith('-')) {
-      if (VALUE_FLAGS.has(rest.shift())) rest.shift()
+      const flag = rest.shift()
+      const inline = flag.match(/^--(?:dir|prefix)=(.*)$/)
+      if (inline) {
+        directory = nextCwd(inline[1], directory)
+      } else if (VALUE_FLAGS.has(flag)) {
+        const value = rest.shift()
+        if (DIRECTORY_FLAGS.has(flag)) directory = nextCwd(value, directory)
+      }
     }
   }
   skipFlags()
   let first = rest.shift()
   if (first === 'exec' || first === 'dlx') {
     skipFlags()
-    return commandWritesDist(rest, context)
+    return commandWritesDist(rest, { ...context, cwd: directory })
   }
   if (first === 'run' || first === 'run-script') {
     skipFlags()
     first = rest.shift()
   }
-  return DIST_SCRIPTS.has(first)
+  // An unknown directory stays blocked: it may well be this repo.
+  return (
+    DIST_SCRIPTS.has(first) &&
+    (directory === null || isInsideRepo(directory, context.root))
+  )
 }
 
 function nccWritesDist(args, context) {

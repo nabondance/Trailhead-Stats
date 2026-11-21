@@ -20,7 +20,8 @@ Never create repo issues, labels or milestones. Never touch `dist/`.
    Leave `[v3.0][Release]` for last.
 3. **Start:** set the item to `In Progress` with `gh project item-edit`, using
    IDs from `gh project field-list 1 --owner nabondance --format json`. Create a
-   worktree on a new `type/short-name` branch from `origin/main`.
+   worktree on a new `type/short-name` branch from `origin/main`, then run
+   `pnpm install --frozen-lockfile` inside it.
 4. **Implement** only that item. Add or update tests.
 5. **Check:** run `verify`. Also run `smoke` if fetching or rendering changed,
    `golden` if output changed, `action-contract` if inputs changed, and
