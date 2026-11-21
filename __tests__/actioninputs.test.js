@@ -27,6 +27,7 @@ describe('Input Validation Tests', () => {
     inputs.showSkillCustomColorLow = '#FFFFFF'
     inputs.outputOnly = false
     inputs.noCommit = false
+    inputs.token = ''
     inputs.darkStyle = 'dimmed'
     inputs.showSkill = 'visible'
     inputs.showCertification = 'detail'
@@ -584,6 +585,20 @@ describe('Input Validation Tests', () => {
       expect(() => {
         inputs.validateShowStampLatest()
       }).not.toThrow()
+    })
+  })
+
+  describe('validateToken', () => {
+    it('accepts an empty token', () => {
+      inputs.token = ''
+      expect(() => inputs.validateToken()).not.toThrow()
+    })
+
+    it('rejects a non-string token', () => {
+      inputs.token = 123
+      expect(() => inputs.validateToken()).toThrow(
+        'token must be a string, got number: 123'
+      )
     })
   })
 

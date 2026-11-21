@@ -11,7 +11,11 @@ const main = require('../src/main')
 
 jest.mock('@actions/core')
 jest.mock('../src/getStats')
-jest.mock('../src/updateFile')
+jest.mock('../src/updateFile', () => ({
+  ...jest.requireActual('../src/updateFile'),
+  updateStatsOnFile: jest.fn(),
+  pushUpdatedFile: jest.fn()
+}))
 jest.mock('../src/cardGenerator', () => ({
   ...jest.requireActual('../src/cardGenerator'),
   generateCard: jest.fn()
@@ -36,6 +40,7 @@ function setInputs(overrides = {}) {
     ...defaults,
     'trailhead-username': 'thUsername',
     'no-commit': 'false',
+    token: 'gh-token',
     ...overrides
   }
   core.getInput.mockImplementation(name => values[name] ?? '')
@@ -67,9 +72,11 @@ describe('run', () => {
       'README.md',
       expect.stringContaining('Rank')
     )
+    // Text mode commits the display file only, with the token input.
     expect(updateFile.pushUpdatedFile).toHaveBeenCalledWith(
       'README.md',
-      'images'
+      [],
+      'gh-token'
     )
     expect(core.setOutput).toHaveBeenCalledWith('stats', expect.any(String))
   })
@@ -83,6 +90,31 @@ describe('run', () => {
     expect(cardGenerator.generateCard).toHaveBeenCalledTimes(2)
     expect(updateFile.updateStatsOnFile).not.toHaveBeenCalled()
     expect(core.setOutput).toHaveBeenCalledWith('stats', expect.any(String))
+  })
+
+  it('commits only the two card images for a card', async () => {
+    setInputs({ 'display-type': 'card', 'card-path': 'images' })
+
+    await main.run()
+
+    expect(core.setFailed).not.toHaveBeenCalled()
+    expect(updateFile.pushUpdatedFile).toHaveBeenCalledWith(
+      'README.md',
+      ['images/TScard-light.png', 'images/TScard-dark.png'],
+      'gh-token'
+    )
+  })
+
+  it('writes nothing when card-path leaves the repository', async () => {
+    setInputs({ 'display-type': 'card', 'card-path': '../outside' })
+
+    await main.run()
+
+    expect(core.setFailed).toHaveBeenCalledWith(
+      'Error generating the card: card-path must stay inside the repository, got: ../outside'
+    )
+    expect(cardGenerator.generateCard).not.toHaveBeenCalled()
+    expectNothingWritten()
   })
 
   it('does not commit when no-commit is set', async () => {

@@ -53,6 +53,7 @@ class ActionInputs {
     this.showSkillTheme = core.getInput('show-skill-theme', { required: false })
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
+    this.token = core.getInput('token', { required: false })
     this.darkStyle = core.getInput('dark-style', { required: false })
     this.showSkill = core.getInput('show-skill', { required: false })
     this.showCertification = core.getInput('show-certification', {
@@ -100,6 +101,7 @@ class ActionInputs {
       this.validateShowSkillCustomColorLow()
       this.validateOutputOnly()
       this.validateNoCommit()
+      this.validateToken()
       this.validateDarkStyle()
       this.validateShowSkill()
       this.validateShowCertification()
@@ -120,6 +122,12 @@ class ActionInputs {
   validateTrailheadUsername() {
     validateRequiredField(this.trailheadUsername, 'trailhead-username')
     validateStringField(this.trailheadUsername, 'trailhead-username')
+  }
+
+  validateToken() {
+    // Empty is allowed: the push then uses the credentials persisted by
+    // actions/checkout.
+    validateStringField(this.token, 'token')
   }
 
   validateDisplayType() {

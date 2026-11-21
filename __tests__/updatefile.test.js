@@ -1,119 +1,309 @@
-const { updateStatsOnFile, pushUpdatedFile } = require('./../src/updateFile')
-const core = require('@actions/core')
+/**
+ * Runs the real git commands against a throwaway repository and a local bare
+ * remote, so what is committed and pushed is checked, not just mocked calls.
+ */
+const childProcess = require('child_process')
 const fs = require('fs')
-const { execSync } = require('child_process')
+const os = require('os')
 const path = require('path')
+const core = require('@actions/core')
+const {
+  updateStatsOnFile,
+  pushUpdatedFile,
+  workspacePath
+} = require('../src/updateFile')
 
-jest.mock('fs', () => {
-  const originalModule = jest.requireActual('fs')
+jest.mock('@actions/core')
 
-  return {
-    ...originalModule,
-    promises: {
-      readFile: jest.fn().mockResolvedValue('mock file content'),
-      writeFile: jest.fn().mockResolvedValue()
-    },
-    readFileSync: jest.fn().mockReturnValue('mock file content'),
-    writeFileSync: jest.fn().mockReturnValue()
-  }
+const TAGGED = 'Intro\n<!--TH_Stats:start-->\nold\n<!--TH_Stats:end-->\nOutro\n'
+const ENV_KEYS = [
+  'GITHUB_WORKSPACE',
+  'GITHUB_REF',
+  'GITHUB_SERVER_URL',
+  'GIT_CONFIG_GLOBAL',
+  'GIT_CONFIG_NOSYSTEM',
+  'GIT_CONFIG_COUNT',
+  'GIT_CONFIG_KEY_0',
+  'GIT_CONFIG_VALUE_0'
+]
+const savedEnv = Object.fromEntries(ENV_KEYS.map(k => [k, process.env[k]]))
+
+let tmp, ws, remote, globalConfig
+
+const run = (cwd, ...args) =>
+  childProcess.execFileSync('git', args, { cwd, encoding: 'utf8' }).trim()
+const remoteLog = () => run(remote, 'log', '--format=%an|%s', 'main')
+const remoteFiles = () =>
+  run(remote, 'show', '--name-only', '--format=', 'main').split('\n')
+const write = (file, content) => {
+  fs.mkdirSync(path.dirname(path.join(ws, file)), { recursive: true })
+  fs.writeFileSync(path.join(ws, file), content)
+}
+
+beforeEach(() => {
+  jest.clearAllMocks()
+  tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'th-update-')))
+  ws = path.join(tmp, 'ws')
+  remote = path.join(tmp, 'remote.git')
+  // Keep the developer's git config (signing, identity...) out of the test.
+  globalConfig = path.join(tmp, 'gitconfig')
+  fs.writeFileSync(globalConfig, '')
+  process.env.GIT_CONFIG_GLOBAL = globalConfig
+  process.env.GIT_CONFIG_NOSYSTEM = '1'
+  delete process.env.GIT_CONFIG_COUNT
+
+  run(tmp, 'init', '-q', '--bare', '-b', 'main', remote)
+  run(tmp, 'init', '-q', '-b', 'main', ws)
+  write('README.md', TAGGED)
+  run(ws, 'add', '.')
+  run(ws, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-qm', 'init')
+  run(ws, 'remote', 'add', 'origin', remote)
+  run(ws, 'push', '-q', 'origin', 'main')
+
+  process.env.GITHUB_WORKSPACE = ws
+  process.env.GITHUB_REF = 'refs/heads/main'
 })
 
-jest.mock('child_process', () => ({
-  execSync: jest.fn()
-}))
-jest.mock('@actions/core')
-jest.mock('axios')
+afterEach(() => {
+  for (const [k, v] of Object.entries(savedEnv)) {
+    if (v === undefined) delete process.env[k]
+    else process.env[k] = v
+  }
+  fs.rmSync(tmp, { recursive: true, force: true })
+})
 
-describe('Update File Tests', () => {
-  const mockDisplayFile = 'readme.md'
-  const mockCardFile = 'images/TS.png'
-  const mockDataContent = 'New stats data'
-  let mockFilePath
+describe('updateStatsOnFile', () => {
+  it('replaces the content between the tags', () => {
+    updateStatsOnFile('README.md', 'new stats')
 
-  beforeEach(() => {
-    jest.resetAllMocks()
-    execSync.mockClear()
-    process.env.GITHUB_WORKSPACE = '/home/runner/work/nabondance/nabondance'
-    process.env.GITHUB_REF = 'refs/heads/main'
-    process.env.GITHUB_TOKEN = 'fake-token'
-    process.env.GITHUB_REPOSITORY = 'user/repo'
-    mockFilePath = path.join(process.env.GITHUB_WORKSPACE, mockDisplayFile)
+    expect(fs.readFileSync(path.join(ws, 'README.md'), 'utf8')).toBe(
+      'Intro\n<!--TH_Stats:start-->\nnew stats\n<!--TH_Stats:end-->\nOutro\n'
+    )
   })
 
-  describe('updateStatsOnFile', () => {
-    it('should update file content successfully', () => {
-      const mockFileContent = `Old content\n<!--TH_Stats:start-->old stats<!--TH_Stats:end-->\nMore old content`
-      fs.readFileSync.mockReturnValue(mockFileContent)
-      fs.writeFileSync.mockReturnValue(undefined)
+  it('throws and leaves the file alone when the tags are missing', () => {
+    write('README.md', 'No tags here')
 
-      updateStatsOnFile(mockDisplayFile, mockDataContent)
-
-      expect(fs.readFileSync).toHaveBeenCalledWith(mockFilePath, 'utf8')
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
-        mockFilePath,
-        expect.stringContaining(mockDataContent),
-        'utf8'
-      )
-    })
-
-    it('should throw an error if tags are not found', () => {
-      jest.spyOn(console, 'error').mockImplementation(() => {})
-      fs.readFileSync.mockReturnValue('No tags here')
-
-      expect(() => updateStatsOnFile(mockDisplayFile, mockDataContent)).toThrow(
-        `Start or end tag not found in ${mockDisplayFile}`
-      )
-      expect(fs.writeFileSync).not.toHaveBeenCalled()
-    })
+    expect(() => updateStatsOnFile('README.md', 'new stats')).toThrow(
+      'Error updating README.md: Start or end tag not found in README.md'
+    )
+    expect(fs.readFileSync(path.join(ws, 'README.md'), 'utf8')).toBe(
+      'No tags here'
+    )
   })
 
-  describe('pushUpdatedFile', () => {
-    it('should push updated file successfully when there are changes', () => {
-      // Simulate git status showing changes
-      execSync.mockImplementation(cmd => {
-        if (cmd === 'git status --porcelain') {
-          return 'M somefile'
-        }
-        return ''
-      })
+  it('refuses a display-file outside the repository', () => {
+    fs.writeFileSync(path.join(tmp, 'outside.md'), TAGGED)
 
-      pushUpdatedFile(mockDisplayFile, './')
+    expect(() => updateStatsOnFile('../outside.md', 'x')).toThrow(
+      'display-file must stay inside the repository, got: ../outside.md'
+    )
+    expect(fs.readFileSync(path.join(tmp, 'outside.md'), 'utf8')).toBe(TAGGED)
+  })
 
-      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
-      expect(execSync).toHaveBeenCalledWith(
-        expect.stringContaining('git commit')
+  it('refuses a display-file reached through a symlink out of the repository', () => {
+    fs.mkdirSync(path.join(tmp, 'elsewhere'))
+    fs.writeFileSync(path.join(tmp, 'elsewhere', 'README.md'), TAGGED)
+    fs.symlinkSync(path.join(tmp, 'elsewhere'), path.join(ws, 'link'))
+
+    expect(() => updateStatsOnFile('link/README.md', 'x')).toThrow(
+      'display-file must stay inside the repository'
+    )
+  })
+})
+
+describe('workspacePath', () => {
+  it.each(['./', '.', 'TS-cards', './TS-cards/new/dir', 'a/../b'])(
+    'accepts %s',
+    p => {
+      expect(workspacePath(p, 'card-path')).toBe(path.resolve(ws, p))
+    }
+  )
+
+  it.each(['..', '../x', '/etc', 'a/../../x'])('rejects %s', p => {
+    expect(() => workspacePath(p, 'card-path')).toThrow(
+      `card-path must stay inside the repository, got: ${p}`
+    )
+  })
+})
+
+describe('pushUpdatedFile', () => {
+  it('commits only the display file and the card images', () => {
+    write('README.md', 'updated')
+    write('TS-cards/TScard-light.png', 'light')
+    write('TS-cards/TScard-dark.png', 'dark')
+    write('TS-cards/other.png', 'not a card')
+    write('junk.txt', 'untracked junk')
+
+    pushUpdatedFile('README.md', [
+      'TS-cards/TScard-light.png',
+      'TS-cards/TScard-dark.png'
+    ])
+
+    expect(remoteLog().split('\n')[0]).toBe(
+      'Trailhead-Stats|Update Trailhead Stats in README.md'
+    )
+    expect(remoteFiles().sort()).toEqual([
+      'README.md',
+      'TS-cards/TScard-dark.png',
+      'TS-cards/TScard-light.png'
+    ])
+    // The identity is per command: no global git config is written.
+    expect(fs.readFileSync(globalConfig, 'utf8')).toBe('')
+    expect(run(ws, 'remote', 'get-url', 'origin')).toBe(remote)
+  })
+
+  it('commits the cards when card-path is the repository root', () => {
+    write('TScard-light.png', 'light')
+    write('TScard-dark.png', 'dark')
+    write('junk.txt', 'untracked junk')
+
+    pushUpdatedFile('README.md', ['./TScard-light.png', './TScard-dark.png'])
+
+    expect(remoteFiles().sort()).toEqual([
+      'TScard-dark.png',
+      'TScard-light.png'
+    ])
+  })
+
+  it('skips card files that do not exist', () => {
+    write('README.md', 'updated')
+
+    pushUpdatedFile('README.md', ['images/TScard-light.png'])
+
+    expect(remoteFiles()).toEqual(['README.md'])
+  })
+
+  it('does not commit when nothing changed', () => {
+    pushUpdatedFile('README.md', [])
+
+    expect(remoteLog()).toBe('t|init')
+  })
+
+  it('pushes to the branch the workflow runs on', () => {
+    run(ws, 'checkout', '-q', '-b', 'stats/profile')
+    process.env.GITHUB_REF = 'refs/heads/stats/profile'
+    write('README.md', 'updated')
+
+    pushUpdatedFile('README.md', [])
+
+    expect(run(remote, 'log', '--format=%s', '-1', 'stats/profile')).toBe(
+      'Update Trailhead Stats in README.md'
+    )
+    expect(remoteLog()).toBe('t|init')
+  })
+
+  it.each(['refs/pull/7/merge', 'refs/tags/v1', ''])(
+    'refuses to commit from %j',
+    ref => {
+      process.env.GITHUB_REF = ref
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [])).toThrow(
+        `Error pushing changes: cannot commit from ${ref || 'an unknown ref'}`
       )
-      expect(execSync).toHaveBeenCalledWith(expect.stringContaining('git push'))
+      expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
+    }
+  )
+
+  it('never runs input values through a shell', () => {
+    const name = 'stats $(touch pwned) `touch pwned2`; touch pwned3.md'
+    write(name, TAGGED)
+    run(ws, 'add', '--', name)
+    run(ws, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-qm', 'add')
+    write(name, 'updated')
+
+    pushUpdatedFile(name, [])
+
+    for (const file of ['pwned', 'pwned2', 'pwned3.md']) {
+      expect(fs.existsSync(path.join(ws, file))).toBe(false)
+    }
+    expect(remoteFiles()).toEqual([name])
+  })
+
+  it('refuses card files outside the repository', () => {
+    expect(() => pushUpdatedFile('README.md', ['../TScard-light.png'])).toThrow(
+      'card-path must stay inside the repository, got: ../TScard-light.png'
+    )
+  })
+
+  describe('with a token', () => {
+    const token = 'ghs_secret123'
+    const basic = Buffer.from(`x-access-token:${token}`).toString('base64')
+    let execFileSync
+
+    beforeEach(() => {
+      execFileSync = jest.spyOn(childProcess, 'execFileSync')
+    })
+    afterEach(() => execFileSync.mockRestore())
+
+    const pushCall = () =>
+      execFileSync.mock.calls.find(
+        ([cmd, args]) => cmd === 'git' && args.includes('push')
+      )
+
+    it('sends it as the only Authorization header, through the environment', () => {
+      process.env.GITHUB_SERVER_URL = 'https://ghe.example.com/'
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], token)
+
+      const [, args, options] = pushCall()
+      expect(args).toEqual(['push', 'origin', 'HEAD:refs/heads/main'])
+      expect(
+        JSON.stringify(execFileSync.mock.calls.map(c => c[1]))
+      ).not.toContain(basic)
+      expect(options.env).toMatchObject({
+        GIT_CONFIG_COUNT: '2',
+        GIT_CONFIG_KEY_0: 'http.https://ghe.example.com/.extraheader',
+        GIT_CONFIG_VALUE_0: '',
+        GIT_CONFIG_KEY_1: 'http.https://ghe.example.com/.extraheader',
+        GIT_CONFIG_VALUE_1: `AUTHORIZATION: basic ${basic}`
+      })
+      expect(core.setSecret).toHaveBeenCalledWith(token)
+      expect(core.setSecret).toHaveBeenCalledWith(basic)
     })
 
-    it('should not push when there are no changes', () => {
-      // Simulate git status showing no changes
-      execSync.mockImplementation(cmd => {
-        if (cmd === 'git status --porcelain') {
-          return ''
-        }
-        return ''
+    it('keeps config entries already passed through the environment', () => {
+      process.env.GIT_CONFIG_COUNT = '1'
+      process.env.GIT_CONFIG_KEY_0 = 'core.autocrlf'
+      process.env.GIT_CONFIG_VALUE_0 = 'false'
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], token)
+
+      expect(pushCall()[2].env).toMatchObject({
+        GIT_CONFIG_COUNT: '3',
+        GIT_CONFIG_KEY_0: 'core.autocrlf',
+        GIT_CONFIG_KEY_1: 'http.https://github.com/.extraheader',
+        GIT_CONFIG_KEY_2: 'http.https://github.com/.extraheader'
       })
-
-      pushUpdatedFile(mockDisplayFile, undefined)
-
-      expect(execSync).toHaveBeenCalledWith(`git add ${mockFilePath}`)
-      expect(execSync).not.toHaveBeenCalledWith(
-        expect.stringContaining('git commit')
-      )
-      expect(execSync).not.toHaveBeenCalledWith(
-        expect.stringContaining('git push')
-      )
     })
 
-    it('should handle git command failure', () => {
-      execSync.mockImplementation(() => {
-        throw new Error('Git command failed')
-      })
+    it('uses the persisted credentials when the token is empty', () => {
+      write('README.md', 'updated')
 
-      expect(() => pushUpdatedFile(mockDisplayFile, mockCardFile)).toThrow(
-        'Error pushing changes: Git command failed'
-      )
+      pushUpdatedFile('README.md', [], '')
+
+      expect(pushCall()[2].env).toBe(process.env)
+      expect(core.setSecret).not.toHaveBeenCalled()
+    })
+
+    it('reports a failed push without the token or the command', () => {
+      fs.rmSync(remote, { recursive: true, force: true })
+      write('README.md', 'updated')
+
+      let message = ''
+      try {
+        pushUpdatedFile('README.md', [], token)
+      } catch (error) {
+        message = error.message
+      }
+
+      expect(message).toMatch(/^Error pushing changes: git push failed: /)
+      expect(message).not.toContain(token)
+      expect(message).not.toContain(basic)
+      expect(message).not.toContain('extraheader')
     })
   })
 })

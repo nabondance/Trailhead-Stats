@@ -8,8 +8,13 @@ const {
   getSkillBackgroundColor
 } = require('./cardCss')
 
+// Where a card is written, and what gets committed.
+function cardFilePath(cardPath, styleTheme) {
+  return path.join(cardPath, `TScard-${styleTheme}.png`)
+}
+
 async function generateCard(dataToFormat, inputs, styleTheme) {
-  const cardFullPath = path.join(inputs.cardPath, `TScard-${styleTheme}.png`)
+  const cardFullPath = cardFilePath(inputs.cardPath, styleTheme)
   const htmlContent = generateHtmlContent(dataToFormat, inputs, styleTheme)
 
   // Debugs
@@ -328,6 +333,7 @@ function hashHtml(htmlContent) {
 }
 
 module.exports = {
+  cardFilePath,
   generateCard,
   generateHtmlContent,
   selectHtmlDisplay,

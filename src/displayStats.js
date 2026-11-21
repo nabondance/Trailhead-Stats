@@ -1,6 +1,7 @@
 const core = require('@actions/core')
 const { generateCard } = require('./cardGenerator')
 const { mkdirSync } = require('fs')
+const { workspacePath } = require('./updateFile')
 
 async function displayStats(
   inputs,
@@ -244,8 +245,8 @@ function displayStatsOutput(dataToFormat) {
 
 async function displayStatsCard(inputs, dataToFormat) {
   try {
-    // Create the card path if it doesn't exist
-    mkdirSync(inputs.cardPath, { recursive: true })
+    // Create the card path if it doesn't exist. It must be in the repository.
+    mkdirSync(workspacePath(inputs.cardPath, 'card-path'), { recursive: true })
 
     // Await the generation of the card and get the full path
     const fullPathLight = await generateCard(dataToFormat, inputs, 'light')
