@@ -8,8 +8,11 @@ const MESSAGE =
   'dist/ is frozen: @main users run it, and only release PRs may change it. ' +
   'Use `bash scripts/agent/verify.sh`, which builds to a temp folder.'
 
+const WORKTREES = '.claude/worktrees'
 const DIST_SCRIPTS = new Set(['all', 'bundle', 'package', 'package:watch'])
 const PACKAGE_MANAGERS = new Set(['pnpm', 'npm', 'yarn'])
+// Package manager commands that share a name with a file command below.
+const PACKAGE_COMMANDS = new Set(['rm', 'ln', 'unlink', 'find'])
 const VALUE_FLAGS = new Set(['-C', '--dir', '--prefix', '--filter', '-F'])
 const DIRECTORY_FLAGS = new Set(['-C', '--dir', '--prefix'])
 const WRAPPERS = new Set(['command', 'env', 'exec', 'nice', 'nohup', 'sudo'])
@@ -186,16 +189,30 @@ function parseShell(text) {
   return { steps, nested }
 }
 
+// Worktrees can sit several folders deep because branch names contain `/`.
+// Their top folder is the one holding a `.git` entry.
+function pathInsideWorktree(relative, root) {
+  if (!relative.startsWith(`${WORKTREES}/`)) return relative
+  const parts = relative.slice(WORKTREES.length + 1).split('/')
+  for (let depth = 1; depth < parts.length; depth++) {
+    const top = path.join(root, WORKTREES, ...parts.slice(0, depth))
+    if (fs.existsSync(path.join(top, '.git'))) {
+      return parts.slice(depth).join('/')
+    }
+  }
+  return parts.slice(1).join('/')
+}
+
 function isDistPath(file, root) {
   const relative = path.relative(root, path.resolve(root, file))
   if (relative.startsWith('..') || path.isAbsolute(relative)) return false
-  const inner = relative.replace(/^\.claude\/worktrees\/[^/]+\//, '')
+  const inner = pathInsideWorktree(relative, root)
   return inner === 'dist' || inner.startsWith('dist/')
 }
 
+// An unknown directory (cwd null) is read as the repo root: it may well be it.
 function targetsDist(file, { root, cwd }) {
   if (!file || file.startsWith('$') || file.startsWith('~')) return false
-  if (!path.isAbsolute(file) && cwd === null) return false
   return isDistPath(path.resolve(cwd ?? root, file), root)
 }
 
@@ -248,15 +265,30 @@ function packageWritesDist(args, context) {
     skipFlags()
     return commandWritesDist(rest, { ...context, cwd: directory })
   }
-  if (first === 'run' || first === 'run-script') {
+  const isRun = first === 'run' || first === 'run-script'
+  if (isRun) {
     skipFlags()
     first = rest.shift()
   }
   // An unknown directory stays blocked: it may well be this repo.
-  return (
-    DIST_SCRIPTS.has(first) &&
-    (directory === null || isInsideRepo(directory, context.root))
-  )
+  if (DIST_SCRIPTS.has(first)) {
+    return directory === null || isInsideRepo(directory, context.root)
+  }
+  if (isRun || first === undefined || PACKAGE_COMMANDS.has(first)) return false
+  // `pnpm ncc build` runs the local binary, exactly like `pnpm exec ncc build`.
+  return commandWritesDist([first, ...rest], { ...context, cwd: directory })
+}
+
+function npxWritesDist(args, context) {
+  const rest = [...args]
+  while (rest[0]?.startsWith('-')) {
+    const flag = rest.shift()
+    if (flag === '-c' || flag === '--call') {
+      return scriptWritesDist(rest[0] ?? '', context)
+    }
+    if (flag === '-p' || flag === '--package') rest.shift()
+  }
+  return commandWritesDist(rest, context)
 }
 
 function nccWritesDist(args, context) {
@@ -318,12 +350,7 @@ function commandWritesDist(rawArgv, context) {
     return flag !== -1 && scriptWritesDist(args[flag + 1] ?? '', context)
   }
   if (PACKAGE_MANAGERS.has(name)) return packageWritesDist(args, context)
-  if (name === 'npx') {
-    return commandWritesDist(
-      args.filter(arg => !arg.startsWith('-')),
-      context
-    )
-  }
+  if (name === 'npx') return npxWritesDist(args, context)
   if (name === 'ncc') return nccWritesDist(args, context)
   if (name === 'git') return gitWritesDist(args, context)
   if (FILE_WRITERS.has(name)) return operands(args).some(inDist)

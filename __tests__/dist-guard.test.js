@@ -1,3 +1,6 @@
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
 const {
   isBlockedCommand,
   isDistPath
@@ -48,7 +51,19 @@ describe('dist-guard commands', () => {
     'git -C dist rm index.js',
     '(( 1 << 2 ))\nrm -rf dist',
     'if (( 1 << 2 )); then rm -rf dist; fi',
-    '((cd dist; rm index.js); ls)'
+    '((cd dist; rm index.js); ls)',
+    'cd "$ROOT" && rm -rf dist',
+    'cd "$CLAUDE_PROJECT_DIR" && rm -rf dist',
+    'cd "$(git rev-parse --show-toplevel)" && rm -rf dist/index.js',
+    'cd "$ROOT" && echo x > dist/index.js',
+    'cd "$ROOT" && pnpm exec ncc build src/index.js',
+    'pnpm ncc build src/index.js',
+    'pnpm -s ncc build src/index.js -o dist',
+    'yarn ncc build src/index.js',
+    'npx ncc build src/index.js',
+    'npx --yes ncc build src/index.js',
+    'npx -p @vercel/ncc ncc build src/index.js',
+    'npx -c "ncc build src/index.js"'
   ])('blocks %s', command => {
     expect(blocked(command)).toBe(true)
   })
@@ -84,7 +99,17 @@ describe('dist-guard commands', () => {
     'pnpm --dir=/tmp/other bundle',
     'pnpm -C /tmp/other exec ncc build src/index.js',
     'git -C /tmp/other rm dist/index.js',
-    '(( 1 << 2 ))'
+    '(( 1 << 2 ))',
+    'cd "$ROOT" && rm -rf src/tmp',
+    'cd "$ROOT" && pnpm exec ncc build src/index.js -o /tmp/out',
+    'pnpm ncc build src/index.js -o /tmp/out',
+    'pnpm -C /tmp/other ncc build src/index.js',
+    'pnpm rm dist',
+    'pnpm run ncc',
+    'pnpm install',
+    'npx ncc build src/index.js -o /tmp/out',
+    'npx --yes ncc build src/index.js --out=/tmp/out',
+    'npx -p @vercel/ncc ncc build src/index.js -o /tmp/out'
   ])('allows %s', command => {
     expect(blocked(command)).toBe(false)
   })
@@ -109,5 +134,35 @@ describe('dist-guard paths', () => {
     ['/tmp/dist/index.js', false]
   ])('%s → %s', (file, expected) => {
     expect(isDistPath(file, root)).toBe(expected)
+  })
+
+  describe('with a worktree on a type/name branch', () => {
+    let repo
+
+    beforeAll(() => {
+      repo = fs.mkdtempSync(path.join(os.tmpdir(), 'dist-guard-'))
+      const worktree = path.join(repo, '.claude/worktrees/feat/foo')
+      fs.mkdirSync(worktree, { recursive: true })
+      fs.writeFileSync(path.join(worktree, '.git'), 'gitdir: elsewhere\n')
+    })
+
+    afterAll(() => {
+      fs.rmSync(repo, { recursive: true, force: true })
+    })
+
+    it.each([
+      ['.claude/worktrees/feat/foo/dist', true],
+      ['.claude/worktrees/feat/foo/dist/index.js', true],
+      ['.claude/worktrees/feat/foo/src/main.js', false],
+      ['.claude/worktrees/feat/foo/packages/dist/index.js', false],
+      ['.claude/worktrees/feat/foo/node_modules/x/dist/index.js', false]
+    ])('%s → %s', (file, expected) => {
+      expect(isDistPath(path.join(repo, file), repo)).toBe(expected)
+    })
+
+    it('blocks a relative delete from the worktree', () => {
+      const cwd = path.join(repo, '.claude/worktrees/feat/foo')
+      expect(isBlockedCommand('rm -rf dist', { root: repo, cwd })).toBe(true)
+    })
   })
 })

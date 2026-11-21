@@ -49,7 +49,6 @@ const skills = earnedSkills => ({ data: { profile: { earnedSkills } } })
 const stamps = edges => ({
   data: {
     earnedStamps: {
-      count: edges.length,
       edges,
       pageInfo: { hasNextPage: false, endCursor: null }
     }
