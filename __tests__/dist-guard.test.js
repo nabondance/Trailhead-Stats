@@ -76,7 +76,13 @@ describe('dist-guard commands', () => {
     'npx @vercel/ncc@0.38.1 build src/index.js',
     'pnpm dlx @vercel/ncc@latest build src/index.js',
     'npm x ncc build src/index.js',
-    'cd dist && echo $(rm index.js)'
+    'cd dist && echo $(rm index.js)',
+    'git checkout origin/other -- .',
+    'git restore --source=origin/other .',
+    'cd src && git checkout origin/other -- ..',
+    'find . -name dist -type d -exec rm -rf {} +',
+    'find . -path "./dist/*" -delete',
+    'find .. -name dist -delete'
   ])('blocks %s', command => {
     expect(blocked(command)).toBe(true)
   })
@@ -129,7 +135,14 @@ describe('dist-guard commands', () => {
     'pnpm exec ncc build src/index.js -o "$out"',
     'cd "$ROOT/src" && rm -rf dist',
     'cd /tmp/x && echo $(rm -rf dist)',
-    'npx @vercel/ncc@0.38.1 build src/index.js -o /tmp/out'
+    'npx @vercel/ncc@0.38.1 build src/index.js -o /tmp/out',
+    'git checkout origin/other -- src',
+    'cd src && git checkout origin/other -- .',
+    'git checkout origin/main -- .',
+    'git restore .',
+    'find /tmp/x -name dist -delete',
+    'find src -name dist -delete',
+    'find . -name "*.tmp" -delete'
   ])('allows %s', command => {
     expect(blocked(command)).toBe(false)
   })
@@ -141,6 +154,32 @@ describe('dist-guard commands', () => {
 
   it('still sees commands after a heredoc', () => {
     expect(blocked('cat <<EOF\nhello\nEOF\npnpm bundle')).toBe(true)
+  })
+
+  describe('with a repo in the home folder', () => {
+    const homeRoot = path.join(os.homedir(), 'guard-test-repo')
+    const inHome = command =>
+      isBlockedCommand(command, { root: homeRoot, cwd: homeRoot })
+
+    it.each([
+      'rm -rf ~/guard-test-repo/dist',
+      'rm -rf "$HOME/guard-test-repo/dist"',
+      'rm -rf "${HOME}/guard-test-repo/dist/index.js"',
+      'cd ~/guard-test-repo && rm -rf dist',
+      'cd "$HOME/guard-test-repo/dist" && rm index.js',
+      'find ~ -name dist -delete'
+    ])('blocks %s', command => {
+      expect(inHome(command)).toBe(true)
+    })
+
+    it.each([
+      'rm -rf ~/other/dist',
+      'rm -rf "$HOME/other/dist"',
+      'cd ~/other && rm -rf dist',
+      'find ~/other -name dist -delete'
+    ])('allows %s', command => {
+      expect(inHome(command)).toBe(false)
+    })
   })
 })
 
@@ -183,6 +222,12 @@ describe('dist-guard paths', () => {
     it('blocks a relative delete from the worktree', () => {
       const cwd = path.join(repo, '.claude/worktrees/feat/foo')
       expect(isBlockedCommand('rm -rf dist', { root: repo, cwd })).toBe(true)
+    })
+
+    it('blocks restoring the whole worktree from another branch', () => {
+      const cwd = path.join(repo, '.claude/worktrees/feat/foo')
+      const command = 'git checkout origin/other -- .'
+      expect(isBlockedCommand(command, { root: repo, cwd })).toBe(true)
     })
   })
 })

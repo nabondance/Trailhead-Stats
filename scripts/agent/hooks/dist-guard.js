@@ -11,6 +11,7 @@ const MESSAGE =
 
 const WORKTREES = '.claude/worktrees'
 const TEMP_VARIABLE = /^\$\{?(?:TMPDIR|TMP|TEMP)\}?(?=\/|$)/
+const HOME_PREFIX = /^(?:~|\$\{?HOME\}?)(?=\/|$)/
 const LEADING_VARIABLES = /^(?:\$(?:\(\)|\{[^}]*\}|\w+)\/*)+(.*)$/
 const DIST_SCRIPTS = new Set(['all', 'bundle', 'package', 'package:watch'])
 const PACKAGE_MANAGERS = new Set(['pnpm', 'npm', 'yarn'])
@@ -200,7 +201,7 @@ function parseShell(text) {
 function pathInsideWorktree(relative, root) {
   if (!relative.startsWith(`${WORKTREES}/`)) return relative
   const parts = relative.slice(WORKTREES.length + 1).split('/')
-  for (let depth = 1; depth < parts.length; depth++) {
+  for (let depth = 1; depth <= parts.length; depth++) {
     const top = path.join(root, WORKTREES, ...parts.slice(0, depth))
     if (fs.existsSync(path.join(top, '.git'))) {
       return parts.slice(depth).join('/')
@@ -209,14 +210,22 @@ function pathInsideWorktree(relative, root) {
   return parts.slice(1).join('/')
 }
 
-function isDistPath(file, root) {
+// The path from the top of the repo or worktree, or null when outside the repo.
+function pathInRepo(file, root) {
   const relative = path.relative(root, path.resolve(root, file))
-  if (relative.startsWith('..') || path.isAbsolute(relative)) return false
-  const inner = pathInsideWorktree(relative, root)
-  return inner === 'dist' || inner.startsWith('dist/')
+  if (relative.startsWith('..') || path.isAbsolute(relative)) return null
+  return pathInsideWorktree(relative, root)
 }
 
-const expandTemp = file => file.replace(TEMP_VARIABLE, () => os.tmpdir())
+function isDistPath(file, root) {
+  const inner = pathInRepo(file, root)
+  return inner === 'dist' || Boolean(inner?.startsWith('dist/'))
+}
+
+const expandKnownFolders = file =>
+  file
+    .replace(TEMP_VARIABLE, () => os.tmpdir())
+    .replace(HOME_PREFIX, () => os.homedir())
 
 // `$ROOT/src` → `src`. Returns null when the path has no leading variable.
 function pathAfterVariables(file) {
@@ -226,17 +235,32 @@ function pathAfterVariables(file) {
 
 // An unknown directory (cwd null) is read as the repo root: it may well be it.
 // A leading variable may be the repo root or the current directory.
-function targetsDist(file, { root, cwd }) {
-  if (!file || file.startsWith('~')) return false
-  const expanded = expandTemp(file)
+function possiblePaths(file, { root, cwd }) {
+  if (!file) return []
+  const expanded = expandKnownFolders(file)
   const inner = pathAfterVariables(expanded)
   if (inner !== null) {
-    return [root, cwd ?? root].some(base =>
-      isDistPath(path.resolve(base, inner), root)
-    )
+    return [path.resolve(root, inner), path.resolve(cwd ?? root, inner)]
   }
-  if (expanded.startsWith('$')) return false
-  return isDistPath(path.resolve(cwd ?? root, expanded), root)
+  if (expanded.startsWith('$')) return []
+  return [path.resolve(cwd ?? root, expanded)]
+}
+
+function targetsDist(file, context) {
+  return possiblePaths(file, context).some(full =>
+    isDistPath(full, context.root)
+  )
+}
+
+// True for dist itself, the top of the repo or worktree, or a parent of the repo.
+function coversDist(file, context) {
+  const { root } = context
+  return possiblePaths(file, context).some(
+    full =>
+      isDistPath(full, root) ||
+      pathInRepo(full, root) === '' ||
+      !path.relative(full, root).startsWith('..')
+  )
 }
 
 function operands(args) {
@@ -336,6 +360,7 @@ function gitWritesDist(args, context) {
   }
   const command = rest.shift()
   const inDist = file => targetsDist(file, { ...context, cwd })
+  const covers = file => coversDist(file, { ...context, cwd })
 
   if (command === 'rm' || command === 'mv') return operands(rest).some(inDist)
   if (command === 'checkout') {
@@ -345,7 +370,7 @@ function gitWritesDist(args, context) {
     return (
       source !== undefined &&
       !SAFE_GIT_SOURCES.has(source) &&
-      rest.slice(separator + 1).some(inDist)
+      rest.slice(separator + 1).some(covers)
     )
   }
   if (command === 'restore') {
@@ -357,10 +382,32 @@ function gitWritesDist(args, context) {
     return (
       source !== undefined &&
       !SAFE_GIT_SOURCES.has(source) &&
-      operands(rest).some(inDist)
+      operands(rest).some(covers)
     )
   }
   return false
+}
+
+function findWritesDist(args, context) {
+  const exec = args.indexOf('-exec')
+  const deletes =
+    args.includes('-delete') ||
+    (exec !== -1 && FILE_WRITERS.has(path.basename(args[exec + 1] ?? '')))
+  if (!deletes) return false
+
+  const rest = [...args]
+  while (['-H', '-L', '-P'].includes(rest[0])) rest.shift()
+  const end = rest.findIndex(arg => /^[-(!]/.test(arg))
+  const starts = end === -1 ? rest : rest.slice(0, end)
+  if (starts.length === 0) starts.push('.')
+  if (starts.some(file => targetsDist(file, context))) return true
+
+  const selectsDist = args.some(
+    (arg, index) =>
+      /^-(?:i?name|i?path|wholename)$/.test(arg) &&
+      /(?:^|\/)dist(?:\/|$)/.test(args[index + 1] ?? '')
+  )
+  return selectsDist && starts.some(file => coversDist(file, context))
 }
 
 function commandWritesDist(rawArgv, context) {
@@ -390,19 +437,14 @@ function commandWritesDist(rawArgv, context) {
       operands(args).some(inDist)
     )
   }
-  if (name === 'find') {
-    const exec = args.indexOf('-exec')
-    const deletes =
-      args.includes('-delete') ||
-      (exec !== -1 && FILE_WRITERS.has(path.basename(args[exec + 1] ?? '')))
-    return deletes && operands(args).some(inDist)
-  }
+  if (name === 'find') return findWritesDist(args, context)
   return false
 }
 
 function nextCwd(target, cwd, root) {
-  if (!target || /^[-~]/.test(target)) return null
-  const expanded = expandTemp(target)
+  if (!target) return null
+  const expanded = expandKnownFolders(target)
+  if (/^[-~]/.test(expanded)) return null
   const inner = pathAfterVariables(expanded)
   if (inner !== null) return path.resolve(root, inner)
   if (expanded.includes('$')) return null
