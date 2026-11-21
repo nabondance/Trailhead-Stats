@@ -49,6 +49,13 @@ function closingParen(text, open) {
   return text.length - 1
 }
 
+// `((` opens arithmetic only when it closes with `))`. Otherwise it is two
+// nested subshells, whose commands must still be checked.
+function isArithmetic(text, open) {
+  const end = closingParen(text, open)
+  return text[end - 1] === ')' && !text.slice(open, end).includes(';')
+}
+
 function skipHeredocs(text, start, delimiters) {
   let position = start
   for (const delimiter of delimiters) {
@@ -140,6 +147,14 @@ function parseShell(text) {
       pending = 'write'
     } else if (char === '&') {
       endCommand()
+    } else if (
+      char === '(' &&
+      next === '(' &&
+      word === null &&
+      argv.every(item => CONTROL_WORDS.has(item)) &&
+      isArithmetic(text, i)
+    ) {
+      i = closingParen(text, i)
     } else if (char === '(' || char === ')') {
       endCommand()
       steps.push({ group: char })
@@ -256,12 +271,14 @@ function nccWritesDist(args, context) {
 
 function gitWritesDist(args, context) {
   const rest = [...args]
+  let { cwd } = context
   while (rest[0]?.startsWith('-')) {
     const flag = rest.shift()
-    if (flag === '-C' || flag === '-c') rest.shift()
+    if (flag === '-C') cwd = nextCwd(rest.shift(), cwd)
+    else if (flag === '-c') rest.shift()
   }
   const command = rest.shift()
-  const inDist = file => targetsDist(file, context)
+  const inDist = file => targetsDist(file, { ...context, cwd })
 
   if (command === 'rm' || command === 'mv') return operands(rest).some(inDist)
   if (command === 'checkout') {

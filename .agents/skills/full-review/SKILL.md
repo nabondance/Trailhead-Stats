@@ -24,12 +24,13 @@ Read-only. The report goes to chat; nothing is written to the repo or GitHub.
 
 2. **Security side, only if the diff touches** `src/updateFile.js`,
    `src/actionInputs.js`, `src/validators.js`, `src/cardGenerator.js`,
-   `src/cardCss.js`, `src/getStats.js`, `action.yml` or `.github/workflows/`:
-   spawn the `security-reviewer` agent in the same message. Its prompt gives the
-   diff path and the tree path, and says to review only the changes in that
-   diff, to read and cite files under the tree only (never the current checkout,
-   which is another branch), and to return at most 5 findings in the
-   `file:line — trigger → what goes wrong → fix` form. Otherwise skip it.
+   `src/cardCss.js`, `src/displayStats.js`, `src/getStats.js`, `action.yml` or
+   `.github/workflows/`: spawn the `security-reviewer` agent in the same
+   message. Its prompt gives the diff path and the tree path, and says to review
+   only the changes in that diff, to read and cite files under the tree only
+   (never the current checkout, which is another branch), and to return at most
+   5 findings in the `file:line — trigger → what goes wrong → fix` form.
+   Otherwise skip it.
 
 3. **Context side, in this session, while they run.** Read the diff file and the
    changed files in the tree. Do not read any agent output yet: the context

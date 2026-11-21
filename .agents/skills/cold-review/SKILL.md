@@ -30,8 +30,9 @@ GitHub.
    is `<dir>/change.diff` and the tree `<dir>/tree`.
 
    - PR:
-     1. `gh pr diff <pr> > "<dir>/change.diff"`
-     2. `git fetch -q origin "pull/<pr>/head"`
+     1. `gh pr diff <number> > "<dir>/change.diff"`, with the `number` from step
+        1, because a PR URL is not a valid fetch ref
+     2. `git fetch -q origin "pull/<number>/head"`
      3. `git worktree add -q --detach "<dir>/tree" FETCH_HEAD`
    - Branch:
      1. `git fetch -q origin main`

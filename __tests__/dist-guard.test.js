@@ -44,7 +44,11 @@ describe('dist-guard commands', () => {
     'cat x > >(tee dist/a)',
     'cd src && pnpm all',
     'cd "$ROOT" && pnpm bundle',
-    'pnpm -C . run package'
+    'pnpm -C . run package',
+    'git -C dist rm index.js',
+    '(( 1 << 2 ))\nrm -rf dist',
+    'if (( 1 << 2 )); then rm -rf dist; fi',
+    '((cd dist; rm index.js); ls)'
   ])('blocks %s', command => {
     expect(blocked(command)).toBe(true)
   })
@@ -78,7 +82,9 @@ describe('dist-guard commands', () => {
     'cd /tmp/other && pnpm run package',
     'pnpm -C /tmp/other run package',
     'pnpm --dir=/tmp/other bundle',
-    'pnpm -C /tmp/other exec ncc build src/index.js'
+    'pnpm -C /tmp/other exec ncc build src/index.js',
+    'git -C /tmp/other rm dist/index.js',
+    '(( 1 << 2 ))'
   ])('allows %s', command => {
     expect(blocked(command)).toBe(false)
   })

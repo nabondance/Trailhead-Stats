@@ -18,6 +18,8 @@ token that can push to their repository. Read-only.
 - `src/actionInputs.js`, `src/validators.js`: untrusted workflow inputs
 - `src/cardGenerator.js`, `src/cardCss.js`: API data and inputs placed in HTML
   that Chromium renders with `--no-sandbox`
+- `src/displayStats.js`: API data and inputs written as HTML or Markdown into
+  the user's file
 - `src/getStats.js`: external API responses
 - `action.yml`, `.github/workflows/`: permissions, runtime, expressions
 
