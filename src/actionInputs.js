@@ -113,8 +113,7 @@ class ActionInputs {
       this.validateShowStamp()
       this.validateShowStampLatest()
     } catch (error) {
-      console.error(`Error during inputs validation: ${error.message}`)
-      core.setFailed(`Error during inputs validation: ${error.message}`)
+      throw new Error(`Error during inputs validation: ${error.message}`)
     }
   }
 

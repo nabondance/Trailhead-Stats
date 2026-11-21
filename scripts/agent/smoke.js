@@ -20,8 +20,9 @@ function fail(problems) {
   process.exit(1)
 }
 
-// The fetchers catch their own errors and return partial data, so a failed
-// query is only visible in the response or in what they log.
+// The fetchers throw once retries are exhausted, which main() reports. This
+// also records GraphQL errors that a retry recovered from, so a flaky API
+// still fails the smoke run.
 function watchFetchFailures() {
   const failures = []
   axios.interceptors.response.use(response => {

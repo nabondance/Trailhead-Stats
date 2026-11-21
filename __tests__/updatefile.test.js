@@ -59,9 +59,11 @@ describe('Update File Tests', () => {
     it('should throw an error if tags are not found', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {})
       fs.readFileSync.mockReturnValue('No tags here')
-      updateStatsOnFile(mockDisplayFile, mockDataContent)
 
-      expect(core.setFailed).toHaveBeenCalledWith(expect.any(String))
+      expect(() => updateStatsOnFile(mockDisplayFile, mockDataContent)).toThrow(
+        `Start or end tag not found in ${mockDisplayFile}`
+      )
+      expect(fs.writeFileSync).not.toHaveBeenCalled()
     })
   })
 
@@ -109,9 +111,9 @@ describe('Update File Tests', () => {
         throw new Error('Git command failed')
       })
 
-      pushUpdatedFile(mockDisplayFile, mockCardFile)
-
-      expect(core.setFailed).toHaveBeenCalledWith('Git command failed')
+      expect(() => pushUpdatedFile(mockDisplayFile, mockCardFile)).toThrow(
+        'Error pushing changes: Git command failed'
+      )
     })
   })
 })

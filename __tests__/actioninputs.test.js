@@ -9,6 +9,11 @@ jest.spyOn(console, 'error').mockImplementation(() => {})
 describe('Input Validation Tests', () => {
   let inputs
   beforeEach(() => {
+    // The mocked core returns no inputs, so skip the constructor's validation
+    // and set valid values below.
+    jest
+      .spyOn(ActionInputs.prototype, 'validateInputs')
+      .mockImplementationOnce(() => {})
     inputs = new ActionInputs()
     inputs.trailheadUsername = 'validUsername'
     inputs.displayFile = 'README.md'
@@ -593,164 +598,153 @@ describe('Input Validation Tests', () => {
 
   // Test for validateAllInputs with invalid inputs
   describe('validateAllInputs error handling', () => {
-    it('should call setFailed for invalid username', () => {
-      inputs.trailheadUsername = ''
-
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+    it('should throw from the constructor so the run stops', () => {
+      core.getInput.mockImplementation(() => '')
+      expect(() => new ActionInputs()).toThrow(
         'Error during inputs validation: trailhead-username is required.'
       )
     })
 
-    it('should call setFailed for invalid displayType', () => {
+    it('should throw for invalid username', () => {
+      inputs.trailheadUsername = ''
+
+      expect(() => inputs.validateInputs()).toThrow(
+        'Error during inputs validation: trailhead-username is required.'
+      )
+    })
+
+    it('should throw for invalid displayType', () => {
       inputs.displayType = 'invalidType'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         "Error during inputs validation: Invalid display-type 'invalidType'. Allowed types are: text, card, output"
       )
     })
 
-    it('should call setFailed for invalid displayFile', () => {
+    it('should throw for invalid displayFile', () => {
       inputs.displayFile = 123
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: display-file must be a string, got number: 123'
       )
     })
 
-    it('should call setFailed for invalid fileFormat', () => {
+    it('should throw for invalid fileFormat', () => {
       inputs.fileFormat = 'invalidFormat'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         "Error during inputs validation: Invalid file-format 'invalidFormat'. Allowed types are: md, html"
       )
     })
 
-    it('should call setFailed for invalid cardPath', () => {
+    it('should throw for invalid cardPath', () => {
       inputs.cardPath = 123
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: card-path must be a string, got number: 123'
       )
     })
 
-    it('should call setFailed for invalid outputOnly', () => {
+    it('should throw for invalid outputOnly', () => {
       inputs.outputOnly = 'notABoolean'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: output-only must be a boolean, got string: notABoolean'
       )
     })
 
-    it('should call setFailed for invalid noCommit', () => {
+    it('should throw for invalid noCommit', () => {
       inputs.noCommit = 'notABoolean'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: no-commit must be a boolean, got string: notABoolean'
       )
     })
 
-    it('should call setFailed for invalid show-skill', () => {
+    it('should throw for invalid show-skill', () => {
       inputs.showSkill = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-skill must be one of [hidden, visible], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-certification', () => {
+    it('should throw for invalid show-certification', () => {
       inputs.showCertification = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-certification must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-certification-latest', () => {
+    it('should throw for invalid show-certification-latest', () => {
       inputs.showCertificationLatest = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-certification-latest must be one of [hidden, visible], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-badge', () => {
+    it('should throw for invalid show-badge', () => {
       inputs.showBadge = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-badge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-badge-latest', () => {
+    it('should throw for invalid show-badge-latest', () => {
       inputs.showBadgeLatest = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-badge-latest must be one of [hidden, visible], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-superbadge', () => {
+    it('should throw for invalid show-superbadge', () => {
       inputs.showSuperBadge = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-superbadge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-superbadge-latest', () => {
+    it('should throw for invalid show-superbadge-latest', () => {
       inputs.showSuperBadgeLatest = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-superbadge-latest must be one of [hidden, visible], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-event-badge', () => {
+    it('should throw for invalid show-event-badge', () => {
       inputs.showEventBadge = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-event-badge must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-event-badge-latest', () => {
+    it('should throw for invalid show-event-badge-latest', () => {
       inputs.showEventBadgeLatest = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-event-badge-latest must be one of [hidden, visible], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-stamp', () => {
+    it('should throw for invalid show-stamp', () => {
       inputs.showStamp = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-stamp must be one of [hidden, icon, table, detail, number], got: invalidValue'
       )
     })
 
-    it('should call setFailed for invalid show-stamp-latest', () => {
+    it('should throw for invalid show-stamp-latest', () => {
       inputs.showStampLatest = 'invalidValue'
 
-      inputs.validateInputs()
-      expect(core.setFailed).toHaveBeenCalledWith(
+      expect(() => inputs.validateInputs()).toThrow(
         'Error during inputs validation: show-stamp-latest must be one of [hidden, visible], got: invalidValue'
       )
     })
