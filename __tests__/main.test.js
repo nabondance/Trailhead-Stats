@@ -5,6 +5,9 @@ const core = require('@actions/core')
 const getStats = require('../src/getStats')
 const updateFile = require('../src/updateFile')
 const cardGenerator = require('../src/cardGenerator')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
 const { readActionInputs } = require('../scripts/agent/lib/action-yml')
 const { fullProfile } = require('./fixtures/trailhead')
 const main = require('../src/main')
@@ -52,14 +55,31 @@ function expectNothingWritten() {
   expect(core.setOutput).not.toHaveBeenCalled()
 }
 
+// Cards are written into a throwaway workspace. The generateCard stub writes
+// a file where the real one would, so the copy step runs for real.
+const writeCard = async (_data, inputs, theme) => {
+  const file = path.join(inputs.cardPath, `TScard-${theme}.png`)
+  fs.writeFileSync(file, `${theme} png`)
+  return file
+}
+
 describe('run', () => {
+  const savedWorkspace = process.env.GITHUB_WORKSPACE
+  let workspace
+
+  afterEach(() => {
+    fs.rmSync(workspace, { recursive: true, force: true })
+    if (savedWorkspace === undefined) delete process.env.GITHUB_WORKSPACE
+    else process.env.GITHUB_WORKSPACE = savedWorkspace
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
+    workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'th-main-'))
+    process.env.GITHUB_WORKSPACE = workspace
     const profile = fullProfile()
     FETCHERS.forEach((name, i) => getStats[name].mockResolvedValue(profile[i]))
-    cardGenerator.generateCard.mockImplementation(
-      async (_data, inputs, theme) => `${inputs.cardPath}/TScard-${theme}.png`
-    )
+    cardGenerator.generateCard.mockImplementation(writeCard)
   })
 
   it('updates, commits and outputs the stats', async () => {

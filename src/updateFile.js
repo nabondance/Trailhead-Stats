@@ -24,16 +24,37 @@ function isInside(root, target) {
 
 // Resolves a user-given path inside the workspace and rejects anything that
 // escapes it, through `..` or through a symlink.
+function exists(target) {
+  try {
+    fs.lstatSync(target)
+    return true
+  } catch {
+    return false
+  }
+}
+
+function realpathOrNull(target) {
+  try {
+    return fs.realpathSync(target)
+  } catch {
+    return null // a dangling symlink
+  }
+}
+
+// Resolves a user-given path inside the workspace and rejects anything that
+// escapes it, through `..` or through a symlink (dangling ones included).
 function workspacePath(relativePath, inputName) {
   const root = workspaceRoot()
   const resolved = path.resolve(root, relativePath)
   let existing = resolved
-  while (!fs.existsSync(existing) && path.dirname(existing) !== existing) {
+  while (!exists(existing) && path.dirname(existing) !== existing) {
     existing = path.dirname(existing)
   }
+  const real = realpathOrNull(existing)
   if (
     !isInside(root, resolved) ||
-    !isInside(fs.realpathSync(root), fs.realpathSync(existing))
+    real === null ||
+    !isInside(fs.realpathSync(root), real)
   ) {
     throw new Error(
       `${inputName} must stay inside the repository, got: ${relativePath}`
@@ -49,7 +70,8 @@ function git(label, args, { env, secrets = [] } = {}) {
   try {
     return childProcess.execFileSync('git', args, {
       cwd: workspaceRoot(),
-      env: env || process.env,
+      // Paths are file names, never patterns: `*` or `[` match themselves.
+      env: { ...(env || process.env), GIT_LITERAL_PATHSPECS: '1' },
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe']
     })
@@ -61,9 +83,10 @@ function git(label, args, { env, secrets = [] } = {}) {
   }
 }
 
-// The token replaces any Authorization header that actions/checkout persisted:
-// an empty value resets git's header list, then ours is added. Passed through
-// the environment, so it never shows up in a command line or an error.
+// Without a token, the push uses the credentials actions/checkout persisted
+// (including a PAT given to checkout). A token replaces them: an empty value
+// resets git's header list, then ours is added. Passed through the
+// environment, so it never shows up in a command line or an error.
 function pushEnv(token) {
   if (!token) return { env: process.env, secrets: [] }
   const basic = Buffer.from(`x-access-token:${token}`).toString('base64')
@@ -87,14 +110,21 @@ function pushEnv(token) {
   }
 }
 
+// The branch that is checked out, which is where the commit belongs. A
+// detached HEAD (pull request merge ref, tag) has no branch to push to.
 function targetBranch() {
-  const ref = process.env.GITHUB_REF || ''
-  if (!ref.startsWith('refs/heads/')) {
+  try {
+    return git('symbolic-ref', [
+      'symbolic-ref',
+      '--quiet',
+      '--short',
+      'HEAD'
+    ]).trim()
+  } catch {
     throw new Error(
-      `cannot commit from ${ref || 'an unknown ref'}. Run the workflow on a branch (schedule, push or workflow_dispatch), or set no-commit: true`
+      'cannot commit from a detached HEAD (pull request or tag checkout). Run the workflow on a branch (schedule, push or workflow_dispatch), or set no-commit: true'
     )
   }
-  return ref.slice('refs/heads/'.length)
 }
 
 function updateStatsOnFile(displayFile, dataContent) {
@@ -133,7 +163,13 @@ function pushUpdatedFile(displayFile, cardFiles = [], token = '') {
     ]
 
     git('add', ['add', '--', ...paths])
-    const staged = git('diff', ['diff', '--cached', '--name-only']).trim()
+    const staged = git('diff', [
+      'diff',
+      '--cached',
+      '--name-only',
+      '--',
+      ...paths
+    ]).trim()
     if (staged === '') {
       core.debug('No changes detected. Skipping commit and push.')
       return
@@ -143,8 +179,11 @@ function pushUpdatedFile(displayFile, cardFiles = [], token = '') {
       ...COMMIT_USER,
       ...COMMIT_EMAIL,
       'commit',
+      '--only',
       '-m',
-      `Update Trailhead Stats in ${displayFile}`
+      `Update Trailhead Stats in ${displayFile}`,
+      '--',
+      ...paths
     ])
     git('push', ['push', 'origin', `HEAD:refs/heads/${branch}`], pushEnv(token))
 

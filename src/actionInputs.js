@@ -2,6 +2,7 @@ const core = require('@actions/core')
 const {
   validateRequiredField,
   validateStringField,
+  validateSecretStringField,
   validateIntegerField,
   validateBooleanField,
   validateStringInListField,
@@ -127,7 +128,7 @@ class ActionInputs {
   validateToken() {
     // Empty is allowed: the push then uses the credentials persisted by
     // actions/checkout.
-    validateStringField(this.token, 'token')
+    validateSecretStringField(this.token, 'token')
   }
 
   validateDisplayType() {

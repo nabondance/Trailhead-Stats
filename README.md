@@ -90,18 +90,18 @@ daily.
 
 ## Inputs
 
-| Input Name           | Kind       | Description                                                                    | Default               |
-| -------------------- | ---------- | ------------------------------------------------------------------------------ | --------------------- |
-| `trailhead-username` | Required   | The username on Trailhead.                                                     | `username`            |
-| `display-file`       | Config     | The file to update for displaying the Trailhead stats.                         | `README.md`           |
-| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                                     | `md`                  |
-| `card-path`          | Config     | Folder path to save the card                                                   | `images`              |
-| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.                 | `text`                |
-| `dark-style`         | Preference | The kind of dark theme. Options: `dimmed`, `dark`, `high-contrast`             | `dimmed`              |
-| `show-*`             | Preference | On a card, customize the element. See Card Display customization.              |                       |
-| `output-only`        | Debug      | Set to true to only output without modifying the file.                         | `false`               |
-| `no-commit`          | Debug      | Set to true to not commit the modification.                                    | `false`               |
-| `token`              | Config     | Token used to push. Needs `contents: write`; use a PAT for a protected branch. | `${{ github.token }}` |
+| Input Name           | Kind       | Description                                                                                          | Default     |
+| -------------------- | ---------- | ---------------------------------------------------------------------------------------------------- | ----------- |
+| `trailhead-username` | Required   | The username on Trailhead.                                                                           | `username`  |
+| `display-file`       | Config     | The file to update for displaying the Trailhead stats.                                               | `README.md` |
+| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                                                           | `md`        |
+| `card-path`          | Config     | Folder path to save the card                                                                         | `images`    |
+| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.                                       | `text`      |
+| `dark-style`         | Preference | The kind of dark theme. Options: `dimmed`, `dark`, `high-contrast`                                   | `dimmed`    |
+| `show-*`             | Preference | On a card, customize the element. See Card Display customization.                                    |             |
+| `output-only`        | Debug      | Set to true to only output without modifying the file.                                               | `false`     |
+| `no-commit`          | Debug      | Set to true to not commit the modification.                                                          | `false`     |
+| `token`              | Config     | Token used to push. Empty uses the `actions/checkout` credentials; set a PAT for a protected branch. |             |
 
 ## Outputs
 

@@ -101,6 +101,14 @@ describe('updateStatsOnFile', () => {
     expect(fs.readFileSync(path.join(tmp, 'outside.md'), 'utf8')).toBe(TAGGED)
   })
 
+  it('refuses a dangling symlink out of the repository', () => {
+    fs.symlinkSync(path.join(tmp, 'nowhere.md'), path.join(ws, 'dangling.md'))
+
+    expect(() => workspacePath('dangling.md', 'card-path')).toThrow(
+      'card-path must stay inside the repository, got: dangling.md'
+    )
+  })
+
   it('refuses a display-file reached through a symlink out of the repository', () => {
     fs.mkdirSync(path.join(tmp, 'elsewhere'))
     fs.writeFileSync(path.join(tmp, 'elsewhere', 'README.md'), TAGGED)
@@ -182,7 +190,7 @@ describe('pushUpdatedFile', () => {
 
   it('pushes to the branch the workflow runs on', () => {
     run(ws, 'checkout', '-q', '-b', 'stats/profile')
-    process.env.GITHUB_REF = 'refs/heads/stats/profile'
+    // GITHUB_REF still says main: the checked-out branch wins.
     write('README.md', 'updated')
 
     pushUpdatedFile('README.md', [])
@@ -193,18 +201,50 @@ describe('pushUpdatedFile', () => {
     expect(remoteLog()).toBe('t|init')
   })
 
-  it.each(['refs/pull/7/merge', 'refs/tags/v1', ''])(
-    'refuses to commit from %j',
-    ref => {
-      process.env.GITHUB_REF = ref
-      write('README.md', 'updated')
+  it('refuses to commit from a detached HEAD (pull request, tag)', () => {
+    run(ws, 'checkout', '-q', '--detach')
+    write('README.md', 'updated')
 
-      expect(() => pushUpdatedFile('README.md', [])).toThrow(
-        `Error pushing changes: cannot commit from ${ref || 'an unknown ref'}`
-      )
-      expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
-    }
-  )
+    expect(() => pushUpdatedFile('README.md', [])).toThrow(
+      'Error pushing changes: cannot commit from a detached HEAD'
+    )
+    expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
+    expect(remoteLog()).toBe('t|init')
+  })
+
+  it('leaves files staged by earlier steps out of the commit', () => {
+    write('other.txt', 'staged elsewhere')
+    run(ws, 'add', 'other.txt')
+    write('README.md', 'updated')
+
+    pushUpdatedFile('README.md', [])
+
+    expect(remoteFiles()).toEqual(['README.md'])
+    expect(run(ws, 'diff', '--cached', '--name-only')).toBe('other.txt')
+  })
+
+  it('does not commit when only unrelated files are staged', () => {
+    write('other.txt', 'staged elsewhere')
+    run(ws, 'add', 'other.txt')
+
+    pushUpdatedFile('README.md', [])
+
+    expect(remoteLog()).toBe('t|init')
+  })
+
+  it('treats glob characters in paths literally', () => {
+    write('cards/TScard-light.png', 'light')
+    write('cards/TScard-dark.png', 'dark')
+    write('[cards]/x.md', TAGGED)
+    run(ws, 'add', '.')
+    run(ws, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-qm', 'add')
+    write('cards/TScard-light.png', 'light 2')
+    write('[cards]/x.md', 'updated')
+
+    pushUpdatedFile('[cards]/x.md', ['*/TScard-light.png'])
+
+    expect(remoteFiles()).toEqual(['[cards]/x.md'])
+  })
 
   it('never runs input values through a shell', () => {
     const name = 'stats $(touch pwned) `touch pwned2`; touch pwned3.md'
@@ -285,7 +325,9 @@ describe('pushUpdatedFile', () => {
 
       pushUpdatedFile('README.md', [], '')
 
-      expect(pushCall()[2].env).toBe(process.env)
+      const { env } = pushCall()[2]
+      expect(env.GIT_CONFIG_COUNT).toBeUndefined()
+      expect(JSON.stringify(env)).not.toContain('extraheader')
       expect(core.setSecret).not.toHaveBeenCalled()
     })
 

@@ -42,10 +42,11 @@ inputs:
     default: 'false'
   token:
     description:
-      'Token used to push the commit. Defaults to the workflow token, which
-      needs `contents: write`. Use a PAT to push to a protected branch.'
+      'Token used to push the commit. Empty uses the credentials of
+      actions/checkout (the workflow token, which needs `contents: write`). Set
+      a PAT to push to a protected branch.'
     required: false
-    default: '${{ github.token }}'
+    default: ''
   show-skill:
     description: 'Show the skills: hidden|visible'
     required: false

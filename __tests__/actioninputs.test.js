@@ -596,9 +596,8 @@ describe('Input Validation Tests', () => {
 
     it('rejects a non-string token', () => {
       inputs.token = 123
-      expect(() => inputs.validateToken()).toThrow(
-        'token must be a string, got number: 123'
-      )
+      expect(() => inputs.validateToken()).toThrow('token must be a string')
+      expect(() => inputs.validateToken()).not.toThrow('123')
     })
   })
 

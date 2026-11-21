@@ -1,7 +1,11 @@
 const core = require('@actions/core')
-const { generateCard } = require('./cardGenerator')
-const { mkdirSync } = require('fs')
+const os = require('os')
+const path = require('path')
+const { generateCard, cardFilePath } = require('./cardGenerator')
+const { copyFileSync, mkdirSync, mkdtempSync, rmSync } = require('fs')
 const { workspacePath } = require('./updateFile')
+
+const THEMES = ['light', 'dark']
 
 async function displayStats(
   inputs,
@@ -244,15 +248,34 @@ function displayStatsOutput(dataToFormat) {
 }
 
 async function displayStatsCard(inputs, dataToFormat) {
+  const staging = mkdtempSync(path.join(os.tmpdir(), 'th-cards-'))
   try {
     // Create the card path if it doesn't exist. It must be in the repository.
     mkdirSync(workspacePath(inputs.cardPath, 'card-path'), { recursive: true })
 
-    // Await the generation of the card and get the full path
-    const fullPathLight = await generateCard(dataToFormat, inputs, 'light')
-    core.debug(`Card image Light saved at ${fullPathLight}`)
-    const fullPathDark = await generateCard(dataToFormat, inputs, 'dark')
-    core.debug(`Card image Dark saved at ${fullPathDark}`)
+    // Render both cards aside first, so a failed render leaves the existing
+    // cards untouched.
+    const staged = {}
+    for (const theme of THEMES) {
+      staged[theme] = await generateCard(
+        dataToFormat,
+        { ...inputs, cardPath: staging },
+        theme
+      )
+    }
+
+    // Then replace each card. Removing it first means an existing symlink is
+    // replaced, never written through.
+    const cardPaths = {}
+    for (const theme of THEMES) {
+      cardPaths[theme] = cardFilePath(inputs.cardPath, theme)
+      const target = workspacePath(cardPaths[theme], 'card-path')
+      rmSync(target, { force: true })
+      copyFileSync(staged[theme], target)
+      core.debug(`Card image ${theme} saved at ${cardPaths[theme]}`)
+    }
+    const fullPathLight = cardPaths.light
+    const fullPathDark = cardPaths.dark
 
     // Construct the image display depending on the file format
     let dataContent = ''
@@ -278,6 +301,8 @@ async function displayStatsCard(inputs, dataToFormat) {
     // A failed or timed-out render must stop the run before any file is
     // written or committed.
     throw new Error(`Error generating the card: ${err.message || err}`)
+  } finally {
+    rmSync(staging, { recursive: true, force: true })
   }
 }
 

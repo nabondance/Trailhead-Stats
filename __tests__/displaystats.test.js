@@ -1,7 +1,9 @@
 const { displayStats } = require('./../src/displayStats')
 const cardGenerator = require('.././src/cardGenerator')
 const core = require('@actions/core')
-const { rmSync, existsSync } = require('fs')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
 
 jest.mock('@actions/core')
 
@@ -11,9 +13,29 @@ jest.mock('../src/cardGenerator', () => ({
   generateCard: jest.fn()
 }))
 
+// Cards are written into a throwaway workspace. The generateCard stub writes
+// a file where the real one would, so the copy step runs for real.
+const writeCard = async (_data, inputs, theme) => {
+  const file = path.join(inputs.cardPath, `TScard-${theme}.png`)
+  fs.writeFileSync(file, `${theme} png`)
+  return file
+}
+
 describe('displayStats Function', () => {
+  const savedWorkspace = process.env.GITHUB_WORKSPACE
+  let workspace
+
+  beforeEach(() => {
+    workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'th-display-'))
+    process.env.GITHUB_WORKSPACE = workspace
+    cardGenerator.generateCard.mockImplementation(writeCard)
+  })
+
   afterEach(() => {
     jest.clearAllMocks()
+    fs.rmSync(workspace, { recursive: true, force: true })
+    if (savedWorkspace === undefined) delete process.env.GITHUB_WORKSPACE
+    else process.env.GITHUB_WORKSPACE = savedWorkspace
   })
 
   const mockTrailheadRankData = {
@@ -536,7 +558,6 @@ describe('displayStats Function', () => {
 
   it('should correctly format and display as card md', async () => {
     // Setup the mock to return a specific value
-    cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
     mockInputs.displayType = 'card'
     mockInputs.fileFormat = 'md'
 
@@ -552,18 +573,19 @@ describe('displayStats Function', () => {
     )
 
     // Check if the result contains the path returned by the mocked generateCard function
-    expect(result).toContain('path/to/generated/card.png#gh-light-mode-only')
-    expect(cardGenerator.generateCard).toHaveBeenCalledWith(
-      expect.anything(), // The data object passed to generateCard
-      mockInputs, // The cardPath argument passed to displayStats
-      'light' // The theme argument passed to generateCard
-    )
+    expect(result).toContain('images/TScard-light.png#gh-light-mode-only')
+    expect(result).toContain('images/TScard-dark.png#gh-dark-mode-only')
+    expect(
+      fs.readFileSync(
+        path.join(workspace, 'images', 'TScard-light.png'),
+        'utf8'
+      )
+    ).toBe('light png')
   })
 
   it('should correctly format and display as card html', async () => {
     // Setup the mock to return a specific value
     const cardPathFolder = 'newImages'
-    cardGenerator.generateCard.mockResolvedValue('path/to/generated/card.png')
     mockInputs.displayType = 'card'
     mockInputs.fileFormat = 'html'
     mockInputs.cardPath = cardPathFolder
@@ -579,17 +601,74 @@ describe('displayStats Function', () => {
       mockTrailheadEarnedStampsData // thEarnedStamps
     )
 
-    // Check if the result contains the path returned by the mocked generateCard function
-    expect(result).toContain('path/to/generated/card.png')
-    expect(cardGenerator.generateCard).toHaveBeenCalledWith(
-      expect.anything(), // The data object passed to generateCard
-      mockInputs, // The cardPath argument passed to displayStats
-      'light' // The theme argument passed to generateCard
+    expect(result).toContain('srcset="newImages/TScard-dark.png"')
+    expect(
+      fs.readFileSync(
+        path.join(workspace, 'newImages', 'TScard-dark.png'),
+        'utf8'
+      )
+    ).toBe('dark png')
+  })
+
+  it('renders both cards aside before replacing any', async () => {
+    fs.mkdirSync(path.join(workspace, 'images'))
+    fs.writeFileSync(path.join(workspace, 'images', 'TScard-light.png'), 'old')
+    cardGenerator.generateCard
+      .mockImplementationOnce(writeCard)
+      .mockRejectedValueOnce(new Error('dark render timed out'))
+
+    await expect(
+      displayStats(
+        { ...mockInputs, displayType: 'card', cardPath: 'images' },
+        mockTrailheadRankData,
+        mockTrailheadBadgesData,
+        mockTrailheadSuperBadgesData,
+        mockTrailheadEventBadgesData,
+        mockTrailheadCertifsData,
+        mockTrailheadSkillsData,
+        mockTrailheadEarnedStampsData
+      )
+    ).rejects.toThrow('dark render timed out')
+
+    expect(
+      fs.readFileSync(
+        path.join(workspace, 'images', 'TScard-light.png'),
+        'utf8'
+      )
+    ).toBe('old')
+    expect(cardGenerator.generateCard.mock.calls[0][1].cardPath).toContain(
+      'th-cards-'
+    )
+    expect(
+      fs.existsSync(cardGenerator.generateCard.mock.calls[0][1].cardPath)
+    ).toBe(false)
+  })
+
+  it('replaces a symlinked card instead of writing through it', async () => {
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'th-outside-'))
+    fs.writeFileSync(path.join(outside, 'target.png'), 'precious')
+    fs.mkdirSync(path.join(workspace, 'images'))
+    fs.symlinkSync(
+      path.join(outside, 'target.png'),
+      path.join(workspace, 'images', 'TScard-light.png')
     )
 
-    // Remove the newImages folder if it was created
-    if (existsSync(cardPathFolder)) {
-      rmSync(cardPathFolder, { recursive: true })
-    }
+    await expect(
+      displayStats(
+        { ...mockInputs, displayType: 'card', cardPath: 'images' },
+        mockTrailheadRankData,
+        mockTrailheadBadgesData,
+        mockTrailheadSuperBadgesData,
+        mockTrailheadEventBadgesData,
+        mockTrailheadCertifsData,
+        mockTrailheadSkillsData,
+        mockTrailheadEarnedStampsData
+      )
+    ).rejects.toThrow('card-path must stay inside the repository')
+
+    expect(fs.readFileSync(path.join(outside, 'target.png'), 'utf8')).toBe(
+      'precious'
+    )
+    fs.rmSync(outside, { recursive: true, force: true })
   })
 })
