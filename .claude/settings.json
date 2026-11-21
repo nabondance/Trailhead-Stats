@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/scripts/agent/hooks/session-start.sh"
+            "command": "root=\"$(git rev-parse --show-toplevel 2>/dev/null)\"; [ -f \"$root/scripts/agent/hooks/session-start.sh\" ] || root=\"$CLAUDE_PROJECT_DIR\"; [ ! -f \"$root/scripts/agent/hooks/session-start.sh\" ] || exec bash \"$root/scripts/agent/hooks/session-start.sh\""
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/scripts/agent/hooks/dist-guard.js"
+            "command": "root=\"$(git rev-parse --show-toplevel 2>/dev/null)\"; [ -f \"$root/scripts/agent/hooks/dist-guard.js\" ] || root=\"$CLAUDE_PROJECT_DIR\"; [ ! -f \"$root/scripts/agent/hooks/dist-guard.js\" ] || exec node \"$root/scripts/agent/hooks/dist-guard.js\""
           }
         ]
       }

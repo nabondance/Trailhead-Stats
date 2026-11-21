@@ -480,15 +480,27 @@ function isBlockedCommand(command, { root = process.cwd(), cwd = root } = {}) {
   return scriptWritesDist(command, { root, cwd })
 }
 
+// Protects the checkout running this hook and the session's project folder,
+// which differ when a session moves into a worktree.
 function shouldBlock(event) {
   const cwd = event.cwd || process.cwd()
-  const root = process.env.CLAUDE_PROJECT_DIR || cwd
+  const roots = [
+    ...new Set([
+      path.resolve(__dirname, '../../..'),
+      process.env.CLAUDE_PROJECT_DIR || cwd
+    ])
+  ]
   const input = event.tool_input || {}
   if (event.tool_name === 'Bash') {
-    return isBlockedCommand(input.command || '', { root, cwd })
+    return roots.some(root =>
+      isBlockedCommand(input.command || '', { root, cwd })
+    )
   }
   const file = input.file_path || input.notebook_path
-  return Boolean(file) && isDistPath(path.resolve(cwd, file), root)
+  return (
+    Boolean(file) &&
+    roots.some(root => isDistPath(path.resolve(cwd, file), root))
+  )
 }
 
 if (require.main === module) {

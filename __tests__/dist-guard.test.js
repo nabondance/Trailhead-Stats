@@ -1,3 +1,4 @@
+const { spawnSync } = require('child_process')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -180,6 +181,40 @@ describe('dist-guard commands', () => {
     ])('allows %s', command => {
       expect(inHome(command)).toBe(false)
     })
+  })
+})
+
+describe('dist-guard hook command', () => {
+  const repoRoot = path.resolve(__dirname, '..')
+  const settings = JSON.parse(
+    fs.readFileSync(path.join(repoRoot, '.claude/settings.json'), 'utf8')
+  )
+  const { command } = settings.hooks.PreToolUse[0].hooks[0]
+  const missing = path.join(os.tmpdir(), 'dist-guard-missing-project')
+
+  const runHook = (cwd, projectDir, file) =>
+    spawnSync('bash', ['-c', command], {
+      cwd,
+      encoding: 'utf8',
+      env: { ...process.env, CLAUDE_PROJECT_DIR: projectDir },
+      input: JSON.stringify({
+        tool_name: 'Write',
+        cwd: repoRoot,
+        tool_input: { file_path: path.join(repoRoot, file) }
+      })
+    }).status
+
+  it('uses the current checkout when the project folder lacks the hook', () => {
+    expect(runHook(repoRoot, missing, 'dist/index.js')).toBe(2)
+    expect(runHook(repoRoot, missing, 'src/main.js')).toBe(0)
+  })
+
+  it('falls back to the project folder outside a checkout', () => {
+    expect(runHook(os.tmpdir(), repoRoot, 'dist/index.js')).toBe(2)
+  })
+
+  it('does not crash when no hook can be found', () => {
+    expect(runHook(os.tmpdir(), missing, 'dist/index.js')).toBe(0)
   })
 })
 
