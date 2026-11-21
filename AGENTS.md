@@ -17,7 +17,8 @@ file of the user's repository.
 5. **Everything ships as v3.0.0.** v2 is frozen, so never propose a v2.x
    release.
 6. **Track work in the private GitHub Project #1** (owner `nabondance`). Never
-   create repo issues, labels or milestones. `[v3.0]` items are the roadmap.
+   create repo issues, labels or milestones. Items with `Version` = `v3.0` are
+   the roadmap.
 7. **Commits** follow `type(scope): description`. Common scopes: `core`, `deps`,
    `ui`, `config`, `release`, `util`, `auth`.
 
@@ -54,7 +55,7 @@ file of the user's repository.
 - **`card-preview [--out dir]`**: render text and cards from fixtures
 - **`action-contract`**: check `action.yml`, `actionInputs.js` and README agree
 - **`trailhead-api`**: endpoints, queries, and how to debug API responses
-- **`v3-next`**: take the next `[v3.0]` item through to a draft PR
+- **`v3-next`**: take the next `Version: v3.0` item through to a draft PR
 - **`cold-review [pr]`**: zero-context review by the `code-goldfish` agent
 - **`full-review [pr]`**: cold, full-context and security reviews, merged
 
