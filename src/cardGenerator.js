@@ -35,23 +35,27 @@ async function createCardAsPng(htmlContent, outputPath) {
     executablePath: '/usr/bin/chromium-browser',
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   })
-  const page = await browser.newPage()
+  // Always close the browser: a live Chromium keeps Node running, so a failed
+  // or timed-out render would hang the step instead of failing it.
+  try {
+    const page = await browser.newPage()
 
-  // Set your HTML content
-  await page.setContent(htmlContent, {
-    waitUntil: 'networkidle0' // Wait for all resources to be loaded
-  })
+    // Set your HTML content
+    await page.setContent(htmlContent, {
+      waitUntil: 'networkidle0' // Wait for all resources to be loaded
+    })
 
-  // Set viewport size if needed
-  await page.setViewport({ width: 1000, height: 10000 })
+    // Set viewport size if needed
+    await page.setViewport({ width: 1000, height: 10000 })
 
-  // Take a screenshot of the card element
-  const cardSelector = '.card'
-  const card = await page.$(cardSelector)
-  await card.screenshot({ path: outputPath, type: 'png' })
-
-  // Close the browser
-  await browser.close()
+    // Take a screenshot of the card element
+    const cardSelector = '.card'
+    const card = await page.$(cardSelector)
+    if (!card) throw new Error(`${cardSelector} not found in the card HTML`)
+    await card.screenshot({ path: outputPath, type: 'png' })
+  } finally {
+    await browser.close()
+  }
 }
 
 function generateHtmlContent(data, inputs, styleTheme) {

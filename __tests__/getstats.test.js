@@ -299,6 +299,18 @@ describe('fails closed', () => {
     )
   })
 
+  it('throws when pagination cycles', async () => {
+    axios.post
+      .mockResolvedValueOnce(ok(stampsData(page([{ id: 1 }], true, 'a'))))
+      .mockResolvedValueOnce(ok(stampsData(page([{ id: 2 }], true, 'b'))))
+      .mockResolvedValueOnce(ok(stampsData(page([{ id: 3 }], true, 'a'))))
+
+    await expect(fetchTrailblazerEarnedStampsInfo('user')).rejects.toThrow(
+      'Trailhead pagination did not advance'
+    )
+    expect(axios.post).toHaveBeenCalledTimes(3)
+  })
+
   it.each([
     [
       'certifications',

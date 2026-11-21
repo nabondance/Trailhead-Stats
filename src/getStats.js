@@ -118,17 +118,18 @@ async function fetchAllPages(fetchPage) {
   let edges = []
   let pageInfo = null
   let first = null
+  const seen = new Set()
   do {
     const after = pageInfo ? pageInfo.endCursor : null
     const page = await fetchPage(after)
     first = first || page
     edges = edges.concat(page.connection.edges)
     pageInfo = page.connection.pageInfo
-    if (
-      pageInfo.hasNextPage &&
-      (!pageInfo.endCursor || pageInfo.endCursor === after)
-    ) {
-      throw new Error('Trailhead pagination did not advance')
+    if (pageInfo.hasNextPage) {
+      if (!pageInfo.endCursor || seen.has(pageInfo.endCursor)) {
+        throw new Error('Trailhead pagination did not advance')
+      }
+      seen.add(pageInfo.endCursor)
     }
   } while (pageInfo.hasNextPage)
   return { first, edges, pageInfo }
