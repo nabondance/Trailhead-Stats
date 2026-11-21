@@ -47,7 +47,7 @@ findings.
   shape, a null field, a boundary value, a failed network call.
 - A caller, importer or consumer of changed code that the change breaks. Search
   the tree for every use of a renamed, removed or re-shaped function, export,
-  prop, field, route or response format before you clear it.
+  field, action input or response format before you clear it.
 
 ## Rules
 
