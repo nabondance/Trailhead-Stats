@@ -235,6 +235,15 @@ describe('fails closed', () => {
     expect(axios.post).toHaveBeenCalledTimes(3)
   })
 
+  it('throws when the body has no data', async () => {
+    axios.post.mockResolvedValue({ data: {} })
+
+    await expect(fetchTrailblazerRankInfo('user')).rejects.toThrow(
+      'response has no data'
+    )
+    expect(axios.post).toHaveBeenCalledTimes(3)
+  })
+
   it('does not retry an unknown username', async () => {
     axios.post.mockResolvedValue(
       gqlErrors({

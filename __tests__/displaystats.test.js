@@ -279,6 +279,21 @@ describe('displayStats Function', () => {
     )
   })
 
+  it('should throw when nothing is rendered', async () => {
+    await expect(
+      displayStats(
+        { ...mockInputs, displayType: 'card', fileFormat: 'pdf' },
+        mockTrailheadRankData,
+        mockTrailheadBadgesData,
+        mockTrailheadSuperBadgesData,
+        mockTrailheadEventBadgesData,
+        mockTrailheadCertifsData,
+        mockTrailheadSkillsData,
+        mockTrailheadEarnedStampsData
+      )
+    ).rejects.toThrow('Nothing was rendered for display-type card')
+  })
+
   it('should throw if there is no rank in md', async () => {
     // Mock other data as empty or minimal for this test
     const mockEmptyData = { data: { profile: {} } }
