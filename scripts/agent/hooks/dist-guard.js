@@ -2,6 +2,7 @@
 // It parses shell commands, so quoted text, comments and heredocs never match.
 // This prevents accidents. CI's dist-guard.yml remains the real enforcement.
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
 
 const MESSAGE =
@@ -9,6 +10,8 @@ const MESSAGE =
   'Use `bash scripts/agent/verify.sh`, which builds to a temp folder.'
 
 const WORKTREES = '.claude/worktrees'
+const TEMP_VARIABLE = /^\$\{?(?:TMPDIR|TMP|TEMP)\}?(?=\/|$)/
+const LEADING_VARIABLES = /^(?:\$(?:\(\)|\{[^}]*\}|\w+)\/*)+(.*)$/
 const DIST_SCRIPTS = new Set(['all', 'bundle', 'package', 'package:watch'])
 const PACKAGE_MANAGERS = new Set(['pnpm', 'npm', 'yarn'])
 // Package manager commands that share a name with a file command below.
@@ -76,7 +79,7 @@ function skipHeredocs(text, start, delimiters) {
 // Splits a script into simple commands, redirects and command substitutions.
 function parseShell(text) {
   const steps = []
-  const nested = []
+  let nested = []
   let argv = []
   let redirects = []
   let heredocs = []
@@ -94,9 +97,12 @@ function parseShell(text) {
   }
   const endCommand = () => {
     endWord()
-    if (argv.length > 0 || redirects.length > 0) steps.push({ argv, redirects })
+    if (argv.length > 0 || redirects.length > 0 || nested.length > 0) {
+      steps.push({ argv, redirects, nested })
+    }
     argv = []
     redirects = []
+    nested = []
     pending = null
   }
   const dropFileDescriptor = () => {
@@ -186,7 +192,7 @@ function parseShell(text) {
     }
   }
   endCommand()
-  return { steps, nested }
+  return steps
 }
 
 // Worktrees can sit several folders deep because branch names contain `/`.
@@ -210,10 +216,27 @@ function isDistPath(file, root) {
   return inner === 'dist' || inner.startsWith('dist/')
 }
 
+const expandTemp = file => file.replace(TEMP_VARIABLE, () => os.tmpdir())
+
+// `$ROOT/src` → `src`. Returns null when the path has no leading variable.
+function pathAfterVariables(file) {
+  const match = file.match(LEADING_VARIABLES)
+  return match ? match[1] || '.' : null
+}
+
 // An unknown directory (cwd null) is read as the repo root: it may well be it.
+// A leading variable may be the repo root or the current directory.
 function targetsDist(file, { root, cwd }) {
-  if (!file || file.startsWith('$') || file.startsWith('~')) return false
-  return isDistPath(path.resolve(cwd ?? root, file), root)
+  if (!file || file.startsWith('~')) return false
+  const expanded = expandTemp(file)
+  const inner = pathAfterVariables(expanded)
+  if (inner !== null) {
+    return [root, cwd ?? root].some(base =>
+      isDistPath(path.resolve(base, inner), root)
+    )
+  }
+  if (expanded.startsWith('$')) return false
+  return isDistPath(path.resolve(cwd ?? root, expanded), root)
 }
 
 function operands(args) {
@@ -252,16 +275,18 @@ function packageWritesDist(args, context) {
       const flag = rest.shift()
       const inline = flag.match(/^--(?:dir|prefix)=(.*)$/)
       if (inline) {
-        directory = nextCwd(inline[1], directory)
+        directory = nextCwd(inline[1], directory, context.root)
       } else if (VALUE_FLAGS.has(flag)) {
         const value = rest.shift()
-        if (DIRECTORY_FLAGS.has(flag)) directory = nextCwd(value, directory)
+        if (DIRECTORY_FLAGS.has(flag)) {
+          directory = nextCwd(value, directory, context.root)
+        }
       }
     }
   }
   skipFlags()
   let first = rest.shift()
-  if (first === 'exec' || first === 'dlx') {
+  if (first === 'exec' || first === 'dlx' || first === 'x') {
     skipFlags()
     return commandWritesDist(rest, { ...context, cwd: directory })
   }
@@ -306,7 +331,7 @@ function gitWritesDist(args, context) {
   let { cwd } = context
   while (rest[0]?.startsWith('-')) {
     const flag = rest.shift()
-    if (flag === '-C') cwd = nextCwd(rest.shift(), cwd)
+    if (flag === '-C') cwd = nextCwd(rest.shift(), cwd, context.root)
     else if (flag === '-c') rest.shift()
   }
   const command = rest.shift()
@@ -341,7 +366,8 @@ function gitWritesDist(args, context) {
 function commandWritesDist(rawArgv, context) {
   const argv = stripPrefixes(rawArgv)
   if (argv.length === 0) return false
-  const name = path.basename(argv[0])
+  // `@vercel/ncc@0.38.1` → `ncc`
+  const name = path.basename(argv[0]).replace(/@.*$/, '')
   const args = argv.slice(1)
   const inDist = file => targetsDist(file, context)
 
@@ -374,29 +400,34 @@ function commandWritesDist(rawArgv, context) {
   return false
 }
 
-function nextCwd(target, cwd) {
-  if (!target || /^[-~]/.test(target) || target.includes('$')) return null
-  if (path.isAbsolute(target)) return target
-  return cwd === null ? null : path.resolve(cwd, target)
+function nextCwd(target, cwd, root) {
+  if (!target || /^[-~]/.test(target)) return null
+  const expanded = expandTemp(target)
+  const inner = pathAfterVariables(expanded)
+  if (inner !== null) return path.resolve(root, inner)
+  if (expanded.includes('$')) return null
+  if (path.isAbsolute(expanded)) return expanded
+  return cwd === null ? null : path.resolve(cwd, expanded)
 }
 
 function scriptWritesDist(script, context) {
-  const { steps, nested } = parseShell(script)
-  if (nested.some(inner => scriptWritesDist(inner, context))) return true
-
   let { cwd } = context
   const groups = []
-  for (const step of steps) {
+  for (const step of parseShell(script)) {
     if (step.group === '(') {
       groups.push(cwd)
     } else if (step.group === ')') {
       if (groups.length > 0) cwd = groups.pop()
     } else {
       const scoped = { root: context.root, cwd }
+      if (step.nested.some(inner => scriptWritesDist(inner, scoped))) {
+        return true
+      }
       if (step.redirects.some(file => targetsDist(file, scoped))) return true
       const argv = stripPrefixes(step.argv)
-      if (argv[0] === 'cd' || argv[0] === 'pushd') cwd = nextCwd(argv[1], cwd)
-      else if (argv[0] === 'popd') cwd = null
+      if (argv[0] === 'cd' || argv[0] === 'pushd') {
+        cwd = nextCwd(argv[1], cwd, context.root)
+      } else if (argv[0] === 'popd') cwd = null
       else if (commandWritesDist(argv, scoped)) return true
     }
   }

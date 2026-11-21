@@ -63,7 +63,20 @@ describe('dist-guard commands', () => {
     'npx ncc build src/index.js',
     'npx --yes ncc build src/index.js',
     'npx -p @vercel/ncc ncc build src/index.js',
-    'npx -c "ncc build src/index.js"'
+    'npx -c "ncc build src/index.js"',
+    'rm -rf "$CLAUDE_PROJECT_DIR/dist"',
+    'rm -rf "$CLAUDE_PROJECT_DIR"/dist',
+    'rm -rf "${ROOT}/dist/index.js"',
+    'echo x > "$ROOT/dist/index.js"',
+    'rm -rf "$(git rev-parse --show-toplevel)/dist"',
+    'pnpm exec ncc build src/index.js -o "$ROOT/dist"',
+    'cd "$ROOT/dist" && rm index.js',
+    'cd "$ROOT/src" && rm -rf ../dist',
+    'cd src && rm "$PWD/../dist/index.js"',
+    'npx @vercel/ncc@0.38.1 build src/index.js',
+    'pnpm dlx @vercel/ncc@latest build src/index.js',
+    'npm x ncc build src/index.js',
+    'cd dist && echo $(rm index.js)'
   ])('blocks %s', command => {
     expect(blocked(command)).toBe(true)
   })
@@ -109,7 +122,14 @@ describe('dist-guard commands', () => {
     'pnpm install',
     'npx ncc build src/index.js -o /tmp/out',
     'npx --yes ncc build src/index.js --out=/tmp/out',
-    'npx -p @vercel/ncc ncc build src/index.js -o /tmp/out'
+    'npx -p @vercel/ncc ncc build src/index.js -o /tmp/out',
+    'rm -rf "$TMPDIR/dist"',
+    'cd "$TMPDIR" && rm -rf dist',
+    'rm -rf "$ROOT/packages/dist"',
+    'pnpm exec ncc build src/index.js -o "$out"',
+    'cd "$ROOT/src" && rm -rf dist',
+    'cd /tmp/x && echo $(rm -rf dist)',
+    'npx @vercel/ncc@0.38.1 build src/index.js -o /tmp/out'
   ])('allows %s', command => {
     expect(blocked(command)).toBe(false)
   })
