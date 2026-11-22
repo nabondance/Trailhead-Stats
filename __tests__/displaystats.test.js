@@ -802,12 +802,42 @@ describe('displayStats Function', () => {
     ).toBe('old')
   })
 
-  it('replaces a symlink without writing through it when not committing', async () => {
+  it('refuses a symlink out of the repository even when not committing', async () => {
     const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'th-outside-'))
     fs.writeFileSync(path.join(outside, 'target.png'), 'precious')
     fs.mkdirSync(path.join(workspace, 'images'))
     fs.symlinkSync(
       path.join(outside, 'target.png'),
+      path.join(workspace, 'images', 'TScard-light.png')
+    )
+
+    await expect(
+      renderCard({ outputOnly: 'true', noCommit: 'true', cardPath: 'images' })
+    ).rejects.toThrow('card-path must stay inside the repository')
+
+    expect(fs.readFileSync(path.join(outside, 'target.png'), 'utf8')).toBe(
+      'precious'
+    )
+    fs.rmSync(outside, { recursive: true, force: true })
+  })
+
+  it('refuses a card folder symlinked out of the repository when not committing', async () => {
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'th-outside-'))
+    fs.symlinkSync(outside, path.join(workspace, 'images'))
+
+    await expect(
+      renderCard({ outputOnly: 'false', noCommit: 'true', cardPath: 'images' })
+    ).rejects.toThrow('card-path must stay inside the repository')
+
+    expect(fs.readdirSync(outside)).toEqual([])
+    fs.rmSync(outside, { recursive: true, force: true })
+  })
+
+  it('replaces a symlink inside the repository without writing through it', async () => {
+    fs.mkdirSync(path.join(workspace, 'images'))
+    fs.writeFileSync(path.join(workspace, 'keep.png'), 'precious')
+    fs.symlinkSync(
+      path.join(workspace, 'keep.png'),
       path.join(workspace, 'images', 'TScard-light.png')
     )
 
@@ -820,10 +850,9 @@ describe('displayStats Function', () => {
     const card = path.join(workspace, 'images', 'TScard-light.png')
     expect(fs.lstatSync(card).isSymbolicLink()).toBe(false)
     expect(fs.readFileSync(card, 'utf8')).toBe('light png')
-    expect(fs.readFileSync(path.join(outside, 'target.png'), 'utf8')).toBe(
+    expect(fs.readFileSync(path.join(workspace, 'keep.png'), 'utf8')).toBe(
       'precious'
     )
-    fs.rmSync(outside, { recursive: true, force: true })
   })
 
   it('allows a card-path outside the repository when nothing is committed', async () => {

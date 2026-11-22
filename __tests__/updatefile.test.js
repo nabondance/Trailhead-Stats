@@ -156,6 +156,19 @@ describe('linkFromDisplayFile', () => {
     expect(linkFromDisplayFile(display, path.join(ws, card))).toBe(link)
   })
 
+  it('follows an in-repository folder symlink for both ends', () => {
+    write('site/docs/README.md', TAGGED)
+    fs.symlinkSync('site/docs', path.join(ws, 'docs'))
+    fs.mkdirSync(path.join(ws, 'site/docs/images'))
+
+    expect(
+      linkFromDisplayFile(
+        'docs/README.md',
+        path.join(ws, 'docs/images/TScard-light.png')
+      )
+    ).toBe('images/TScard-light.png')
+  })
+
   it('is relative to the target of a symlinked display file', () => {
     write('docs/README.md', TAGGED)
     fs.rmSync(path.join(ws, 'README.md'))
@@ -303,6 +316,15 @@ describe('pushUpdatedFile', () => {
     expect(remoteLog()).toBe('t|init')
   })
 
+  it('does not commit when staged changes cancel out', () => {
+    write('README.md', 'staged by an earlier step')
+    run(ws, 'add', 'README.md')
+    write('README.md', TAGGED)
+
+    expect(() => pushUpdatedFile('README.md', [])).not.toThrow()
+    expect(remoteLog()).toBe('t|init')
+  })
+
   it('reports an ignored card instead of silently skipping it', () => {
     write('.gitignore', 'cards/\n')
     run(ws, 'add', '.gitignore')
@@ -415,8 +437,21 @@ describe('pushUpdatedFile', () => {
     const basic = Buffer.from(`x-access-token:${token}`).toString('base64')
     let execFileSync
 
+    // A token needs an HTTPS origin: keep that URL, and deliver the real push
+    // to the local bare remote.
     beforeEach(() => {
-      execFileSync = jest.spyOn(childProcess, 'execFileSync')
+      run(ws, 'remote', 'set-url', 'origin', 'https://github.com/o/r.git')
+      execFileSync = jest
+        .spyOn(childProcess, 'execFileSync')
+        .mockImplementation((cmd, args, options) =>
+          realExecFileSync(
+            cmd,
+            args.includes('push')
+              ? args.map(arg => (arg === 'origin' ? remote : arg))
+              : args,
+            options
+          )
+        )
     })
     afterEach(() => execFileSync.mockRestore())
 
@@ -427,6 +462,7 @@ describe('pushUpdatedFile', () => {
 
     it('sends it as the only Authorization header, through the environment', () => {
       process.env.GITHUB_SERVER_URL = 'https://ghe.example.com/'
+      run(ws, 'remote', 'set-url', 'origin', 'https://ghe.example.com/o/r.git')
       write('README.md', 'updated')
 
       pushUpdatedFile('README.md', [], token)
@@ -605,6 +641,19 @@ describe('pushUpdatedFile', () => {
       expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
     })
 
+    it.each(['/tmp/remote.git', 'file:///tmp/remote.git'])(
+      'refuses the token input with the local remote %s',
+      url => {
+        run(ws, 'remote', 'set-url', 'origin', url)
+        write('README.md', 'updated')
+
+        expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+          'the token input only works with an HTTPS remote'
+        )
+        expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
+      }
+    )
+
     it('leaves an env token unused for another host', () => {
       process.env.GITHUB_TOKEN = token
       run(ws, 'remote', 'set-url', 'origin', 'https://gitlab.example/o/r.git')
@@ -685,7 +734,6 @@ describe('pushUpdatedFile', () => {
     })
 
     it('accepts an explicit http.sslVerify=true', () => {
-      // A local remote has no TLS: the setting is simply not consulted.
       run(ws, 'config', 'http.sslVerify', 'true')
       write('README.md', 'updated')
 
@@ -759,7 +807,7 @@ describe('pushUpdatedFile', () => {
       write('README.md', 'updated')
 
       expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
-        'the token input needs git 2.31 or newer, found 2.30'
+        'pushing with a token needs git 2.31 or newer, found 2.30'
       )
       // Checked before the commit: nothing is left behind.
       expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')

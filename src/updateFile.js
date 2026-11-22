@@ -71,9 +71,19 @@ function displayFilePath(displayFile) {
   return workspacePath(relative, 'display-file')
 }
 
-// The path git tracks: a symlinked display file is committed at its target.
+// The path git tracks: symlinks are followed as far as the path exists, so a
+// symlinked display file is committed at its target.
 function repoPath(file) {
-  return path.relative(fs.realpathSync(workspaceRoot()), fs.realpathSync(file))
+  let existing = file
+  const missing = []
+  while (!exists(existing) && path.dirname(existing) !== existing) {
+    missing.unshift(path.basename(existing))
+    existing = path.dirname(existing)
+  }
+  return path.relative(
+    fs.realpathSync(workspaceRoot()),
+    path.join(fs.realpathSync(existing), ...missing)
+  )
 }
 
 // Runs git without a shell, so input values are never interpreted. The error
@@ -134,13 +144,18 @@ function tokenProblem(url) {
   if (/^http:\/\//i.test(url)) {
     return 'the token input only works with an HTTPS remote, but origin uses plain HTTP'
   }
-  if (
-    /^https:\/\//i.test(url) &&
-    new URL(url).origin !== new URL(serverUrl()).origin
-  ) {
+  // A local remote would run its own hooks with the credential in their env.
+  if (!/^https:\/\//i.test(url)) {
+    return 'the token input only works with an HTTPS remote'
+  }
+  if (new URL(url).origin !== new URL(serverUrl()).origin) {
     return `the token input only applies to ${serverUrl()}, but origin is on another host`
   }
   return null
+}
+
+function isLexicallyInWorkspace(target) {
+  return isInside(workspaceRoot(), path.resolve(workspaceRoot(), target))
 }
 
 function isInWorkspace(target) {
@@ -154,11 +169,9 @@ function isInWorkspace(target) {
 
 // How a card link must be written for the display file that contains it.
 function linkFromDisplayFile(displayFile, target) {
-  const display = displayFilePath(displayFile)
-  const from = exists(display)
-    ? repoPath(display)
-    : path.relative(workspaceRoot(), display)
-  const to = path.relative(workspaceRoot(), target)
+  const from = repoPath(displayFilePath(displayFile))
+  // The card itself is replaced, so only its folder is resolved.
+  const to = path.join(repoPath(path.dirname(target)), path.basename(target))
   return path.relative(path.dirname(from), to).split(path.sep).join('/')
 }
 
@@ -177,7 +190,7 @@ function assertEnvConfigSupported() {
   const [major, minor] = version ? version.slice(1).map(Number) : [0, 0]
   if (major < 2 || (major === 2 && minor < 31)) {
     throw new Error(
-      `the token input needs git 2.31 or newer, found ${version ? version[0] : 'unknown'}`
+      `pushing with a token needs git 2.31 or newer, found ${version ? version[0] : 'unknown'}`
     )
   }
 }
@@ -241,7 +254,7 @@ function assertNotLfs(paths) {
   for (let i = 2; i < fields.length; i += 3) {
     if (fields[i] === 'lfs') {
       throw new Error(
-        'this push includes files tracked by Git LFS, whose upload hook does not run with an injected token. Give the token to actions/checkout instead'
+        'this push includes files tracked by Git LFS, whose upload hook does not run with a token passed to this action. Give the token to actions/checkout instead'
       )
     }
   }
@@ -364,6 +377,18 @@ function pushUpdatedFile(displayFile, cardFiles = [], token = '') {
     const { secrets } = auth
 
     git('add', [...auth.noHooks, 'add', '--', ...paths], { secrets })
+    // Staged changes can cancel out against the new content.
+    const staged = git('diff', [
+      'diff',
+      '--cached',
+      '--name-only',
+      '--',
+      ...paths
+    ]).trim()
+    if (staged === '') {
+      core.debug('No changes detected. Skipping commit and push.')
+      return
+    }
 
     git(
       'commit',
@@ -394,5 +419,6 @@ module.exports = {
   workspacePath,
   workspaceRoot,
   isInWorkspace,
+  isLexicallyInWorkspace,
   linkFromDisplayFile
 }

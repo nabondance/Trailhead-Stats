@@ -14,18 +14,19 @@ const {
   workspacePath,
   workspaceRoot,
   isInWorkspace,
+  isLexicallyInWorkspace,
   linkFromDisplayFile
 } = require('./updateFile')
 
 // Cards that get committed must stay in the repository. Without a commit
-// (output-only or no-commit), any folder works, e.g. runner.temp for an
-// artifact upload.
+// (output-only or no-commit), a folder outside it works, e.g. runner.temp for
+// an artifact upload. A path inside it can never escape through a symlink.
 function commitsCards(inputs) {
   return inputs.outputOnly === 'false' && inputs.noCommit === 'false'
 }
 
 function cardTarget(inputs, file) {
-  return commitsCards(inputs)
+  return commitsCards(inputs) || isLexicallyInWorkspace(file)
     ? workspacePath(file, 'card-path')
     : path.resolve(workspaceRoot(), file)
 }
