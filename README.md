@@ -248,6 +248,10 @@ between these tags.
   workflow.
 - **Protected branch:** the workflow token cannot push there. Set the `token`
   input to a PAT that can.
+- **Git LFS:** with the `token` input, the LFS upload hook does not run. Give
+  the token to `actions/checkout` instead.
+- **TLS verification disabled:** the `token` input is refused when git is
+  configured with `http.sslVerify=false` or `GIT_SSL_NO_VERIFY`.
 - **Detached HEAD:** the workflow checked out a pull request or a tag. Run it on
   a branch (`schedule`, `push` or `workflow_dispatch`), or set
   `no-commit: true`.

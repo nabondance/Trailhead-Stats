@@ -55,6 +55,9 @@ class ActionInputs {
     this.outputOnly = core.getInput('output-only', { required: false })
     this.noCommit = core.getInput('no-commit', { required: false })
     this.token = core.getInput('token', { required: false })
+    // Mask it and keep it out of the environment child processes inherit.
+    if (this.token) core.setSecret(this.token)
+    delete process.env.INPUT_TOKEN
     this.darkStyle = core.getInput('dark-style', { required: false })
     this.showSkill = core.getInput('show-skill', { required: false })
     this.showCertification = core.getInput('show-certification', {

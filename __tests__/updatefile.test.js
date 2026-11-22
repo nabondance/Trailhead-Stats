@@ -28,7 +28,9 @@ const ENV_KEYS = [
   'GIT_CONFIG_COUNT',
   'GIT_CONFIG_KEY_0',
   'GIT_CONFIG_VALUE_0',
-  'GITHUB_TOKEN'
+  'GITHUB_TOKEN',
+  'INPUT_TOKEN',
+  'GIT_SSL_NO_VERIFY'
 ]
 const savedEnv = Object.fromEntries(ENV_KEYS.map(k => [k, process.env[k]]))
 
@@ -56,6 +58,8 @@ beforeEach(() => {
   process.env.GIT_CONFIG_NOSYSTEM = '1'
   delete process.env.GIT_CONFIG_COUNT
   delete process.env.GITHUB_TOKEN
+  delete process.env.INPUT_TOKEN
+  delete process.env.GIT_SSL_NO_VERIFY
 
   run(tmp, 'init', '-q', '--bare', '-b', 'main', remote)
   run(tmp, 'init', '-q', '-b', 'main', ws)
@@ -206,6 +210,69 @@ describe('pushUpdatedFile', () => {
     expect(remoteLog()).toBe('t|init')
   })
 
+  it('pushes to the real branch when a tag has the same name', () => {
+    run(ws, 'tag', 'main')
+    write('README.md', 'updated')
+
+    pushUpdatedFile('README.md', [])
+
+    expect(run(remote, 'for-each-ref', '--format=%(refname)')).toBe(
+      'refs/heads/main'
+    )
+    expect(run(remote, 'log', '--format=%s', '-1', 'refs/heads/main')).toBe(
+      'Update Trailhead Stats in README.md'
+    )
+  })
+
+  it('commits the target of a symlinked display file', () => {
+    write('docs/README.md', TAGGED)
+    fs.rmSync(path.join(ws, 'README.md'))
+    fs.symlinkSync('docs/README.md', path.join(ws, 'README.md'))
+    run(ws, 'add', '.')
+    run(
+      ws,
+      '-c',
+      'user.name=t',
+      '-c',
+      'user.email=t@t',
+      'commit',
+      '-qm',
+      'link'
+    )
+
+    updateStatsOnFile('README.md', 'new stats')
+    pushUpdatedFile('README.md', [])
+
+    expect(remoteFiles()).toEqual(['docs/README.md'])
+    expect(run(remote, 'show', 'main:docs/README.md')).toContain('new stats')
+  })
+
+  it('reads a display-file with a leading slash from the repository', () => {
+    write('docs/README.md', TAGGED)
+
+    updateStatsOnFile('/docs/README.md', 'new stats')
+    pushUpdatedFile('/docs/README.md', [])
+
+    expect(fs.readFileSync(path.join(ws, 'docs/README.md'), 'utf8')).toContain(
+      'new stats'
+    )
+    expect(remoteFiles()).toEqual(['docs/README.md'])
+  })
+
+  it('keeps an absolute display-file that is inside the repository', () => {
+    updateStatsOnFile(path.join(ws, 'README.md'), 'new stats')
+
+    expect(fs.readFileSync(path.join(ws, 'README.md'), 'utf8')).toContain(
+      'new stats'
+    )
+  })
+
+  it('refuses a leading-slash display-file that climbs out', () => {
+    expect(() => updateStatsOnFile('/../outside.md', 'x')).toThrow(
+      'display-file must stay inside the repository'
+    )
+  })
+
   it('refuses to commit from a detached HEAD (pull request, tag)', () => {
     run(ws, 'checkout', '-q', '--detach')
     write('README.md', 'updated')
@@ -332,19 +399,98 @@ describe('pushUpdatedFile', () => {
       })
     })
 
-    it('does not run hooks that could read the token', () => {
-      const hooks = path.join(ws, '.git', 'hooks')
-      fs.writeFileSync(
-        path.join(hooks, 'pre-push'),
-        `#!/bin/sh\nenv > "${path.join(tmp, 'leak')}"\n`,
-        { mode: 0o755 }
-      )
+    it.each(['pre-commit', 'commit-msg', 'post-commit', 'pre-push'])(
+      'does not run a %s hook that could read the token',
+      hook => {
+        fs.writeFileSync(
+          path.join(ws, '.git', 'hooks', hook),
+          `#!/bin/sh\nenv > "${path.join(tmp, 'leak')}"\n`,
+          { mode: 0o755 }
+        )
+        write('README.md', 'updated')
+
+        pushUpdatedFile('README.md', [], token)
+
+        expect(fs.existsSync(path.join(tmp, 'leak'))).toBe(false)
+        expect(remoteFiles()).toEqual(['README.md'])
+      }
+    )
+
+    it('keeps tokens out of the environment of every git command', () => {
+      process.env.GITHUB_TOKEN = 'env-token'
+      process.env.INPUT_TOKEN = token
       write('README.md', 'updated')
 
       pushUpdatedFile('README.md', [], token)
 
-      expect(fs.existsSync(path.join(tmp, 'leak'))).toBe(false)
+      const gitCalls = execFileSync.mock.calls.filter(([cmd]) => cmd === 'git')
+      expect(gitCalls.length).toBeGreaterThan(3)
+      for (const [, , options] of gitCalls) {
+        expect(options.env.GITHUB_TOKEN).toBeUndefined()
+        expect(options.env.INPUT_TOKEN).toBeUndefined()
+      }
+    })
+
+    it('refuses an LFS-tracked card before changing anything', () => {
+      write('.gitattributes', '*.png filter=lfs diff=lfs merge=lfs -text\n')
+      run(ws, 'add', '.gitattributes')
+      run(
+        ws,
+        '-c',
+        'user.name=t',
+        '-c',
+        'user.email=t@t',
+        'commit',
+        '-qm',
+        'lfs'
+      )
+      write('TScard-light.png', 'light')
+
+      expect(() =>
+        pushUpdatedFile('README.md', ['TScard-light.png'], token)
+      ).toThrow('tracked by Git LFS')
+      expect(run(ws, 'log', '--format=%s', '-1')).toBe('lfs')
+      expect(run(ws, 'diff', '--cached', '--name-only')).toBe('')
+    })
+
+    it.each([
+      ['http.sslVerify', 'false'],
+      ['http.https://github.com/.sslVerify', 'no']
+    ])('refuses to send it when %s is %s', (key, value) => {
+      run(ws, 'config', key, value)
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'refusing to send the token with TLS verification disabled'
+      )
+      expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
+    })
+
+    it('refuses to send it with GIT_SSL_NO_VERIFY', () => {
+      process.env.GIT_SSL_NO_VERIFY = '1'
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'TLS verification disabled (GIT_SSL_NO_VERIFY)'
+      )
+    })
+
+    it('accepts an explicit http.sslVerify=true', () => {
+      run(ws, 'config', 'http.sslVerify', 'true')
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], token)
+
       expect(remoteFiles()).toEqual(['README.md'])
+    })
+
+    it('reports an invalid http.sslVerify instead of ignoring it', () => {
+      run(ws, 'config', 'http.sslVerify', 'maybe')
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'git config failed'
+      )
     })
 
     it('keeps hooks when no token is injected (e.g. Git LFS pre-push)', () => {
@@ -404,6 +550,8 @@ describe('pushUpdatedFile', () => {
       expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
         'the token input needs git 2.31 or newer, found 2.30'
       )
+      // Checked before the commit: nothing is left behind.
+      expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
       expect(remoteLog()).toBe('t|init')
     })
 

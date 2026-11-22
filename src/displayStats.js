@@ -258,7 +258,7 @@ function displayStatsOutput(dataToFormat) {
 async function displayStatsCard(inputs, dataToFormat) {
   const staging = mkdtempSync(path.join(os.tmpdir(), 'th-cards-'))
   try {
-    // Create the card path if it doesn't exist. It must be in the repository.
+    // Create the card path if it doesn't exist.
     mkdirSync(cardTarget(inputs, inputs.cardPath), { recursive: true })
 
     // Render both cards aside first, so a failed render leaves the existing
