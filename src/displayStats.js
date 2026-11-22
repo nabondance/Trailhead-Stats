@@ -13,6 +13,7 @@ const {
 const {
   workspacePath,
   workspaceRoot,
+  isInWorkspace,
   linkFromDisplayFile
 } = require('./updateFile')
 
@@ -29,10 +30,10 @@ function cardTarget(inputs, file) {
     : path.resolve(workspaceRoot(), file)
 }
 
-// A committed link must be relative: an absolute card-path would publish a
-// runner path that resolves to nothing on GitHub.
+// A link written into the display file is relative to that file, so it works
+// from a subfolder and never publishes a runner path.
 function cardLink(inputs, file, target) {
-  if (!commitsCards(inputs) || !path.isAbsolute(inputs.cardPath)) return file
+  if (inputs.outputOnly !== 'false' || !isInWorkspace(target)) return file
   return linkFromDisplayFile(inputs.displayFile, target)
 }
 

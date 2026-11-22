@@ -519,6 +519,15 @@ describe('pushUpdatedFile', () => {
       expect(remoteLog()).toBe('t|init')
     })
 
+    it('works with a file named HEAD at the repository root', () => {
+      write('HEAD', 'not a revision')
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], token)
+
+      expect(remoteFiles()).toEqual(['README.md'])
+    })
+
     it('still pushes an unpushed commit without LFS files', () => {
       write('notes.txt', 'notes')
       run(ws, 'add', '.')

@@ -143,6 +143,15 @@ function tokenProblem(url) {
   return null
 }
 
+function isInWorkspace(target) {
+  try {
+    workspacePath(target, 'path')
+    return true
+  } catch {
+    return false
+  }
+}
+
 // How a card link must be written for the display file that contains it.
 function linkFromDisplayFile(displayFile, target) {
   const display = displayFilePath(displayFile)
@@ -208,7 +217,8 @@ function unpushedFiles() {
     '-z',
     'HEAD',
     '--not',
-    '--remotes=origin'
+    '--remotes=origin',
+    '--'
   ])
     .split('\0')
     .map(file => file.replace(/^\n+/, ''))
@@ -374,5 +384,6 @@ module.exports = {
   pushUpdatedFile,
   workspacePath,
   workspaceRoot,
+  isInWorkspace,
   linkFromDisplayFile
 }

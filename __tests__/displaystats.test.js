@@ -720,6 +720,48 @@ describe('displayStats Function', () => {
     expect(result).toContain('](images/TScard-dark.png#gh-dark-mode-only)')
   })
 
+  it('writes a relative card-path link relative to the display file', async () => {
+    fs.mkdirSync(path.join(workspace, 'docs'))
+    fs.writeFileSync(path.join(workspace, 'docs', 'README.md'), 'x')
+
+    const result = await renderCard({
+      outputOnly: 'false',
+      noCommit: 'false',
+      displayFile: 'docs/README.md',
+      cardPath: 'docs/images'
+    })
+
+    expect(result).toContain('](images/TScard-light.png#gh-light-mode-only)')
+  })
+
+  it('keeps the v2 link for a display file at the root', async () => {
+    fs.writeFileSync(path.join(workspace, 'README.md'), 'x')
+
+    const result = await renderCard({
+      outputOnly: 'false',
+      noCommit: 'false',
+      displayFile: 'README.md',
+      cardPath: './TS-cards'
+    })
+
+    expect(result).toContain('](TS-cards/TScard-light.png#gh-light-mode-only)')
+    expect(result).toContain('](TS-cards/TScard-dark.png#gh-dark-mode-only)')
+  })
+
+  it('writes a relative link with no-commit when the card is in the repository', async () => {
+    fs.writeFileSync(path.join(workspace, 'README.md'), 'x')
+
+    const result = await renderCard({
+      outputOnly: 'false',
+      noCommit: 'true',
+      displayFile: 'README.md',
+      cardPath: path.join(workspace, 'images')
+    })
+
+    expect(result).toContain('](images/TScard-light.png#gh-light-mode-only)')
+    expect(result).not.toContain(workspace)
+  })
+
   it('changes nothing when a card target is a directory', async () => {
     fs.mkdirSync(path.join(workspace, 'images', 'TScard-dark.png'), {
       recursive: true
