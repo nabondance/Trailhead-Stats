@@ -190,7 +190,14 @@ function linkFromDisplayFile(displayFile, target) {
 
 function hasPersistedAuth() {
   try {
-    return git('config', ['config', '--get-all', extraHeaderKey()]) !== ''
+    const values = git('config', [
+      'config',
+      '--get-all',
+      extraHeaderKey()
+    ]).split('\n')
+    values.pop() // the output ends with a newline
+    // An empty value clears the headers set before it.
+    return values.length > 0 && values[values.length - 1] !== ''
   } catch {
     return false // `git config --get-all` exits 1 when the key is unset
   }

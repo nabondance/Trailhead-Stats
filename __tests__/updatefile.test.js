@@ -832,6 +832,24 @@ describe('pushUpdatedFile', () => {
       )
     })
 
+    it('falls back to the env token when the persisted header was cleared', () => {
+      process.env.GITHUB_TOKEN = token
+      run(
+        ws,
+        'config',
+        'http.https://github.com/.extraheader',
+        'AUTHORIZATION: basic x'
+      )
+      run(ws, 'config', '--add', 'http.https://github.com/.extraheader', '')
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], '')
+
+      expect(pushCall()[2].env.GIT_CONFIG_VALUE_1).toBe(
+        `AUTHORIZATION: basic ${basic}`
+      )
+    })
+
     it('keeps the persisted credentials over a GITHUB_TOKEN in the env', () => {
       process.env.GITHUB_TOKEN = token
       run(
