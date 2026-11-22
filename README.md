@@ -90,17 +90,18 @@ daily.
 
 ## Inputs
 
-| Input Name           | Kind       | Description                                                        | Default     |
-| -------------------- | ---------- | ------------------------------------------------------------------ | ----------- |
-| `trailhead-username` | Required   | The username on Trailhead.                                         | `username`  |
-| `display-file`       | Config     | The file to update for displaying the Trailhead stats.             | `README.md` |
-| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                         | `md`        |
-| `card-path`          | Config     | Folder path to save the card                                       | `images`    |
-| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.     | `text`      |
-| `dark-style`         | Preference | The kind of dark theme. Options: `dimmed`, `dark`, `high-contrast` | `dimmed`    |
-| `show-*`             | Preference | On a card, customize the element. See Card Display customization.  |             |
-| `output-only`        | Debug      | Set to true to only output without modifying the file.             | `false`     |
-| `no-commit`          | Debug      | Set to true to not commit the modification.                        | `false`     |
+| Input Name           | Kind       | Description                                                                                          | Default     |
+| -------------------- | ---------- | ---------------------------------------------------------------------------------------------------- | ----------- |
+| `trailhead-username` | Required   | The username on Trailhead.                                                                           | `username`  |
+| `display-file`       | Config     | The file to update for displaying the Trailhead stats.                                               | `README.md` |
+| `file-format`        | Config     | Format of the file. Options: `md`, `html`.                                                           | `md`        |
+| `card-path`          | Config     | Folder path to save the card                                                                         | `images`    |
+| `display-type`       | Preference | The type of display output. Options: `text`, `card`, `output`.                                       | `text`      |
+| `dark-style`         | Preference | The kind of dark theme. Options: `dimmed`, `dark`, `high-contrast`                                   | `dimmed`    |
+| `show-*`             | Preference | On a card, customize the element. See Card Display customization.                                    |             |
+| `output-only`        | Debug      | Set to true to only output without modifying the file.                                               | `false`     |
+| `no-commit`          | Debug      | Set to true to not commit the modification.                                                          | `false`     |
+| `token`              | Config     | Token used to push. Empty uses the `actions/checkout` credentials; set a PAT for a protected branch. |             |
 
 ## Outputs
 
@@ -241,8 +242,24 @@ between these tags.
 
 **Problem:** The Git commands fails during execution.
 
-**Solution:** Check that you granted the content:write permission for the job in
-your workflow.
+**Solution:** Check the error message:
+
+- **Permission denied (403):** grant `contents: write` to the job in your
+  workflow.
+- **Protected branch:** the workflow token cannot push there. Set the `token`
+  input to a PAT that can.
+- **Git LFS:** with the `token` input, the LFS upload hook does not run. Give
+  the token to `actions/checkout` instead.
+- **SSH or other remote:** the `token` input only works with an HTTPS remote on
+  your GitHub server. With SSH, remove it to push with the key.
+- **TLS verification disabled:** the `token` input is refused when git is
+  configured with `http.sslVerify=false` or `GIT_SSL_NO_VERIFY`.
+- **Detached HEAD:** the workflow checked out a pull request or a tag. Run it on
+  a branch (`schedule`, `push` or `workflow_dispatch`), or set
+  `no-commit: true`.
+- **Must stay inside the repository:** `display-file` and `card-path` must point
+  inside the checked-out repository. Without a commit (`output-only` or
+  `no-commit`), `card-path` can be any folder.
 
 ---
 

@@ -12,6 +12,13 @@ function validateStringField(field, fieldName) {
   }
 }
 
+// For secrets: the error never contains the value.
+function validateSecretStringField(field, fieldName) {
+  if (typeof field !== 'string') {
+    throw new Error(`${fieldName} must be a string`)
+  }
+}
+
 function validateIntegerField(field, fieldName) {
   if (!Number.isInteger(field)) {
     throw new Error(
@@ -67,6 +74,7 @@ function validateHexadecimalField(field, fieldName) {
 module.exports = {
   validateRequiredField,
   validateStringField,
+  validateSecretStringField,
   validateIntegerField,
   validateBooleanField,
   validateStringInListField,

@@ -27,6 +27,7 @@ describe('Input Validation Tests', () => {
     inputs.showSkillCustomColorLow = '#FFFFFF'
     inputs.outputOnly = false
     inputs.noCommit = false
+    inputs.token = ''
     inputs.darkStyle = 'dimmed'
     inputs.showSkill = 'visible'
     inputs.showCertification = 'detail'
@@ -584,6 +585,36 @@ describe('Input Validation Tests', () => {
       expect(() => {
         inputs.validateShowStampLatest()
       }).not.toThrow()
+    })
+  })
+
+  describe('validateToken', () => {
+    it('accepts an empty token', () => {
+      inputs.token = ''
+      expect(() => inputs.validateToken()).not.toThrow()
+    })
+
+    it('masks the token and removes it from the environment', () => {
+      process.env.INPUT_TOKEN = 'ghs_input'
+      core.getInput.mockImplementation(name =>
+        name === 'token' ? 'ghs_input' : ''
+      )
+      jest
+        .spyOn(ActionInputs.prototype, 'validateInputs')
+        .mockImplementationOnce(() => {})
+
+      const read = new ActionInputs()
+
+      expect(read.token).toBe('ghs_input')
+      expect(core.setSecret).toHaveBeenCalledWith('ghs_input')
+      expect(process.env.INPUT_TOKEN).toBeUndefined()
+      core.getInput.mockReset()
+    })
+
+    it('rejects a non-string token', () => {
+      inputs.token = 123
+      expect(() => inputs.validateToken()).toThrow('token must be a string')
+      expect(() => inputs.validateToken()).not.toThrow('123')
     })
   })
 

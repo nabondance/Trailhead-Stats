@@ -1,6 +1,67 @@
 const core = require('@actions/core')
-const { generateCard } = require('./cardGenerator')
-const { mkdirSync } = require('fs')
+const os = require('os')
+const path = require('path')
+const { generateCard, cardFilePath, CARD_THEMES } = require('./cardGenerator')
+const {
+  copyFileSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  renameSync,
+  rmSync
+} = require('fs')
+const {
+  workspacePath,
+  workspaceRoot,
+  isInWorkspace,
+  isLexicallyInWorkspace,
+  linkFromDisplayFile
+} = require('./updateFile')
+
+// Cards that get committed must stay in the repository. Without a commit
+// (output-only or no-commit), a folder outside it works, e.g. runner.temp for
+// an artifact upload. A path inside it can never escape through a symlink.
+function commitsCards(inputs) {
+  return inputs.outputOnly === 'false' && inputs.noCommit === 'false'
+}
+
+function cardTarget(inputs, file) {
+  return commitsCards(inputs) || isLexicallyInWorkspace(file)
+    ? workspacePath(file, 'card-path')
+    : path.resolve(workspaceRoot(), file)
+}
+
+// A link written into the display file is relative to that file, so it works
+// from a subfolder. A card outside the repository, only possible without a
+// commit, keeps the path it was given.
+function cardLink(inputs, file, target) {
+  if (inputs.outputOnly !== 'false' || !isInWorkspace(target)) return file
+  return linkFromDisplayFile(inputs.displayFile, target)
+}
+
+// Copies both cards next to their targets, then renames them into place. A
+// failed copy changes nothing, and a rename replaces a symlink instead of
+// writing through it.
+function replaceCards(staged, targets) {
+  for (const theme of CARD_THEMES) {
+    if (lstatSync(targets[theme], { throwIfNoEntry: false })?.isDirectory()) {
+      throw new Error(`${path.basename(targets[theme])} is a directory`)
+    }
+  }
+  const swap = mkdtempSync(
+    path.join(path.dirname(targets[CARD_THEMES[0]]), '.th-cards-')
+  )
+  try {
+    for (const theme of CARD_THEMES) {
+      copyFileSync(staged[theme], path.join(swap, theme))
+    }
+    for (const theme of CARD_THEMES) {
+      renameSync(path.join(swap, theme), targets[theme])
+    }
+  } finally {
+    rmSync(swap, { recursive: true, force: true })
+  }
+}
 
 async function displayStats(
   inputs,
@@ -243,15 +304,34 @@ function displayStatsOutput(dataToFormat) {
 }
 
 async function displayStatsCard(inputs, dataToFormat) {
+  const staging = mkdtempSync(path.join(os.tmpdir(), 'th-cards-'))
   try {
-    // Create the card path if it doesn't exist
-    mkdirSync(inputs.cardPath, { recursive: true })
+    // Create the card path if it doesn't exist.
+    mkdirSync(cardTarget(inputs, inputs.cardPath), { recursive: true })
 
-    // Await the generation of the card and get the full path
-    const fullPathLight = await generateCard(dataToFormat, inputs, 'light')
-    core.debug(`Card image Light saved at ${fullPathLight}`)
-    const fullPathDark = await generateCard(dataToFormat, inputs, 'dark')
-    core.debug(`Card image Dark saved at ${fullPathDark}`)
+    // Render both cards aside first, so a failed render leaves the existing
+    // cards untouched.
+    const staged = {}
+    for (const theme of CARD_THEMES) {
+      staged[theme] = await generateCard(
+        dataToFormat,
+        { ...inputs, cardPath: staging },
+        theme
+      )
+    }
+
+    // Check every target before replacing any.
+    const cardLinks = {}
+    const targets = {}
+    for (const theme of CARD_THEMES) {
+      const file = cardFilePath(inputs.cardPath, theme)
+      targets[theme] = cardTarget(inputs, file)
+      cardLinks[theme] = cardLink(inputs, file, targets[theme])
+    }
+    replaceCards(staged, targets)
+    core.debug(`Card images saved in ${inputs.cardPath}`)
+    const fullPathLight = cardLinks.light
+    const fullPathDark = cardLinks.dark
 
     // Construct the image display depending on the file format
     let dataContent = ''
@@ -277,6 +357,8 @@ async function displayStatsCard(inputs, dataToFormat) {
     // A failed or timed-out render must stop the run before any file is
     // written or committed.
     throw new Error(`Error generating the card: ${err.message || err}`)
+  } finally {
+    rmSync(staging, { recursive: true, force: true })
   }
 }
 

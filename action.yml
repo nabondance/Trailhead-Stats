@@ -40,6 +40,13 @@ inputs:
     description: Do not commit any modification, for debugging purpose
     required: false
     default: 'false'
+  token:
+    description:
+      'Token used to push the commit. Empty uses the credentials of
+      actions/checkout (the workflow token, which needs `contents: write`). Set
+      a PAT to push to a protected branch.'
+    required: false
+    default: ''
   show-skill:
     description: 'Show the skills: hidden|visible'
     required: false

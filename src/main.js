@@ -2,6 +2,7 @@ const core = require('@actions/core')
 const { displayStats } = require('./displayStats')
 const { ActionInputs } = require('./actionInputs')
 const { updateStatsOnFile, pushUpdatedFile } = require('./updateFile')
+const { cardFiles } = require('./cardGenerator')
 const {
   fetchTrailblazerRankInfo,
   fetchTrailblazerBadgesInfo,
@@ -58,8 +59,12 @@ async function run() {
 
       // Commit file if wanted
       if (inputs.noCommit === 'false') {
-        // Update file on branch
-        pushUpdatedFile(inputs.displayFile, inputs.cardPath)
+        // Commit the display file and, for a card, only the two card images.
+        pushUpdatedFile(
+          inputs.displayFile,
+          inputs.displayType === 'card' ? cardFiles(inputs.cardPath) : [],
+          inputs.token
+        )
       }
     }
 
