@@ -605,6 +605,45 @@ describe('pushUpdatedFile', () => {
       )
     })
 
+    const failGit = subcommand =>
+      execFileSync.mockImplementation((cmd, args, options) => {
+        if (args[0] === subcommand) {
+          throw Object.assign(new Error('failed'), {
+            status: 128,
+            stderr: 'fatal: broken repository'
+          })
+        }
+        return realExecFileSync(cmd, args, options)
+      })
+
+    it('reports a real error while reading the branch', () => {
+      failGit('symbolic-ref')
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'git symbolic-ref failed: fatal: broken repository'
+      )
+    })
+
+    it('reports a real error while listing unpushed commits', () => {
+      failGit('rev-parse')
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'git rev-parse failed: fatal: broken repository'
+      )
+      expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
+    })
+
+    it('refuses a HEAD that points outside refs/heads', () => {
+      run(ws, 'symbolic-ref', 'HEAD', 'refs/custom/stats')
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'cannot push to refs/custom/stats: HEAD is not on a branch'
+      )
+    })
+
     it('works with a file named HEAD at the repository root', () => {
       write('HEAD', 'not a revision')
       write('README.md', 'updated')

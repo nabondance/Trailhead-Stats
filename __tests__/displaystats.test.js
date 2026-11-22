@@ -762,6 +762,21 @@ describe('displayStats Function', () => {
     expect(result).not.toContain(workspace)
   })
 
+  it('keeps the given path for a card outside the repository with no-commit', async () => {
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'th-artifact-'))
+    fs.writeFileSync(path.join(workspace, 'README.md'), 'x')
+
+    const result = await renderCard({
+      outputOnly: 'false',
+      noCommit: 'true',
+      displayFile: 'README.md',
+      cardPath: outside
+    })
+
+    expect(result).toContain(path.join(outside, 'TScard-light.png'))
+    fs.rmSync(outside, { recursive: true, force: true })
+  })
+
   it('changes nothing when a card target is a directory', async () => {
     fs.mkdirSync(path.join(workspace, 'images', 'TScard-dark.png'), {
       recursive: true
