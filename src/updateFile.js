@@ -125,8 +125,21 @@ function extraHeaderKey() {
   return `http.${serverUrl()}/.extraheader`
 }
 
-function originUrl() {
-  return git('remote', ['remote', 'get-url', '--push', 'origin']).trim()
+// `git push origin` sends to every push URL, so each one has to qualify.
+function originUrls() {
+  return git('remote', ['remote', 'get-url', '--push', '--all', 'origin'])
+    .split('\n')
+    .map(url => url.trim())
+    .filter(Boolean)
+}
+
+// Git traces would write the Authorization header to a file or the log.
+function withoutGitTraces(env) {
+  return Object.fromEntries(
+    Object.entries(env).filter(
+      ([name]) => !/^GIT_(TRACE|CURL_VERBOSE)/.test(name)
+    )
+  )
 }
 
 function isSshUrl(url) {
@@ -203,22 +216,22 @@ function assertTlsVerified() {
     )
   }
   if ('GIT_SSL_NO_VERIFY' in process.env) refuse('GIT_SSL_NO_VERIFY')
-  const origin = originUrl()
-  if (!/^https:\/\//i.test(origin)) return
-  // The value that applies to this remote, whatever other hosts are set to.
-  let verify = ''
-  try {
-    verify = git('config', [
-      'config',
-      '--type=bool',
-      '--get-urlmatch',
-      'http.sslVerify',
-      origin
-    ]).trim()
-  } catch (error) {
-    if (error.status !== 1) throw error // 1 means the key is not set
+  for (const origin of originUrls()) {
+    // The value that applies to this remote, whatever other hosts are set to.
+    let verify = ''
+    try {
+      verify = git('config', [
+        'config',
+        '--type=bool',
+        '--get-urlmatch',
+        'http.sslVerify',
+        origin
+      ]).trim()
+    } catch (error) {
+      if (error.status !== 1) throw error // 1 means the key is not set
+    }
+    if (verify === 'false') refuse('http.sslVerify')
   }
-  if (verify === 'false') refuse('http.sslVerify')
 }
 
 // Files changed by commits that this push would also send.
@@ -265,7 +278,7 @@ function assertNotLfs(paths) {
 // else a GITHUB_TOKEN set in the step env, as v2 used it. An explicit token
 // that cannot apply is an error; an env token is just left unused.
 function pushToken(token) {
-  const problem = tokenProblem(originUrl())
+  const problem = originUrls().map(tokenProblem).find(Boolean)
   if (token) {
     if (problem) throw new Error(problem)
     return token
@@ -290,7 +303,7 @@ function pushAuth(inputToken) {
   const n = Number(process.env.GIT_CONFIG_COUNT) || 0
   return {
     env: {
-      ...process.env,
+      ...withoutGitTraces(process.env),
       GIT_CONFIG_COUNT: String(n + 2),
       [`GIT_CONFIG_KEY_${n}`]: key,
       [`GIT_CONFIG_VALUE_${n}`]: '',

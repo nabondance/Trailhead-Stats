@@ -654,6 +654,45 @@ describe('pushUpdatedFile', () => {
       }
     )
 
+    it('refuses the token when any push URL does not qualify', () => {
+      run(
+        ws,
+        'remote',
+        'set-url',
+        '--add',
+        '--push',
+        'origin',
+        'https://github.com/o/r.git'
+      )
+      run(ws, 'remote', 'set-url', '--add', '--push', 'origin', remote)
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'the token input only works with an HTTPS remote'
+      )
+      expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
+    })
+
+    it('removes git trace settings from a token push', () => {
+      process.env.GIT_TRACE_CURL = path.join(tmp, 'trace')
+      process.env.GIT_TRACE_REDACT = '0'
+      process.env.GIT_CURL_VERBOSE = '1'
+      write('README.md', 'updated')
+
+      try {
+        pushUpdatedFile('README.md', [], token)
+      } finally {
+        delete process.env.GIT_TRACE_CURL
+        delete process.env.GIT_TRACE_REDACT
+        delete process.env.GIT_CURL_VERBOSE
+      }
+
+      const { env } = pushCall()[2]
+      expect(env.GIT_TRACE_CURL).toBeUndefined()
+      expect(env.GIT_TRACE_REDACT).toBeUndefined()
+      expect(env.GIT_CURL_VERBOSE).toBeUndefined()
+    })
+
     it('leaves an env token unused for another host', () => {
       process.env.GITHUB_TOKEN = token
       run(ws, 'remote', 'set-url', 'origin', 'https://gitlab.example/o/r.git')
