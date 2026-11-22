@@ -34,6 +34,7 @@ on: # yamllint disable-line
       card-path:
         description: Folder path to save the card
         required: false
+        type: string
         default: 'images'
       output-only:
         description: Only output, do not modify file
@@ -55,20 +56,22 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: true
       # dist/ on main is the last released build; build the checked-out code
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
         with:
           version: 9
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: .node-version
           cache: pnpm
           cache-dependency-path: 'pnpm-lock.yaml'
       - name: Build dist/
-        run: pnpm install && pnpm run package
+        run: pnpm install --frozen-lockfile --ignore-scripts && pnpm run package
       - name: Check Chromium Version
         run: chromium-browser --version || echo "Chromium is not installed"
       - name: Find Chromium Path
