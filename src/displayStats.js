@@ -2,17 +2,52 @@ const core = require('@actions/core')
 const os = require('os')
 const path = require('path')
 const { generateCard, cardFilePath, CARD_THEMES } = require('./cardGenerator')
-const { copyFileSync, mkdirSync, mkdtempSync, rmSync } = require('fs')
+const {
+  copyFileSync,
+  mkdirSync,
+  mkdtempSync,
+  renameSync,
+  rmSync
+} = require('fs')
 const { workspacePath, workspaceRoot } = require('./updateFile')
 
 // Cards that get committed must stay in the repository. Without a commit
 // (output-only or no-commit), any folder works, e.g. runner.temp for an
 // artifact upload.
+function commitsCards(inputs) {
+  return inputs.outputOnly === 'false' && inputs.noCommit === 'false'
+}
+
 function cardTarget(inputs, file) {
-  const commits = inputs.outputOnly === 'false' && inputs.noCommit === 'false'
-  return commits
+  return commitsCards(inputs)
     ? workspacePath(file, 'card-path')
     : path.resolve(workspaceRoot(), file)
+}
+
+// A committed link must be relative: an absolute card-path would publish a
+// runner path that resolves to nothing on GitHub.
+function cardLink(inputs, file, target) {
+  if (!commitsCards(inputs) || !path.isAbsolute(inputs.cardPath)) return file
+  return path.relative(workspaceRoot(), target).split(path.sep).join('/')
+}
+
+// Copies both cards next to their targets, then renames them into place. A
+// failed copy changes nothing, and a rename replaces a symlink instead of
+// writing through it.
+function replaceCards(staged, targets) {
+  const swap = mkdtempSync(
+    path.join(path.dirname(targets[CARD_THEMES[0]]), '.th-cards-')
+  )
+  try {
+    for (const theme of CARD_THEMES) {
+      copyFileSync(staged[theme], path.join(swap, theme))
+    }
+    for (const theme of CARD_THEMES) {
+      renameSync(path.join(swap, theme), targets[theme])
+    }
+  } finally {
+    rmSync(swap, { recursive: true, force: true })
+  }
 }
 
 async function displayStats(
@@ -272,22 +307,18 @@ async function displayStatsCard(inputs, dataToFormat) {
       )
     }
 
-    // Check every target before replacing any, then replace each card.
-    // Removing it first means an existing symlink is replaced, never written
-    // through.
-    const cardPaths = {}
+    // Check every target before replacing any.
+    const cardLinks = {}
     const targets = {}
     for (const theme of CARD_THEMES) {
-      cardPaths[theme] = cardFilePath(inputs.cardPath, theme)
-      targets[theme] = cardTarget(inputs, cardPaths[theme])
+      const file = cardFilePath(inputs.cardPath, theme)
+      targets[theme] = cardTarget(inputs, file)
+      cardLinks[theme] = cardLink(inputs, file, targets[theme])
     }
-    for (const theme of CARD_THEMES) {
-      rmSync(targets[theme], { force: true })
-      copyFileSync(staged[theme], targets[theme])
-      core.debug(`Card image ${theme} saved at ${cardPaths[theme]}`)
-    }
-    const fullPathLight = cardPaths.light
-    const fullPathDark = cardPaths.dark
+    replaceCards(staged, targets)
+    core.debug(`Card images saved in ${inputs.cardPath}`)
+    const fullPathLight = cardLinks.light
+    const fullPathDark = cardLinks.dark
 
     // Construct the image display depending on the file format
     let dataContent = ''

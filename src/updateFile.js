@@ -80,7 +80,7 @@ function repoPath(file) {
 // names the command but never echoes its arguments or environment, and any
 // secret is scrubbed from git's own output. Tokens are removed from the
 // environment, so hooks and filters do not inherit them.
-function git(label, args, { env, secrets = [] } = {}) {
+function git(label, args, { env, input, secrets = [] } = {}) {
   // Paths are file names, never patterns: `*` or `[` match themselves.
   const gitEnv = { ...(env || process.env), GIT_LITERAL_PATHSPECS: '1' }
   delete gitEnv.GITHUB_TOKEN
@@ -90,7 +90,9 @@ function git(label, args, { env, secrets = [] } = {}) {
       cwd: workspaceRoot(),
       env: gitEnv,
       encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe']
+      input,
+      maxBuffer: 64 * 1024 * 1024,
+      stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe']
     })
   } catch (error) {
     let detail =
@@ -107,6 +109,14 @@ function extraHeaderKey() {
     process.env.GITHUB_SERVER_URL || 'https://github.com'
   ).replace(/\/+$/, '')
   return `http.${server}/.extraheader`
+}
+
+function originUrl() {
+  return git('remote', ['remote', 'get-url', '--push', 'origin']).trim()
+}
+
+function isSshUrl(url) {
+  return /^(git\+)?ssh:\/\//i.test(url) || /^[^/:@]+@[^/:]+:/.test(url)
 }
 
 function hasPersistedAuth() {
@@ -137,37 +147,71 @@ function assertTlsVerified() {
     )
   }
   if ('GIT_SSL_NO_VERIFY' in process.env) refuse('GIT_SSL_NO_VERIFY')
-  let entries = ''
+  const origin = originUrl()
+  if (!/^https:\/\//i.test(origin)) return
+  // The value that applies to this remote, whatever other hosts are set to.
+  let verify = ''
   try {
-    entries = git('config', [
+    verify = git('config', [
       'config',
       '--type=bool',
-      '--get-regexp',
-      '^http\\.(.*\\.)?sslverify$'
-    ])
+      '--get-urlmatch',
+      'http.sslVerify',
+      origin
+    ]).trim()
   } catch (error) {
     if (error.status !== 1) throw error // 1 means the key is not set
   }
-  const disabled = entries.match(/^(\S+) false$/m)
-  if (disabled) refuse(disabled[1])
+  if (verify === 'false') refuse('http.sslVerify')
+}
+
+// Files changed by commits that this push would also send.
+function unpushedFiles() {
+  return git('log', [
+    'log',
+    '--format=',
+    '--name-only',
+    '-z',
+    'HEAD',
+    '--not',
+    '--remotes=origin'
+  ])
+    .split('\0')
+    .map(file => file.replace(/^\n+/, ''))
+    .filter(Boolean)
 }
 
 // Git LFS uploads through a pre-push hook, which is off for an injected token.
 function assertNotLfs(paths) {
-  const attributes = git('check-attr', ['check-attr', 'filter', '--', ...paths])
-  if (/: filter: lfs$/m.test(attributes)) {
-    throw new Error(
-      'the stats files are tracked by Git LFS, whose upload hook does not run with an injected token. Give the token to actions/checkout instead'
-    )
+  const files = [...new Set([...paths, ...unpushedFiles()])]
+  const fields = git('check-attr', ['check-attr', '-z', '--stdin', 'filter'], {
+    input: `${files.join('\0')}\0`
+  }).split('\0')
+  // The output is a sequence of path, attribute and value.
+  for (let i = 2; i < fields.length; i += 3) {
+    if (fields[i] === 'lfs') {
+      throw new Error(
+        'this push includes files tracked by Git LFS, whose upload hook does not run with an injected token. Give the token to actions/checkout instead'
+      )
+    }
   }
 }
 
 // Which token to push with, in order: the `token` input; else nothing, when
 // actions/checkout persisted credentials (including a PAT given to checkout);
-// else a GITHUB_TOKEN set in the step env, as v2 used it.
+// else a GITHUB_TOKEN set in the step env, as v2 used it. An SSH remote
+// authenticates with its key and cannot use a token.
 function pushToken(token) {
-  if (token) return token
-  if (hasPersistedAuth()) return ''
+  const ssh = isSshUrl(originUrl())
+  if (token) {
+    if (ssh) {
+      throw new Error(
+        'the token input only works with an HTTPS remote, but origin uses SSH. Remove the input to push with the SSH key'
+      )
+    }
+    return token
+  }
+  if (ssh || hasPersistedAuth()) return ''
   return process.env.GITHUB_TOKEN || ''
 }
 
@@ -202,16 +246,21 @@ function pushAuth(inputToken) {
 // The branch that is checked out, which is where the commit belongs. A
 // detached HEAD (pull request merge ref, tag) has no branch to push to.
 function targetBranch() {
+  let ref
   try {
     // The full ref: `--short` turns it into `heads/x` when a tag is also `x`.
-    const ref = git('symbolic-ref', ['symbolic-ref', '--quiet', 'HEAD']).trim()
-    if (!ref.startsWith('refs/heads/')) throw new Error(`unexpected ref ${ref}`)
-    return ref
-  } catch {
+    ref = git('symbolic-ref', ['symbolic-ref', '--quiet', 'HEAD']).trim()
+  } catch (error) {
+    // Exit 1 means detached. Anything else is a real git error to report.
+    if (error.status !== 1) throw error
     throw new Error(
       'cannot commit from a detached HEAD (pull request or tag checkout). Run the workflow on a branch (schedule, push or workflow_dispatch), or set no-commit: true'
     )
   }
+  if (!ref.startsWith('refs/heads/')) {
+    throw new Error(`cannot push to ${ref}: HEAD is not on a branch`)
+  }
+  return ref
 }
 
 function updateStatsOnFile(displayFile, dataContent) {

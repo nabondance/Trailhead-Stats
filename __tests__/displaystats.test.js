@@ -683,6 +683,75 @@ describe('displayStats Function', () => {
     fs.rmSync(outside, { recursive: true, force: true })
   })
 
+  const renderCard = overrides =>
+    displayStats(
+      { ...mockInputs, displayType: 'card', fileFormat: 'md', ...overrides },
+      mockTrailheadRankData,
+      mockTrailheadBadgesData,
+      mockTrailheadSuperBadgesData,
+      mockTrailheadEventBadgesData,
+      mockTrailheadCertifsData,
+      mockTrailheadSkillsData,
+      mockTrailheadEarnedStampsData
+    )
+
+  it('commits relative links for an absolute card-path', async () => {
+    const result = await renderCard({
+      outputOnly: 'false',
+      noCommit: 'false',
+      cardPath: path.join(workspace, 'images')
+    })
+
+    expect(result).toContain('](images/TScard-light.png#gh-light-mode-only)')
+    expect(result).not.toContain(workspace)
+  })
+
+  it('keeps the existing cards when a copy fails', async () => {
+    fs.mkdirSync(path.join(workspace, 'images'))
+    fs.writeFileSync(path.join(workspace, 'images', 'TScard-light.png'), 'old')
+    cardGenerator.generateCard
+      .mockImplementationOnce(writeCard)
+      .mockResolvedValueOnce(path.join(workspace, 'missing.png'))
+
+    await expect(
+      renderCard({ outputOnly: 'false', noCommit: 'false', cardPath: 'images' })
+    ).rejects.toThrow('Error generating the card')
+
+    expect(fs.readdirSync(path.join(workspace, 'images'))).toEqual([
+      'TScard-light.png'
+    ])
+    expect(
+      fs.readFileSync(
+        path.join(workspace, 'images', 'TScard-light.png'),
+        'utf8'
+      )
+    ).toBe('old')
+  })
+
+  it('replaces a symlink without writing through it when not committing', async () => {
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'th-outside-'))
+    fs.writeFileSync(path.join(outside, 'target.png'), 'precious')
+    fs.mkdirSync(path.join(workspace, 'images'))
+    fs.symlinkSync(
+      path.join(outside, 'target.png'),
+      path.join(workspace, 'images', 'TScard-light.png')
+    )
+
+    await renderCard({
+      outputOnly: 'true',
+      noCommit: 'true',
+      cardPath: 'images'
+    })
+
+    const card = path.join(workspace, 'images', 'TScard-light.png')
+    expect(fs.lstatSync(card).isSymbolicLink()).toBe(false)
+    expect(fs.readFileSync(card, 'utf8')).toBe('light png')
+    expect(fs.readFileSync(path.join(outside, 'target.png'), 'utf8')).toBe(
+      'precious'
+    )
+    fs.rmSync(outside, { recursive: true, force: true })
+  })
+
   it('allows a card-path outside the repository when nothing is committed', async () => {
     const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'th-artifact-'))
 

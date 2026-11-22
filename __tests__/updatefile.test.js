@@ -284,6 +284,26 @@ describe('pushUpdatedFile', () => {
     expect(remoteLog()).toBe('t|init')
   })
 
+  it('reports a real git error instead of a detached HEAD', () => {
+    const plain = path.join(tmp, 'plain')
+    fs.mkdirSync(plain)
+    fs.writeFileSync(path.join(plain, 'README.md'), TAGGED)
+    // Keep git from finding a repository in a parent folder.
+    process.env.GIT_CEILING_DIRECTORIES = tmp
+    process.env.GITHUB_WORKSPACE = plain
+
+    let message = ''
+    try {
+      pushUpdatedFile('README.md', [])
+    } catch (error) {
+      message = error.message
+    }
+    delete process.env.GIT_CEILING_DIRECTORIES
+
+    expect(message).toContain('git symbolic-ref failed: fatal: not a git')
+    expect(message).not.toContain('detached')
+  })
+
   it('leaves files staged by earlier steps out of the commit', () => {
     write('other.txt', 'staged elsewhere')
     run(ws, 'add', 'other.txt')
@@ -453,10 +473,97 @@ describe('pushUpdatedFile', () => {
       expect(run(ws, 'diff', '--cached', '--name-only')).toBe('')
     })
 
+    it('refuses an unpushed commit with an LFS file', () => {
+      write('.gitattributes', '*.bin filter=lfs diff=lfs merge=lfs -text\n')
+      write('data.bin', 'binary')
+      run(ws, 'add', '.')
+      run(
+        ws,
+        '-c',
+        'user.name=t',
+        '-c',
+        'user.email=t@t',
+        'commit',
+        '-qm',
+        'lfs'
+      )
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'this push includes files tracked by Git LFS'
+      )
+      expect(run(ws, 'log', '--format=%s', '-1')).toBe('lfs')
+      expect(remoteLog()).toBe('t|init')
+    })
+
+    it('still pushes an unpushed commit without LFS files', () => {
+      write('notes.txt', 'notes')
+      run(ws, 'add', '.')
+      run(
+        ws,
+        '-c',
+        'user.name=t',
+        '-c',
+        'user.email=t@t',
+        'commit',
+        '-qm',
+        'notes'
+      )
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], token)
+
+      expect(
+        run(remote, 'log', '--format=%s', '-2', 'main').split('\n')
+      ).toEqual(['Update Trailhead Stats in README.md', 'notes'])
+    })
+
+    it.each(['git@github.com:o/r.git', 'ssh://git@github.com/o/r.git'])(
+      'refuses the token input with the SSH remote %s',
+      url => {
+        run(ws, 'remote', 'set-url', 'origin', url)
+        write('README.md', 'updated')
+
+        expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+          'the token input only works with an HTTPS remote'
+        )
+        expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
+      }
+    )
+
+    it('pushes with the SSH key when only an env token exists', () => {
+      process.env.GITHUB_TOKEN = token
+      run(ws, 'remote', 'set-url', 'origin', 'git@github.com:o/r.git')
+      execFileSync.mockImplementation((cmd, args, options) =>
+        args.includes('push') ? '' : realExecFileSync(cmd, args, options)
+      )
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], '')
+
+      const [, args, options] = pushCall()
+      expect(args).toEqual(['push', 'origin', 'HEAD:refs/heads/main'])
+      expect(options.env.GIT_CONFIG_COUNT).toBeUndefined()
+    })
+
+    it('ignores sslVerify=false set for another host', () => {
+      run(ws, 'remote', 'set-url', 'origin', 'https://github.com/o/r.git')
+      run(ws, 'config', 'http.https://git.corp.example/.sslVerify', 'false')
+      execFileSync.mockImplementation((cmd, args, options) =>
+        args.includes('push') ? '' : realExecFileSync(cmd, args, options)
+      )
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], token)
+
+      expect(pushCall()).toBeDefined()
+    })
+
     it.each([
       ['http.sslVerify', 'false'],
       ['http.https://github.com/.sslVerify', 'no']
     ])('refuses to send it when %s is %s', (key, value) => {
+      run(ws, 'remote', 'set-url', 'origin', 'https://github.com/o/r.git')
       run(ws, 'config', key, value)
       write('README.md', 'updated')
 
@@ -476,6 +583,7 @@ describe('pushUpdatedFile', () => {
     })
 
     it('accepts an explicit http.sslVerify=true', () => {
+      // A local remote has no TLS: the setting is simply not consulted.
       run(ws, 'config', 'http.sslVerify', 'true')
       write('README.md', 'updated')
 
@@ -485,6 +593,7 @@ describe('pushUpdatedFile', () => {
     })
 
     it('reports an invalid http.sslVerify instead of ignoring it', () => {
+      run(ws, 'remote', 'set-url', 'origin', 'https://github.com/o/r.git')
       run(ws, 'config', 'http.sslVerify', 'maybe')
       write('README.md', 'updated')
 

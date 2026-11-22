@@ -250,6 +250,8 @@ between these tags.
   input to a PAT that can.
 - **Git LFS:** with the `token` input, the LFS upload hook does not run. Give
   the token to `actions/checkout` instead.
+- **SSH remote:** the `token` input only works with an HTTPS remote. Remove it
+  to push with the SSH key.
 - **TLS verification disabled:** the `token` input is refused when git is
   configured with `http.sslVerify=false` or `GIT_SSL_NO_VERIFY`.
 - **Detached HEAD:** the workflow checked out a pull request or a tag. Run it on
