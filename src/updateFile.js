@@ -412,7 +412,8 @@ function pushUpdatedFile(displayFile, cardFiles = [], token = '') {
         'commit',
         '--only',
         '-m',
-        `Update Trailhead Stats in ${displayFile}`,
+        // Relative, so a runner path never lands in the repository history.
+        `Update Trailhead Stats in ${path.relative(workspaceRoot(), displayFilePath(displayFile))}`,
         '--',
         ...paths
       ],

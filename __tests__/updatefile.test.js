@@ -303,6 +303,16 @@ describe('pushUpdatedFile', () => {
     )
   })
 
+  it('keeps a runner path out of the commit message', () => {
+    write('README.md', 'updated')
+
+    pushUpdatedFile(path.join(ws, 'README.md'), [])
+
+    expect(remoteLog().split('\n')[0]).toBe(
+      'Trailhead-Stats|Update Trailhead Stats in README.md'
+    )
+  })
+
   it('refuses a leading-slash display-file that climbs out', () => {
     expect(() => updateStatsOnFile('/../outside.md', 'x')).toThrow(
       'display-file must stay inside the repository'

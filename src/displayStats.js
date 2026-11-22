@@ -32,7 +32,8 @@ function cardTarget(inputs, file) {
 }
 
 // A link written into the display file is relative to that file, so it works
-// from a subfolder and never publishes a runner path.
+// from a subfolder. A card outside the repository, only possible without a
+// commit, keeps the path it was given.
 function cardLink(inputs, file, target) {
   if (inputs.outputOnly !== 'false' || !isInWorkspace(target)) return file
   return linkFromDisplayFile(inputs.displayFile, target)
