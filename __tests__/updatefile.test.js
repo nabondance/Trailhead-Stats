@@ -296,6 +296,34 @@ describe('pushUpdatedFile', () => {
     )
   })
 
+  it('succeeds on a detached HEAD when nothing changed', () => {
+    run(ws, 'checkout', '-q', '--detach')
+
+    expect(() => pushUpdatedFile('README.md', [])).not.toThrow()
+    expect(remoteLog()).toBe('t|init')
+  })
+
+  it('reports an ignored card instead of silently skipping it', () => {
+    write('.gitignore', 'cards/\n')
+    run(ws, 'add', '.gitignore')
+    run(
+      ws,
+      '-c',
+      'user.name=t',
+      '-c',
+      'user.email=t@t',
+      'commit',
+      '-qm',
+      'ignore'
+    )
+    run(ws, 'push', '-q', 'origin', 'main')
+    write('cards/TScard-light.png', 'light')
+
+    expect(() =>
+      pushUpdatedFile('README.md', ['cards/TScard-light.png'])
+    ).toThrow('git add failed')
+  })
+
   it('refuses to commit from a detached HEAD (pull request, tag)', () => {
     run(ws, 'checkout', '-q', '--detach')
     write('README.md', 'updated')
@@ -323,7 +351,7 @@ describe('pushUpdatedFile', () => {
     }
     delete process.env.GIT_CEILING_DIRECTORIES
 
-    expect(message).toContain('git symbolic-ref failed: fatal: not a git')
+    expect(message).toContain('git status failed: fatal: not a git')
     expect(message).not.toContain('detached')
   })
 
@@ -517,6 +545,18 @@ describe('pushUpdatedFile', () => {
       )
       expect(run(ws, 'log', '--format=%s', '-1')).toBe('lfs')
       expect(remoteLog()).toBe('t|init')
+    })
+
+    it('commits the first file of an unborn branch', () => {
+      run(ws, 'checkout', '-q', '--orphan', 'stats')
+      run(ws, 'rm', '-rfq', '--cached', '.')
+      write('README.md', TAGGED)
+
+      pushUpdatedFile('README.md', [], token)
+
+      expect(run(remote, 'log', '--format=%s', 'stats')).toBe(
+        'Update Trailhead Stats in README.md'
+      )
     })
 
     it('works with a file named HEAD at the repository root', () => {

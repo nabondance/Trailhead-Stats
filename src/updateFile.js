@@ -210,6 +210,12 @@ function assertTlsVerified() {
 
 // Files changed by commits that this push would also send.
 function unpushedFiles() {
+  try {
+    git('rev-parse', ['rev-parse', '--verify', '--quiet', 'HEAD'])
+  } catch (error) {
+    if (error.status === 1) return [] // an unborn branch has no commits yet
+    throw error
+  }
   return git('log', [
     'log',
     '--format=',
@@ -330,7 +336,6 @@ function updateStatsOnFile(displayFile, dataContent) {
 // the branch the workflow runs on.
 function pushUpdatedFile(displayFile, cardFiles = [], token = '') {
   try {
-    const branch = targetBranch()
     const paths = [
       displayFilePath(displayFile),
       ...cardFiles
@@ -338,23 +343,27 @@ function pushUpdatedFile(displayFile, cardFiles = [], token = '') {
         .filter(file => fs.existsSync(file))
     ].map(repoPath)
 
+    // Nothing to commit is a success, whatever is checked out. Ignored files
+    // are listed so that `git add` reports them instead of a silent no-op.
+    const changes = git('status', [
+      'status',
+      '--porcelain',
+      '--ignored',
+      '--',
+      ...paths
+    ]).trim()
+    if (changes === '') {
+      core.debug('No changes detected. Skipping commit and push.')
+      return
+    }
+
     // Every check runs before the first change to the index.
+    const branch = targetBranch()
     const auth = pushAuth(token)
     if (auth.noHooks.length > 0) assertNotLfs(paths)
     const { secrets } = auth
 
     git('add', [...auth.noHooks, 'add', '--', ...paths], { secrets })
-    const staged = git('diff', [
-      'diff',
-      '--cached',
-      '--name-only',
-      '--',
-      ...paths
-    ]).trim()
-    if (staged === '') {
-      core.debug('No changes detected. Skipping commit and push.')
-      return
-    }
 
     git(
       'commit',
