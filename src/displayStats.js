@@ -4,12 +4,17 @@ const path = require('path')
 const { generateCard, cardFilePath, CARD_THEMES } = require('./cardGenerator')
 const {
   copyFileSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
   renameSync,
   rmSync
 } = require('fs')
-const { workspacePath, workspaceRoot } = require('./updateFile')
+const {
+  workspacePath,
+  workspaceRoot,
+  linkFromDisplayFile
+} = require('./updateFile')
 
 // Cards that get committed must stay in the repository. Without a commit
 // (output-only or no-commit), any folder works, e.g. runner.temp for an
@@ -28,13 +33,18 @@ function cardTarget(inputs, file) {
 // runner path that resolves to nothing on GitHub.
 function cardLink(inputs, file, target) {
   if (!commitsCards(inputs) || !path.isAbsolute(inputs.cardPath)) return file
-  return path.relative(workspaceRoot(), target).split(path.sep).join('/')
+  return linkFromDisplayFile(inputs.displayFile, target)
 }
 
 // Copies both cards next to their targets, then renames them into place. A
 // failed copy changes nothing, and a rename replaces a symlink instead of
 // writing through it.
 function replaceCards(staged, targets) {
+  for (const theme of CARD_THEMES) {
+    if (lstatSync(targets[theme], { throwIfNoEntry: false })?.isDirectory()) {
+      throw new Error(`${path.basename(targets[theme])} is a directory`)
+    }
+  }
   const swap = mkdtempSync(
     path.join(path.dirname(targets[CARD_THEMES[0]]), '.th-cards-')
   )

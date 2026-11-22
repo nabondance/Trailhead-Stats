@@ -104,11 +104,15 @@ function git(label, args, { env, input, secrets = [] } = {}) {
   }
 }
 
+function serverUrl() {
+  return (process.env.GITHUB_SERVER_URL || 'https://github.com').replace(
+    /\/+$/,
+    ''
+  )
+}
+
 function extraHeaderKey() {
-  const server = (
-    process.env.GITHUB_SERVER_URL || 'https://github.com'
-  ).replace(/\/+$/, '')
-  return `http.${server}/.extraheader`
+  return `http.${serverUrl()}/.extraheader`
 }
 
 function originUrl() {
@@ -116,7 +120,37 @@ function originUrl() {
 }
 
 function isSshUrl(url) {
-  return /^(git\+)?ssh:\/\//i.test(url) || /^[^/:@]+@[^/:]+:/.test(url)
+  if (/^(ssh|git\+ssh|ssh\+git):\/\//i.test(url)) return true
+  // scp-like syntax: `host:path` or `user@host:path`, with no scheme.
+  return !/^[a-z][a-z0-9+.-]*:\/\//i.test(url) && /^[^/]+:/.test(url)
+}
+
+// Why a token cannot authenticate a push to this remote, if so. The header is
+// scoped to the GitHub server, so anywhere else it would be silently unused.
+function tokenProblem(url) {
+  if (isSshUrl(url)) {
+    return 'the token input only works with an HTTPS remote, but origin uses SSH. Remove the input to push with the SSH key'
+  }
+  if (/^http:\/\//i.test(url)) {
+    return 'the token input only works with an HTTPS remote, but origin uses plain HTTP'
+  }
+  if (
+    /^https:\/\//i.test(url) &&
+    new URL(url).origin !== new URL(serverUrl()).origin
+  ) {
+    return `the token input only applies to ${serverUrl()}, but origin is on another host`
+  }
+  return null
+}
+
+// How a card link must be written for the display file that contains it.
+function linkFromDisplayFile(displayFile, target) {
+  const display = displayFilePath(displayFile)
+  const from = exists(display)
+    ? repoPath(display)
+    : path.relative(workspaceRoot(), display)
+  const to = path.relative(workspaceRoot(), target)
+  return path.relative(path.dirname(from), to).split(path.sep).join('/')
 }
 
 function hasPersistedAuth() {
@@ -199,19 +233,15 @@ function assertNotLfs(paths) {
 
 // Which token to push with, in order: the `token` input; else nothing, when
 // actions/checkout persisted credentials (including a PAT given to checkout);
-// else a GITHUB_TOKEN set in the step env, as v2 used it. An SSH remote
-// authenticates with its key and cannot use a token.
+// else a GITHUB_TOKEN set in the step env, as v2 used it. An explicit token
+// that cannot apply is an error; an env token is just left unused.
 function pushToken(token) {
-  const ssh = isSshUrl(originUrl())
+  const problem = tokenProblem(originUrl())
   if (token) {
-    if (ssh) {
-      throw new Error(
-        'the token input only works with an HTTPS remote, but origin uses SSH. Remove the input to push with the SSH key'
-      )
-    }
+    if (problem) throw new Error(problem)
     return token
   }
-  if (ssh || hasPersistedAuth()) return ''
+  if (problem || hasPersistedAuth()) return ''
   return process.env.GITHUB_TOKEN || ''
 }
 
@@ -343,5 +373,6 @@ module.exports = {
   updateStatsOnFile,
   pushUpdatedFile,
   workspacePath,
-  workspaceRoot
+  workspaceRoot,
+  linkFromDisplayFile
 }

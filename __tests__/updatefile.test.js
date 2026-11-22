@@ -10,7 +10,8 @@ const core = require('@actions/core')
 const {
   updateStatsOnFile,
   pushUpdatedFile,
-  workspacePath
+  workspacePath,
+  linkFromDisplayFile
 } = require('../src/updateFile')
 
 jest.mock('@actions/core')
@@ -140,6 +141,28 @@ describe('workspacePath', () => {
   it.each(['..', '../x', '/etc', 'a/../../x'])('rejects %s', p => {
     expect(() => workspacePath(p, 'card-path')).toThrow(
       `card-path must stay inside the repository, got: ${p}`
+    )
+  })
+})
+
+describe('linkFromDisplayFile', () => {
+  it.each([
+    ['README.md', 'images/TScard-light.png', 'images/TScard-light.png'],
+    ['docs/README.md', 'docs/images/c.png', 'images/c.png'],
+    ['docs/README.md', 'images/c.png', '../images/c.png']
+  ])('from %s to %s is %s', (display, card, link) => {
+    write(display, TAGGED)
+
+    expect(linkFromDisplayFile(display, path.join(ws, card))).toBe(link)
+  })
+
+  it('is relative to the target of a symlinked display file', () => {
+    write('docs/README.md', TAGGED)
+    fs.rmSync(path.join(ws, 'README.md'))
+    fs.symlinkSync('docs/README.md', path.join(ws, 'README.md'))
+
+    expect(linkFromDisplayFile('README.md', path.join(ws, 'docs/c.png'))).toBe(
+      'c.png'
     )
   })
 })
@@ -518,18 +541,48 @@ describe('pushUpdatedFile', () => {
       ).toEqual(['Update Trailhead Stats in README.md', 'notes'])
     })
 
-    it.each(['git@github.com:o/r.git', 'ssh://git@github.com/o/r.git'])(
-      'refuses the token input with the SSH remote %s',
-      url => {
-        run(ws, 'remote', 'set-url', 'origin', url)
-        write('README.md', 'updated')
+    it.each([
+      ['plain HTTP', 'http://github.com/o/r.git', 'origin uses plain HTTP'],
+      [
+        'another host',
+        'https://gitlab.example/o/r.git',
+        'origin is on another host'
+      ]
+    ])('refuses the token input with %s', (_label, url, message) => {
+      run(ws, 'remote', 'set-url', 'origin', url)
+      write('README.md', 'updated')
 
-        expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
-          'the token input only works with an HTTPS remote'
-        )
-        expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
-      }
-    )
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(message)
+      expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
+    })
+
+    it('leaves an env token unused for another host', () => {
+      process.env.GITHUB_TOKEN = token
+      run(ws, 'remote', 'set-url', 'origin', 'https://gitlab.example/o/r.git')
+      execFileSync.mockImplementation((cmd, args, options) =>
+        args.includes('push') ? '' : realExecFileSync(cmd, args, options)
+      )
+      write('README.md', 'updated')
+
+      pushUpdatedFile('README.md', [], '')
+
+      expect(pushCall()[2].env.GIT_CONFIG_COUNT).toBeUndefined()
+    })
+
+    it.each([
+      'git@github.com:o/r.git',
+      'github.com:o/r.git',
+      'ssh://git@github.com/o/r.git',
+      'git+ssh://git@github.com/o/r.git'
+    ])('refuses the token input with the SSH remote %s', url => {
+      run(ws, 'remote', 'set-url', 'origin', url)
+      write('README.md', 'updated')
+
+      expect(() => pushUpdatedFile('README.md', [], token)).toThrow(
+        'the token input only works with an HTTPS remote'
+      )
+      expect(run(ws, 'log', '--format=%s', '-1')).toBe('init')
+    })
 
     it('pushes with the SSH key when only an env token exists', () => {
       process.env.GITHUB_TOKEN = token

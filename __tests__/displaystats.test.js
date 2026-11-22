@@ -706,6 +706,38 @@ describe('displayStats Function', () => {
     expect(result).not.toContain(workspace)
   })
 
+  it('writes an absolute card-path link relative to the display file', async () => {
+    fs.mkdirSync(path.join(workspace, 'docs'))
+    fs.writeFileSync(path.join(workspace, 'docs', 'README.md'), 'x')
+
+    const result = await renderCard({
+      outputOnly: 'false',
+      noCommit: 'false',
+      displayFile: 'docs/README.md',
+      cardPath: path.join(workspace, 'docs', 'images')
+    })
+
+    expect(result).toContain('](images/TScard-dark.png#gh-dark-mode-only)')
+  })
+
+  it('changes nothing when a card target is a directory', async () => {
+    fs.mkdirSync(path.join(workspace, 'images', 'TScard-dark.png'), {
+      recursive: true
+    })
+    fs.writeFileSync(path.join(workspace, 'images', 'TScard-light.png'), 'old')
+
+    await expect(
+      renderCard({ outputOnly: 'false', noCommit: 'false', cardPath: 'images' })
+    ).rejects.toThrow('TScard-dark.png is a directory')
+
+    expect(
+      fs.readFileSync(
+        path.join(workspace, 'images', 'TScard-light.png'),
+        'utf8'
+      )
+    ).toBe('old')
+  })
+
   it('keeps the existing cards when a copy fails', async () => {
     fs.mkdirSync(path.join(workspace, 'images'))
     fs.writeFileSync(path.join(workspace, 'images', 'TScard-light.png'), 'old')
