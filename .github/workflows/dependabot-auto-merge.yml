@@ -1,6 +1,8 @@
+---
 name: Dependabot auto-merge
 
 # Needs the PAT on Dependabot PRs. It never checks out or runs PR code.
+# yamllint disable-line rule:truthy
 on: pull_request_target # zizmor: ignore[dangerous-triggers]
 
 permissions:

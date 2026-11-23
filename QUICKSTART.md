@@ -52,9 +52,8 @@ action's
 
 ### Enhanced GitHub profile readme
 
-You can edit your README.md to add more information about yourself, see more
-explanation
-[here](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/managing-your-profile-readme).
+You can edit your README.md to add more information about yourself, see
+[GitHub's guide to profile READMEs](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/managing-your-profile-readme).
 Don't remove the specific tag needed by the action, you can write things before
 or after but not in between the tags.
 

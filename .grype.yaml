@@ -1,3 +1,4 @@
+---
 # enable/disable checking for application updates on startup
 # same as GRYPE_CHECK_FOR_APP_UPDATE env var
 # check-for-app-update: true
