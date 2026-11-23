@@ -541,6 +541,35 @@ describe('displayStats Function', () => {
     expect(result.lastEarnedStamp).toBe(`Dreamforce '24`)
   })
 
+  it('should not let an unparseable date hide the latest stamp', async () => {
+    mockInputs.displayType = 'output'
+    const stamp = (name, eventDate) => ({ node: { name, eventDate } })
+    const edges = [
+      stamp('No date', 'not-a-date'),
+      stamp('Older', '2023-01-01T00:00:00.000Z'),
+      stamp('Newest', '2025-01-01T00:00:00.000Z')
+    ]
+
+    const result = await displayStats(
+      mockInputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      { data: { earnedStamps: { edges } } } // thEarnedStamps
+    )
+
+    expect(result.lastEarnedStamp).toBe('Newest')
+    expect(result.nbEarnedStamps).toBe(3)
+    expect(result.earnedStampsDetails.map(s => s.title)).toEqual([
+      'No date',
+      'Older',
+      'Newest'
+    ])
+  })
+
   it('should correctly format and display as text md', async () => {
     mockInputs.fileFormat = 'md'
 

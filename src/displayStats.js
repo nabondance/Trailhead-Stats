@@ -174,9 +174,9 @@ function prepareData(
     status: cert.status.title,
     iconUrl: cert.logoUrl
   }))
-  const sortedCertifications = certificationsDetails
-    .filter(cert => new Date(cert.dateCompleted) !== 'Invalid Date')
-    .sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted))
+  const sortedCertifications = [...certificationsDetails].sort(
+    (a, b) => timeOf(b.dateCompleted) - timeOf(a.dateCompleted)
+  )
   const lastCertification =
     sortedCertifications.length > 0 ? sortedCertifications[0] : null
 
@@ -198,9 +198,9 @@ function prepareData(
           : edge.node.kind,
     iconUrl: edge.node.iconUrl
   }))
-  const sortedEarnedStamps = earnedStampsDetails
-    .filter(stamp => new Date(stamp.eventDate) !== 'Invalid Date')
-    .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate))
+  const sortedEarnedStamps = [...earnedStampsDetails].sort(
+    (a, b) => timeOf(b.eventDate) - timeOf(a.eventDate)
+  )
   const lastEarnedStamps =
     sortedEarnedStamps.length > 0 ? sortedEarnedStamps[0] : null
 
@@ -360,6 +360,12 @@ async function displayStatsCard(inputs, dataToFormat) {
   } finally {
     rmSync(staging, { recursive: true, force: true })
   }
+}
+
+// A missing or unparseable date sorts as the oldest.
+function timeOf(date) {
+  const time = Date.parse(date)
+  return Number.isNaN(time) ? 0 : time
 }
 
 function appDC(propertyLabel, propertyValue) {
