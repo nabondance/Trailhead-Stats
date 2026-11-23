@@ -541,6 +541,35 @@ describe('displayStats Function', () => {
     expect(result.lastEarnedStamp).toBe(`Dreamforce '24`)
   })
 
+  it('should escape Trailhead values in html text', async () => {
+    mockInputs.displayType = 'text'
+    mockInputs.fileFormat = 'html'
+    const edges = [
+      {
+        node: {
+          name: '<img src=x onerror=alert(1)> & "more"',
+          eventDate: '2025-01-01T00:00:00.000Z'
+        }
+      }
+    ]
+
+    const result = await displayStats(
+      mockInputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      { data: { earnedStamps: { edges } } } // thEarnedStamps
+    )
+
+    expect(result).not.toContain('<img')
+    expect(result).toContain(
+      '<li>Last Stamp earned: &lt;img src=x onerror=alert(1)&gt; &amp; &quot;more&quot;</li>'
+    )
+  })
+
   it('should not let an unparseable date hide the latest stamp', async () => {
     mockInputs.displayType = 'output'
     const stamp = (name, eventDate) => ({ node: { name, eventDate } })

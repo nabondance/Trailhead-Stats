@@ -7,22 +7,13 @@ const {
   getSkillColorMap,
   getSkillBackgroundColor
 } = require('./cardCss')
+const { escapeHtml } = require('./escapeHtml')
 
 const CARD_THEMES = ['light', 'dark']
 
 // Where a card is written, and what gets committed.
 function cardFilePath(cardPath, styleTheme) {
   return path.join(cardPath, `TScard-${styleTheme}.png`)
-}
-
-// Trailhead values are untrusted. Every attribute in the card uses double
-// quotes, so these four characters are enough for text and attributes.
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
 }
 
 function cardFiles(cardPath) {
