@@ -125,7 +125,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
       <div class="skill-container">
         <div class="skill-bar" style="width: ${normalizedWidth}px; background-color: ${skillColor};">
           <span class="skill-name">${escapeHtml(skill.name)}</span>
-          <span class="skill-points">${skill.points.toLocaleString('fr')}</span>
+          <span class="skill-points">${escapeHtml(skill.points.toLocaleString('fr'))}</span>
         </div>
       </div>`
       })
@@ -195,8 +195,8 @@ function generateHtmlContent(data, inputs, styleTheme) {
                         <img src="${escapeHtml(data.rankIcon)}" alt="Rank Logo" class="rank-logo">
                         <div>
                             <h1>${escapeHtml(data.rank)}</h1>
-                            <p><b>${data.nbBadges?.toLocaleString('fr')}</b> Badge${data.nbBadges > 1 ? 's' : ''},
-                            <b>${data.points?.toLocaleString('fr')}</b> Points</p>
+                            <p><b>${escapeHtml(data.nbBadges?.toLocaleString('fr'))}</b> Badge${data.nbBadges > 1 ? 's' : ''},
+                            <b>${escapeHtml(data.points?.toLocaleString('fr'))}</b> Points</p>
                         </div>
                     </div>
                     <div class="card-content">
