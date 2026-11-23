@@ -16,7 +16,7 @@ jobs:
         with:
           persist-credentials: true
       # Disabled sample for users to copy, so it keeps a readable version.
-      - uses: nabondance/trailhead-stats@v1 # zizmor: ignore[unpinned-uses]
+      - uses: nabondance/trailhead-stats@v2 # zizmor: ignore[unpinned-uses]
         with:
           trailhead-username: 'your_trailhead_username'
           display-type: 'card'
