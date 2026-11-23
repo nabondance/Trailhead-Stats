@@ -223,7 +223,7 @@ function prepareData(
     nbCertifs: trailheadCertif?.length,
     lastCertif: lastCertification?.title,
     skillPointsDetails,
-    nbEarnedStamps: trailheadEarnedStamps?.count,
+    nbEarnedStamps: earnedStampsDetails.length,
     lastEarnedStamp: lastEarnedStamps?.title,
     earnedStampsDetails
   }

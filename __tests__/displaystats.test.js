@@ -523,6 +523,24 @@ describe('displayStats Function', () => {
     expect(result.nbBadges).toBe(480)
   })
 
+  it('should count the fetched stamps and expose the latest one', async () => {
+    mockInputs.displayType = 'output'
+
+    const result = await displayStats(
+      mockInputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
+    )
+
+    expect(result.nbEarnedStamps).toBe(2)
+    expect(result.lastEarnedStamp).toBe(`Dreamforce '24`)
+  })
+
   it('should correctly format and display as text md', async () => {
     mockInputs.fileFormat = 'md'
 

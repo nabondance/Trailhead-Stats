@@ -8,6 +8,7 @@ exports[`golden output: empty profile renders html text 1`] = `
 <li>Number of Certification: 0</li>
 <li>Number of Superbadges: 0</li>
 <li>Number of Event Badges: 0</li>
+<li>Number of Stamps Earned: 0</li>
 </ul>"
 `;
 
@@ -19,6 +20,7 @@ exports[`golden output: empty profile renders markdown text 1`] = `
  Number of Certification: 0  
  Number of Superbadges: 0  
  Number of Event Badges: 0  
+ Number of Stamps Earned: 0  
 "
 `;
 
@@ -387,7 +389,7 @@ exports[`golden output: empty profile returns the output object 1`] = `
   "lastSuperBadge": undefined,
   "nbBadges": 0,
   "nbCertifs": 0,
-  "nbEarnedStamps": undefined,
+  "nbEarnedStamps": 0,
   "nbEventBadges": 0,
   "nbSuperBadges": 0,
   "points": 0,
@@ -411,6 +413,7 @@ exports[`golden output: full profile renders html text 1`] = `
 <li>Number of Event Badges: 1</li>
 <li>Last Event Badge earned: World Tour Paris</li>
 <li>Main skill: Apex</li>
+<li>Number of Stamps Earned: 2</li>
 <li>Last Stamp earned: Community Live</li>
 </ul>"
 `;
@@ -427,6 +430,7 @@ exports[`golden output: full profile renders markdown text 1`] = `
  Number of Event Badges: 1  
  Last Event Badge earned: World Tour Paris  
  Main skill: Apex  
+ Number of Stamps Earned: 2  
  Last Stamp earned: Community Live  
 "
 `;
@@ -592,7 +596,7 @@ exports[`golden output: full profile renders the dark card html 1`] = `
                         <p>Last Badge: Apex Basics</p>
                         <p>Last Superbadge: Security Specialist</p>
                         <p>Last Event Badge: World Tour Paris</p>
-                        
+                        <p>Last Stamp: Community Live</p>
 
                         <h2>Top 5 Skills:</h2><div class="skills-bar-chart">
       <div class="skill-container">
@@ -807,7 +811,7 @@ exports[`golden output: full profile renders the light card html 1`] = `
                         <p>Last Badge: Apex Basics</p>
                         <p>Last Superbadge: Security Specialist</p>
                         <p>Last Event Badge: World Tour Paris</p>
-                        
+                        <p>Last Stamp: Community Live</p>
 
                         <h2>Top 5 Skills:</h2><div class="skills-bar-chart">
       <div class="skill-container">
@@ -917,7 +921,7 @@ exports[`golden output: full profile returns the output object 1`] = `
   "lastSuperBadge": "Security Specialist",
   "nbBadges": 321,
   "nbCertifs": 2,
-  "nbEarnedStamps": undefined,
+  "nbEarnedStamps": 2,
   "nbEventBadges": 1,
   "nbSuperBadges": 1,
   "points": 123456,

@@ -85,7 +85,7 @@ describe('cardGenerator Tests', () => {
       { name: 'Chatter', points: 1250 }
     ],
     nbEarnedStamps: 1,
-    lastEarnedStamps: 'Salesforce stamp',
+    lastEarnedStamp: 'Salesforce stamp',
     earnedStampsDetails: [
       {
         name: 'Salesforce stamp',

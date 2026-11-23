@@ -201,7 +201,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
                         ${makeLatestHtml('Last Badge', data.lastBadge, inputs.showBadgeLatest)}
                         ${makeLatestHtml('Last Superbadge', data.lastSuperBadge, inputs.showSuperBadgeLatest)}
                         ${makeLatestHtml('Last Event Badge', data.lastEventBadge, inputs.showEventBadgeLatest)}
-                        ${makeLatestHtml('Last Stamp', data.lastEarnedStamps, inputs.showStampLatest)}
+                        ${makeLatestHtml('Last Stamp', data.lastEarnedStamp, inputs.showStampLatest)}
 
                         ${skillsBarChartHtml}
                         ${certificationsHtml}
