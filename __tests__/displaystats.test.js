@@ -6,6 +6,7 @@ const os = require('os')
 const path = require('path')
 
 jest.mock('@actions/core')
+jest.mock('puppeteer-core', () => ({}))
 
 // Mock generateCard function
 jest.mock('../src/cardGenerator', () => ({

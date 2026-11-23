@@ -13,6 +13,7 @@ const { fullProfile } = require('./fixtures/trailhead')
 const main = require('../src/main')
 
 jest.mock('@actions/core')
+jest.mock('puppeteer-core', () => ({}))
 jest.mock('../src/getStats')
 jest.mock('../src/updateFile', () => ({
   ...jest.requireActual('../src/updateFile'),
