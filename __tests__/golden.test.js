@@ -12,7 +12,7 @@ const {
 } = require('./fixtures/trailhead')
 
 jest.mock('@actions/core')
-jest.mock('puppeteer', () => ({}))
+jest.mock('puppeteer-core', () => ({}))
 
 const render = (profile, overrides) =>
   displayStats({ ...fixtureInputs, ...overrides }, ...profile())

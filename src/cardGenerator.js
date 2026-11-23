@@ -1,5 +1,5 @@
 const core = require('@actions/core')
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-core')
 const path = require('path')
 const crypto = require('crypto')
 const {

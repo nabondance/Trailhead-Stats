@@ -5,10 +5,10 @@ const {
   makeLatestHtml,
   hashHtml
 } = require('../src/cardGenerator')
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-core')
 
 // Mocking Puppeteer
-jest.mock('puppeteer', () => ({
+jest.mock('puppeteer-core', () => ({
   launch: jest.fn().mockResolvedValue({
     newPage: jest.fn().mockResolvedValue({
       setViewport: jest.fn().mockResolvedValue(null),

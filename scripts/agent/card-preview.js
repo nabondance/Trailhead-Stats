@@ -1,7 +1,7 @@
 // Renders text and card variants from fixtures, with no network access.
 const fs = require('fs')
 const path = require('path')
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-core')
 const { ROOT } = require('./lib/action-yml')
 require('./lib/inputs')
 const {
@@ -20,13 +20,9 @@ function findBrowser() {
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     '/usr/bin/chromium-browser',
     '/usr/bin/chromium',
-    '/usr/bin/google-chrome'
+    '/usr/bin/google-chrome',
+    '/opt/homebrew/bin/chromium'
   ]
-  try {
-    candidates.push(puppeteer.executablePath())
-  } catch {
-    // No bundled browser installed.
-  }
   return candidates.find(file => file && fs.existsSync(file))
 }
 
