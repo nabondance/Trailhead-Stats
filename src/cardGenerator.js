@@ -15,6 +15,16 @@ function cardFilePath(cardPath, styleTheme) {
   return path.join(cardPath, `TScard-${styleTheme}.png`)
 }
 
+// Trailhead values are untrusted. Every attribute in the card uses double
+// quotes, so these four characters are enough for text and attributes.
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
 function cardFiles(cardPath) {
   return CARD_THEMES.map(theme => cardFilePath(cardPath, theme))
 }
@@ -50,6 +60,9 @@ async function createCardAsPng(htmlContent, outputPath) {
   // or timed-out render would hang the step instead of failing it.
   try {
     const page = await browser.newPage()
+
+    // The card needs no script, so none can run from its content
+    await page.setJavaScriptEnabled(false)
 
     // Set your HTML content
     await page.setContent(htmlContent, {
@@ -120,7 +133,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
         return `
       <div class="skill-container">
         <div class="skill-bar" style="width: ${normalizedWidth}px; background-color: ${skillColor};">
-          <span class="skill-name">${skill.name}</span>
+          <span class="skill-name">${escapeHtml(skill.name)}</span>
           <span class="skill-points">${skill.points.toLocaleString('fr')}</span>
         </div>
       </div>`
@@ -188,9 +201,9 @@ function generateHtmlContent(data, inputs, styleTheme) {
             <body>
                 <div class="card">
                     <div class="card-header">
-                        <img src="${data.rankIcon}" alt="Rank Logo" class="rank-logo">
+                        <img src="${escapeHtml(data.rankIcon)}" alt="Rank Logo" class="rank-logo">
                         <div>
-                            <h1>${data.rank}</h1>
+                            <h1>${escapeHtml(data.rank)}</h1>
                             <p><b>${data.nbBadges?.toLocaleString('fr')}</b> Badge${data.nbBadges > 1 ? 's' : ''},
                             <b>${data.points?.toLocaleString('fr')}</b> Points</p>
                         </div>
@@ -242,7 +255,7 @@ function makeIconDisplay(details, name) {
       .map(
         detail => `
           <div class="icon">
-            <img src="${detail.iconUrl}" alt="${detail.title}" class="icon-logo">
+            <img src="${escapeHtml(detail.iconUrl)}" alt="${escapeHtml(detail.title)}" class="icon-logo">
           </div>`
       )
       .join('')
@@ -263,7 +276,7 @@ function makeTableDisplay(details, name) {
       .map(
         detail => `
           <div class="table">
-            <img src="${detail.iconUrl}" alt="${detail.title}" class="table-logo">
+            <img src="${escapeHtml(detail.iconUrl)}" alt="${escapeHtml(detail.title)}" class="table-logo">
           </div>`
       )
       .join('')
@@ -283,8 +296,8 @@ function makeDetailDisplay(details, name) {
       .map(
         detail => `
       <div class="detail">
-        <img src="${detail.iconUrl}" alt="${detail.title}" class="detail-logo">
-        <b>${detail?.title}</b>${detail?.status ? `&nbsp;-&nbsp;` + detail?.status : ''}${detail?.kind ? `&nbsp;-&nbsp;` + detail?.kind : ''}
+        <img src="${escapeHtml(detail.iconUrl)}" alt="${escapeHtml(detail.title)}" class="detail-logo">
+        <b>${escapeHtml(detail?.title)}</b>${detail?.status ? `&nbsp;-&nbsp;` + escapeHtml(detail.status) : ''}${detail?.kind ? `&nbsp;-&nbsp;` + escapeHtml(detail.kind) : ''}
       </div>`
       )
       .join('')
@@ -329,7 +342,7 @@ function makeLatestHtml(propertyLabel, propertyValue, propertyShow) {
     propertyValue !== null &&
     propertyValue !== undefined
   ) {
-    return `<p>${propertyLabel}: ${propertyValue}</p>`
+    return `<p>${propertyLabel}: ${escapeHtml(propertyValue)}</p>`
   }
   return ''
 }

@@ -11,6 +11,7 @@ const puppeteer = require('puppeteer-core')
 jest.mock('puppeteer-core', () => ({
   launch: jest.fn().mockResolvedValue({
     newPage: jest.fn().mockResolvedValue({
+      setJavaScriptEnabled: jest.fn().mockResolvedValue(null),
       setViewport: jest.fn().mockResolvedValue(null),
       setContent: jest.fn().mockResolvedValue(null),
       screenshot: jest.fn().mockResolvedValue('image data'),
@@ -152,6 +153,7 @@ describe('cardGenerator Tests', () => {
       const close = jest.fn().mockResolvedValue(null)
       puppeteer.launch.mockResolvedValueOnce({
         newPage: jest.fn().mockResolvedValue({
+          setJavaScriptEnabled: jest.fn().mockResolvedValue(null),
           setViewport: jest.fn().mockResolvedValue(null),
           setContent: failure.setContent
             ? jest.fn().mockRejectedValue(new Error(failure.setContent))
@@ -165,6 +167,31 @@ describe('cardGenerator Tests', () => {
         failure.setContent || '.card not found in the card HTML'
       )
       expect(close).toHaveBeenCalledTimes(1)
+    })
+
+    it('disables JavaScript before loading the card', async () => {
+      const calls = []
+      const track = name =>
+        jest.fn().mockImplementation(async () => {
+          calls.push(name)
+        })
+      const setJavaScriptEnabled = track('disableJs')
+      puppeteer.launch.mockResolvedValueOnce({
+        newPage: jest.fn().mockResolvedValue({
+          setJavaScriptEnabled,
+          setViewport: jest.fn().mockResolvedValue(null),
+          setContent: track('setContent'),
+          $: jest.fn().mockResolvedValue({
+            screenshot: jest.fn().mockResolvedValue('image')
+          })
+        }),
+        close: jest.fn().mockResolvedValue(null)
+      })
+
+      await generateCard(mockData, mockInputs, 'light')
+
+      expect(setJavaScriptEnabled).toHaveBeenCalledWith(false)
+      expect(calls).toEqual(['disableJs', 'setContent'])
     })
   })
 
@@ -189,6 +216,45 @@ describe('cardGenerator Tests', () => {
         expect(result).toContain('<html>')
         expect(result).toContain('<h1>Triple Star Ranger</h1>')
         expect(result).toContain('Salesforce Certified Platform App Builder')
+      })
+
+      it('should escape every Trailhead value in the card', () => {
+        const evil = '"><img src=x onerror=alert(1)>&'
+        const safe = '&quot;&gt;&lt;img src=x onerror=alert(1)&gt;&amp;'
+        const detail = { title: evil, status: evil, kind: evil, iconUrl: evil }
+        const data = {
+          ...mockData,
+          rank: evil,
+          rankIcon: evil,
+          lastBadge: evil,
+          lastEarnedStamp: evil,
+          skillPointsDetails: [{ name: evil, points: 10 }],
+          certificationsDetails: [detail],
+          badgeDetails: [detail],
+          superBadgeDetails: [detail],
+          eventBadgeDetails: [detail],
+          earnedStampsDetails: [detail]
+        }
+
+        for (const display of ['icon', 'table', 'detail']) {
+          const result = generateHtmlContent(
+            data,
+            {
+              ...mockInputs,
+              showCertification: display,
+              showBadge: display,
+              showSuperBadge: display,
+              showEventBadge: display,
+              showStamp: display
+            },
+            'light'
+          )
+
+          expect(result).not.toContain('<img src=x')
+          expect(result).not.toContain('"><img')
+          expect(result).toContain(`<h1>${safe}</h1>`)
+          expect(result).toContain(`<p>Last Stamp: ${safe}</p>`)
+        }
       })
     })
 
