@@ -6,21 +6,21 @@ labels: bug
 assignees: ''
 ---
 
-### Describe the bug
+## Describe the bug
 
 A clear and concise description of what the bug is.
 
-### To Reproduce
+## To Reproduce
 
 Steps to reproduce the behavior:
 
 1.
 
-### Expected behavior
+## Expected behavior
 
 A clear and concise description of what you expected to happen.
 
-### Files
+## Files
 
 The workflow .yml file:
 
@@ -30,15 +30,15 @@ The workflow .yml file:
 
 The file you want to update:
 
-### Screenshots
+## Screenshots
 
 If applicable, add screenshots to help explain your problem.
 
-### Versions Details
+## Versions Details
 
 - OS:
 - TrailHead-Stats Version:
 
-### Additional context
+## Additional context
 
 Add any other context about the problem here.
