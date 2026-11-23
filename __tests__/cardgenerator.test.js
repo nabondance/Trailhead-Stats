@@ -1,10 +1,12 @@
 const {
   generateCard,
   generateHtmlContent,
+  isAllowedImageUrl,
   selectHtmlDisplay,
   makeLatestHtml,
   hashHtml
 } = require('../src/cardGenerator')
+const core = require('@actions/core')
 const puppeteer = require('puppeteer-core')
 
 // Mocking Puppeteer
@@ -12,6 +14,8 @@ jest.mock('puppeteer-core', () => ({
   launch: jest.fn().mockResolvedValue({
     newPage: jest.fn().mockResolvedValue({
       setJavaScriptEnabled: jest.fn().mockResolvedValue(null),
+      setRequestInterception: jest.fn().mockResolvedValue(null),
+      on: jest.fn(),
       setViewport: jest.fn().mockResolvedValue(null),
       setContent: jest.fn().mockResolvedValue(null),
       screenshot: jest.fn().mockResolvedValue('image data'),
@@ -154,6 +158,8 @@ describe('cardGenerator Tests', () => {
       puppeteer.launch.mockResolvedValueOnce({
         newPage: jest.fn().mockResolvedValue({
           setJavaScriptEnabled: jest.fn().mockResolvedValue(null),
+          setRequestInterception: jest.fn().mockResolvedValue(null),
+          on: jest.fn(),
           setViewport: jest.fn().mockResolvedValue(null),
           setContent: failure.setContent
             ? jest.fn().mockRejectedValue(new Error(failure.setContent))
@@ -179,6 +185,8 @@ describe('cardGenerator Tests', () => {
       puppeteer.launch.mockResolvedValueOnce({
         newPage: jest.fn().mockResolvedValue({
           setJavaScriptEnabled,
+          setRequestInterception: track('intercept'),
+          on: jest.fn(),
           setViewport: jest.fn().mockResolvedValue(null),
           setContent: track('setContent'),
           $: jest.fn().mockResolvedValue({
@@ -191,7 +199,45 @@ describe('cardGenerator Tests', () => {
       await generateCard(mockData, mockInputs, 'light')
 
       expect(setJavaScriptEnabled).toHaveBeenCalledWith(false)
-      expect(calls).toEqual(['disableJs', 'setContent'])
+      expect(calls).toEqual(['disableJs', 'intercept', 'setContent'])
+    })
+
+    it('only lets allowed images through', async () => {
+      const on = jest.fn()
+      puppeteer.launch.mockResolvedValueOnce({
+        newPage: jest.fn().mockResolvedValue({
+          setJavaScriptEnabled: jest.fn().mockResolvedValue(null),
+          setRequestInterception: jest.fn().mockResolvedValue(null),
+          on,
+          setViewport: jest.fn().mockResolvedValue(null),
+          setContent: jest.fn().mockResolvedValue(null),
+          $: jest.fn().mockResolvedValue({
+            screenshot: jest.fn().mockResolvedValue('image')
+          })
+        }),
+        close: jest.fn().mockResolvedValue(null)
+      })
+      await generateCard(mockData, mockInputs, 'light')
+      const handler = on.mock.calls.find(([event]) => event === 'request')[1]
+      const request = (type, url) => ({
+        resourceType: () => type,
+        url: () => url,
+        continue: jest.fn().mockResolvedValue(null),
+        abort: jest.fn().mockResolvedValue(null)
+      })
+
+      const image = request('image', 'https://res.cloudinary.com/a.png')
+      const internal = request('image', 'http://169.254.169.254/latest')
+      const frame = request('document', 'https://res.cloudinary.com/a.html')
+      for (const item of [image, internal, frame]) handler(item)
+
+      expect(image.continue).toHaveBeenCalledTimes(1)
+      expect(image.abort).not.toHaveBeenCalled()
+      expect(internal.abort).toHaveBeenCalledTimes(1)
+      expect(frame.abort).toHaveBeenCalledTimes(1)
+      expect(core.warning).toHaveBeenCalledWith(
+        'Card request blocked: 169.254.169.254'
+      )
     })
   })
 
@@ -257,6 +303,37 @@ describe('cardGenerator Tests', () => {
           expect(result).toContain(`<h1>${safe}</h1>`)
           expect(result).toContain(`<p>Last Stamp: ${safe}</p>`)
         }
+      })
+    })
+
+    describe('isAllowedImageUrl function', () => {
+      it.each([
+        'https://res.cloudinary.com/hy4kyit2a/badge.png',
+        'https://dfc-static-production.s3.amazonaws.com/a.png',
+        'https://dfc-static-production.s3.us-east-1.amazonaws.com/a.png',
+        'https://developer.salesforce.com/a.png',
+        'https://drm.my.salesforce.com/a.png',
+        'https://drm.file.force.com/servlet/servlet.ImageServer?id=1&oid=2',
+        'data:image/svg+xml,%3Csvg%3E%3C/svg%3E'
+      ])('should allow %s', url => {
+        expect(isAllowedImageUrl(url)).toBe(true)
+      })
+
+      it.each([
+        'http://res.cloudinary.com/a.png',
+        'https://res.cloudinary.com:8443/a.png',
+        'https://evil.example/a.png',
+        'https://res.cloudinary.com.evil.example/a.png',
+        'https://evilsalesforce.com/a.png',
+        'https://res.cloudinary.com@evil.example/a.png',
+        'https://other-bucket.s3.amazonaws.com/a.png',
+        'http://169.254.169.254/latest/meta-data',
+        'http://127.0.0.1/a.png',
+        'file:///etc/passwd',
+        'data:text/html,<script>1</script>',
+        'not a url'
+      ])('should block %s', url => {
+        expect(isAllowedImageUrl(url)).toBe(false)
       })
     })
 

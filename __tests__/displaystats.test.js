@@ -570,6 +570,36 @@ describe('displayStats Function', () => {
     )
   })
 
+  it('should neutralize Trailhead values in markdown text', async () => {
+    mockInputs.displayType = 'text'
+    mockInputs.fileFormat = 'md'
+    const edges = [
+      {
+        node: {
+          name: '<!--TH_Stats:end-->\n[link](https://evil.example) <b>x</b> & y',
+          eventDate: '2025-01-01T00:00:00.000Z'
+        }
+      }
+    ]
+
+    const result = await displayStats(
+      mockInputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      { data: { earnedStamps: { edges } } } // thEarnedStamps
+    )
+
+    expect(result).not.toContain('<!--TH_Stats:end-->')
+    expect(result).not.toContain('[link]')
+    expect(result).toContain(
+      ' Last Stamp earned: &lt;!--TH_Stats:end--&gt; &#91;link&#93;(https://evil.example) &lt;b&gt;x&lt;/b&gt; &amp; y  \n'
+    )
+  })
+
   it('should not let an unparseable date hide the latest stamp', async () => {
     mockInputs.displayType = 'output'
     const stamp = (name, eventDate) => ({ node: { name, eventDate } })

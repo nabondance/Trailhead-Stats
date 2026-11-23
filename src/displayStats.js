@@ -2,7 +2,7 @@ const core = require('@actions/core')
 const os = require('os')
 const path = require('path')
 const { generateCard, cardFilePath, CARD_THEMES } = require('./cardGenerator')
-const { escapeHtml } = require('./escapeHtml')
+const { escapeHtml, escapeMarkdown } = require('./escape')
 const {
   copyFileSync,
   lstatSync,
@@ -371,7 +371,7 @@ function timeOf(date) {
 
 function appDC(propertyLabel, propertyValue) {
   if (propertyValue !== undefined && propertyValue !== null) {
-    return ` ${propertyLabel}: ${propertyValue}  \n`
+    return ` ${propertyLabel}: ${escapeMarkdown(propertyValue)}  \n`
   }
   return ''
 }
