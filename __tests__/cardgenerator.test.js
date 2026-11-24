@@ -238,6 +238,21 @@ describe('cardGenerator Tests', () => {
       expect(core.warning).toHaveBeenCalledWith(
         'Card request blocked: 169.254.169.254'
       )
+
+      // A bad URL is blocked, and a request that can no longer be aborted
+      // (page closed) must not become an unhandled rejection.
+      core.warning.mockClear()
+      const invalid = request('image', 'not a url')
+      invalid.abort.mockRejectedValue(new Error('page closed'))
+      handler(invalid)
+      handler(request('image', 'also not a url'))
+      await new Promise(setImmediate)
+
+      expect(core.warning).toHaveBeenCalledTimes(1)
+      expect(core.warning).toHaveBeenCalledWith(
+        'Card request blocked: invalid URL'
+      )
+      expect(core.debug).toHaveBeenCalledWith('Card request: page closed')
     })
   })
 
