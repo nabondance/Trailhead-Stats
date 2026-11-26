@@ -329,6 +329,7 @@ describe('cardGenerator Tests', () => {
         'https://developer.salesforce.com/a.png',
         'https://drm.my.salesforce.com/a.png',
         'https://drm.file.force.com/servlet/servlet.ImageServer?id=1&oid=2',
+        'https://cdn.prod.website-files.com/67d18d987a52ccd810a5b040/logo.svg',
         'data:image/svg+xml,%3Csvg%3E%3C/svg%3E'
       ])('should allow %s', url => {
         expect(isAllowedImageUrl(url)).toBe(true)
@@ -342,6 +343,8 @@ describe('cardGenerator Tests', () => {
         'https://evilsalesforce.com/a.png',
         'https://res.cloudinary.com@evil.example/a.png',
         'https://other-bucket.s3.amazonaws.com/a.png',
+        'https://website-files.com/a.png',
+        'https://cdn.prod.website-files.com.evil.example/a.png',
         'http://169.254.169.254/latest/meta-data',
         'http://127.0.0.1/a.png',
         'file:///etc/passwd',

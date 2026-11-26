@@ -11,11 +11,13 @@ const { escapeHtml } = require('./escape')
 
 const CARD_THEMES = ['light', 'dark']
 
-// Where Trailhead serves badge, rank, certification and stamp images.
+// Where Trailhead serves badge, rank, certification and stamp images. Some
+// event stamp icons come from the Webflow CDN of Salesforce event sites.
 const IMAGE_HOSTS = [
   'res.cloudinary.com',
   'dfc-static-production.s3.amazonaws.com',
-  'dfc-static-production.s3.us-east-1.amazonaws.com'
+  'dfc-static-production.s3.us-east-1.amazonaws.com',
+  'cdn.prod.website-files.com'
 ]
 const IMAGE_HOST_SUFFIXES = ['.salesforce.com', '.force.com']
 
