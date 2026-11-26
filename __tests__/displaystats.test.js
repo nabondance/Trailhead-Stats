@@ -523,6 +523,112 @@ describe('displayStats Function', () => {
     expect(result.nbBadges).toBe(480)
   })
 
+  it('should count the fetched stamps and expose the latest one', async () => {
+    mockInputs.displayType = 'output'
+
+    const result = await displayStats(
+      mockInputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      mockTrailheadEarnedStampsData // thEarnedStamps
+    )
+
+    expect(result.nbEarnedStamps).toBe(2)
+    expect(result.lastEarnedStamp).toBe(`Dreamforce '24`)
+  })
+
+  it('should escape Trailhead values in html text', async () => {
+    mockInputs.displayType = 'text'
+    mockInputs.fileFormat = 'html'
+    const edges = [
+      {
+        node: {
+          name: '<img src=x onerror=alert(1)> & "more"',
+          eventDate: '2025-01-01T00:00:00.000Z'
+        }
+      }
+    ]
+
+    const result = await displayStats(
+      mockInputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      { data: { earnedStamps: { edges } } } // thEarnedStamps
+    )
+
+    expect(result).not.toContain('<img')
+    expect(result).toContain(
+      '<li>Last Stamp earned: &lt;img src=x onerror=alert(1)&gt; &amp; &quot;more&quot;</li>'
+    )
+  })
+
+  it('should neutralize Trailhead values in markdown text', async () => {
+    mockInputs.displayType = 'text'
+    mockInputs.fileFormat = 'md'
+    const edges = [
+      {
+        node: {
+          name: '<!--TH_Stats:end-->\n[link](https://evil.example) <b>x</b> & y',
+          eventDate: '2025-01-01T00:00:00.000Z'
+        }
+      }
+    ]
+
+    const result = await displayStats(
+      mockInputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      { data: { earnedStamps: { edges } } } // thEarnedStamps
+    )
+
+    expect(result).not.toContain('<!--TH_Stats:end-->')
+    expect(result).not.toContain('[link]')
+    expect(result).toContain(
+      ' Last Stamp earned: &lt;!--TH_Stats:end--&gt; &#91;link&#93;(https://evil.example) &lt;b&gt;x&lt;/b&gt; &amp; y  \n'
+    )
+  })
+
+  it('should not let an unparseable date hide the latest stamp', async () => {
+    mockInputs.displayType = 'output'
+    const stamp = (name, eventDate) => ({ node: { name, eventDate } })
+    const edges = [
+      stamp('No date', 'not-a-date'),
+      stamp('Older', '2023-01-01T00:00:00.000Z'),
+      stamp('Newest', '2025-01-01T00:00:00.000Z')
+    ]
+
+    const result = await displayStats(
+      mockInputs,
+      mockTrailheadRankData, // thRank
+      mockTrailheadBadgesData, // thBadges
+      mockTrailheadSuperBadgesData, // thSuperBadges
+      mockTrailheadEventBadgesData, // thEventBadges
+      mockTrailheadCertifsData, // thCertifs
+      mockTrailheadSkillsData, // thSkills
+      { data: { earnedStamps: { edges } } } // thEarnedStamps
+    )
+
+    expect(result.lastEarnedStamp).toBe('Newest')
+    expect(result.nbEarnedStamps).toBe(3)
+    expect(result.earnedStampsDetails.map(s => s.title)).toEqual([
+      'No date',
+      'Older',
+      'Newest'
+    ])
+  })
+
   it('should correctly format and display as text md', async () => {
     mockInputs.fileFormat = 'md'
 

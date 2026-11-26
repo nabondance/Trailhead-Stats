@@ -1,16 +1,21 @@
 const {
   generateCard,
   generateHtmlContent,
+  isAllowedImageUrl,
   selectHtmlDisplay,
   makeLatestHtml,
   hashHtml
 } = require('../src/cardGenerator')
+const core = require('@actions/core')
 const puppeteer = require('puppeteer-core')
 
 // Mocking Puppeteer
 jest.mock('puppeteer-core', () => ({
   launch: jest.fn().mockResolvedValue({
     newPage: jest.fn().mockResolvedValue({
+      setJavaScriptEnabled: jest.fn().mockResolvedValue(null),
+      setRequestInterception: jest.fn().mockResolvedValue(null),
+      on: jest.fn(),
       setViewport: jest.fn().mockResolvedValue(null),
       setContent: jest.fn().mockResolvedValue(null),
       screenshot: jest.fn().mockResolvedValue('image data'),
@@ -85,7 +90,7 @@ describe('cardGenerator Tests', () => {
       { name: 'Chatter', points: 1250 }
     ],
     nbEarnedStamps: 1,
-    lastEarnedStamps: 'Salesforce stamp',
+    lastEarnedStamp: 'Salesforce stamp',
     earnedStampsDetails: [
       {
         name: 'Salesforce stamp',
@@ -152,6 +157,9 @@ describe('cardGenerator Tests', () => {
       const close = jest.fn().mockResolvedValue(null)
       puppeteer.launch.mockResolvedValueOnce({
         newPage: jest.fn().mockResolvedValue({
+          setJavaScriptEnabled: jest.fn().mockResolvedValue(null),
+          setRequestInterception: jest.fn().mockResolvedValue(null),
+          on: jest.fn(),
           setViewport: jest.fn().mockResolvedValue(null),
           setContent: failure.setContent
             ? jest.fn().mockRejectedValue(new Error(failure.setContent))
@@ -165,6 +173,86 @@ describe('cardGenerator Tests', () => {
         failure.setContent || '.card not found in the card HTML'
       )
       expect(close).toHaveBeenCalledTimes(1)
+    })
+
+    it('disables JavaScript before loading the card', async () => {
+      const calls = []
+      const track = name =>
+        jest.fn().mockImplementation(async () => {
+          calls.push(name)
+        })
+      const setJavaScriptEnabled = track('disableJs')
+      puppeteer.launch.mockResolvedValueOnce({
+        newPage: jest.fn().mockResolvedValue({
+          setJavaScriptEnabled,
+          setRequestInterception: track('intercept'),
+          on: jest.fn(),
+          setViewport: jest.fn().mockResolvedValue(null),
+          setContent: track('setContent'),
+          $: jest.fn().mockResolvedValue({
+            screenshot: jest.fn().mockResolvedValue('image')
+          })
+        }),
+        close: jest.fn().mockResolvedValue(null)
+      })
+
+      await generateCard(mockData, mockInputs, 'light')
+
+      expect(setJavaScriptEnabled).toHaveBeenCalledWith(false)
+      expect(calls).toEqual(['disableJs', 'intercept', 'setContent'])
+    })
+
+    it('only lets allowed images through', async () => {
+      const on = jest.fn()
+      puppeteer.launch.mockResolvedValueOnce({
+        newPage: jest.fn().mockResolvedValue({
+          setJavaScriptEnabled: jest.fn().mockResolvedValue(null),
+          setRequestInterception: jest.fn().mockResolvedValue(null),
+          on,
+          setViewport: jest.fn().mockResolvedValue(null),
+          setContent: jest.fn().mockResolvedValue(null),
+          $: jest.fn().mockResolvedValue({
+            screenshot: jest.fn().mockResolvedValue('image')
+          })
+        }),
+        close: jest.fn().mockResolvedValue(null)
+      })
+      await generateCard(mockData, mockInputs, 'light')
+      const handler = on.mock.calls.find(([event]) => event === 'request')[1]
+      const request = (type, url) => ({
+        resourceType: () => type,
+        url: () => url,
+        continue: jest.fn().mockResolvedValue(null),
+        abort: jest.fn().mockResolvedValue(null)
+      })
+
+      const image = request('image', 'https://res.cloudinary.com/a.png')
+      const internal = request('image', 'http://169.254.169.254/latest')
+      const frame = request('document', 'https://res.cloudinary.com/a.html')
+      for (const item of [image, internal, frame]) handler(item)
+
+      expect(image.continue).toHaveBeenCalledTimes(1)
+      expect(image.abort).not.toHaveBeenCalled()
+      expect(internal.abort).toHaveBeenCalledTimes(1)
+      expect(frame.abort).toHaveBeenCalledTimes(1)
+      expect(core.warning).toHaveBeenCalledWith(
+        'Card request blocked: 169.254.169.254'
+      )
+
+      // A bad URL is blocked, and a request that can no longer be aborted
+      // (page closed) must not become an unhandled rejection.
+      core.warning.mockClear()
+      const invalid = request('image', 'not a url')
+      invalid.abort.mockRejectedValue(new Error('page closed'))
+      handler(invalid)
+      handler(request('image', 'also not a url'))
+      await new Promise(setImmediate)
+
+      expect(core.warning).toHaveBeenCalledTimes(1)
+      expect(core.warning).toHaveBeenCalledWith(
+        'Card request blocked: invalid URL'
+      )
+      expect(core.debug).toHaveBeenCalledWith('Card request: page closed')
     })
   })
 
@@ -189,6 +277,81 @@ describe('cardGenerator Tests', () => {
         expect(result).toContain('<html>')
         expect(result).toContain('<h1>Triple Star Ranger</h1>')
         expect(result).toContain('Salesforce Certified Platform App Builder')
+      })
+
+      it('should escape every Trailhead value in the card', () => {
+        const evil = '"><img src=x onerror=alert(1)>&'
+        const safe = '&quot;&gt;&lt;img src=x onerror=alert(1)&gt;&amp;'
+        const detail = { title: evil, status: evil, kind: evil, iconUrl: evil }
+        const data = {
+          ...mockData,
+          rank: evil,
+          rankIcon: evil,
+          nbBadges: evil,
+          points: evil,
+          lastBadge: evil,
+          lastEarnedStamp: evil,
+          skillPointsDetails: [{ name: evil, points: evil }],
+          certificationsDetails: [detail],
+          badgeDetails: [detail],
+          superBadgeDetails: [detail],
+          eventBadgeDetails: [detail],
+          earnedStampsDetails: [detail]
+        }
+
+        for (const display of ['icon', 'table', 'detail']) {
+          const result = generateHtmlContent(
+            data,
+            {
+              ...mockInputs,
+              showCertification: display,
+              showBadge: display,
+              showSuperBadge: display,
+              showEventBadge: display,
+              showStamp: display
+            },
+            'light'
+          )
+
+          expect(result).not.toContain('<img src=x')
+          expect(result).not.toContain('"><img')
+          expect(result).toContain(`<h1>${safe}</h1>`)
+          expect(result).toContain(`<p>Last Stamp: ${safe}</p>`)
+        }
+      })
+    })
+
+    describe('isAllowedImageUrl function', () => {
+      it.each([
+        'https://res.cloudinary.com/hy4kyit2a/badge.png',
+        'https://dfc-static-production.s3.amazonaws.com/a.png',
+        'https://dfc-static-production.s3.us-east-1.amazonaws.com/a.png',
+        'https://developer.salesforce.com/a.png',
+        'https://drm.my.salesforce.com/a.png',
+        'https://drm.file.force.com/servlet/servlet.ImageServer?id=1&oid=2',
+        'https://cdn.prod.website-files.com/67d18d987a52ccd810a5b040/logo.svg',
+        'data:image/svg+xml,%3Csvg%3E%3C/svg%3E'
+      ])('should allow %s', url => {
+        expect(isAllowedImageUrl(url)).toBe(true)
+      })
+
+      it.each([
+        'http://res.cloudinary.com/a.png',
+        'https://res.cloudinary.com:8443/a.png',
+        'https://evil.example/a.png',
+        'https://res.cloudinary.com.evil.example/a.png',
+        'https://evilsalesforce.com/a.png',
+        'https://res.cloudinary.com@evil.example/a.png',
+        'https://other-bucket.s3.amazonaws.com/a.png',
+        'https://website-files.com/a.png',
+        'https://cdn.prod.website-files.com.evil.example/a.png',
+        'http://169.254.169.254/latest/meta-data',
+        'http://127.0.0.1/a.png',
+        'file:///etc/passwd',
+        'data:text/html,<script>1</script>',
+        'not a url'
+      ])('should block %s', url => {
+        expect(isAllowedImageUrl(url)).toBe(false)
       })
     })
 

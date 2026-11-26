@@ -7,12 +7,66 @@ const {
   getSkillColorMap,
   getSkillBackgroundColor
 } = require('./cardCss')
+const { escapeHtml } = require('./escape')
 
 const CARD_THEMES = ['light', 'dark']
+
+// Where Trailhead serves badge, rank, certification and stamp images. Some
+// event stamp icons come from the Webflow CDN of Salesforce event sites.
+const IMAGE_HOSTS = [
+  'res.cloudinary.com',
+  'dfc-static-production.s3.amazonaws.com',
+  'dfc-static-production.s3.us-east-1.amazonaws.com',
+  'cdn.prod.website-files.com'
+]
+const IMAGE_HOST_SUFFIXES = ['.salesforce.com', '.force.com']
 
 // Where a card is written, and what gets committed.
 function cardFilePath(cardPath, styleTheme) {
   return path.join(cardPath, `TScard-${styleTheme}.png`)
+}
+
+function isAllowedImageUrl(imageUrl) {
+  let url
+  try {
+    url = new URL(imageUrl)
+  } catch {
+    return false
+  }
+  if (url.protocol === 'data:') return url.pathname.startsWith('image/')
+  if (url.protocol !== 'https:' || url.port !== '') return false
+  return (
+    IMAGE_HOSTS.includes(url.hostname) ||
+    IMAGE_HOST_SUFFIXES.some(suffix => url.hostname.endsWith(suffix))
+  )
+}
+
+function requestHost(requestUrl) {
+  try {
+    return new URL(requestUrl).host || 'unknown host'
+  } catch {
+    return 'invalid URL'
+  }
+}
+
+// The card only loads images from Trailhead. A redirect is a new request, so
+// it goes through the same check.
+async function restrictRequests(page) {
+  const warned = new Set()
+  await page.setRequestInterception(true)
+  page.on('request', request => {
+    const allowed =
+      request.resourceType() === 'image' && isAllowedImageUrl(request.url())
+    if (!allowed) {
+      const host = requestHost(request.url())
+      if (!warned.has(host)) {
+        warned.add(host)
+        core.warning(`Card request blocked: ${host}`)
+      }
+    }
+    const resolved = allowed ? request.continue() : request.abort()
+    resolved.catch(error => core.debug(`Card request: ${error.message}`))
+  })
 }
 
 function cardFiles(cardPath) {
@@ -51,6 +105,10 @@ async function createCardAsPng(htmlContent, outputPath) {
   try {
     const page = await browser.newPage()
 
+    // The card needs no script, so none can run from its content
+    await page.setJavaScriptEnabled(false)
+    await restrictRequests(page)
+
     // Set your HTML content
     await page.setContent(htmlContent, {
       waitUntil: 'networkidle0' // Wait for all resources to be loaded
@@ -63,7 +121,12 @@ async function createCardAsPng(htmlContent, outputPath) {
     const cardSelector = '.card'
     const card = await page.$(cardSelector)
     if (!card) throw new Error(`${cardSelector} not found in the card HTML`)
-    await card.screenshot({ path: outputPath, type: 'png' })
+    // Scrolling into view waits on a page script, and scripts are disabled
+    await card.screenshot({
+      path: outputPath,
+      type: 'png',
+      scrollIntoView: false
+    })
   } finally {
     await browser.close()
   }
@@ -120,8 +183,8 @@ function generateHtmlContent(data, inputs, styleTheme) {
         return `
       <div class="skill-container">
         <div class="skill-bar" style="width: ${normalizedWidth}px; background-color: ${skillColor};">
-          <span class="skill-name">${skill.name}</span>
-          <span class="skill-points">${skill.points.toLocaleString('fr')}</span>
+          <span class="skill-name">${escapeHtml(skill.name)}</span>
+          <span class="skill-points">${escapeHtml(skill.points.toLocaleString('fr'))}</span>
         </div>
       </div>`
       })
@@ -188,11 +251,11 @@ function generateHtmlContent(data, inputs, styleTheme) {
             <body>
                 <div class="card">
                     <div class="card-header">
-                        <img src="${data.rankIcon}" alt="Rank Logo" class="rank-logo">
+                        <img src="${escapeHtml(data.rankIcon)}" alt="Rank Logo" class="rank-logo">
                         <div>
-                            <h1>${data.rank}</h1>
-                            <p><b>${data.nbBadges?.toLocaleString('fr')}</b> Badge${data.nbBadges > 1 ? 's' : ''},
-                            <b>${data.points?.toLocaleString('fr')}</b> Points</p>
+                            <h1>${escapeHtml(data.rank)}</h1>
+                            <p><b>${escapeHtml(data.nbBadges?.toLocaleString('fr'))}</b> Badge${data.nbBadges > 1 ? 's' : ''},
+                            <b>${escapeHtml(data.points?.toLocaleString('fr'))}</b> Points</p>
                         </div>
                     </div>
                     <div class="card-content">
@@ -201,7 +264,7 @@ function generateHtmlContent(data, inputs, styleTheme) {
                         ${makeLatestHtml('Last Badge', data.lastBadge, inputs.showBadgeLatest)}
                         ${makeLatestHtml('Last Superbadge', data.lastSuperBadge, inputs.showSuperBadgeLatest)}
                         ${makeLatestHtml('Last Event Badge', data.lastEventBadge, inputs.showEventBadgeLatest)}
-                        ${makeLatestHtml('Last Stamp', data.lastEarnedStamps, inputs.showStampLatest)}
+                        ${makeLatestHtml('Last Stamp', data.lastEarnedStamp, inputs.showStampLatest)}
 
                         ${skillsBarChartHtml}
                         ${certificationsHtml}
@@ -242,7 +305,7 @@ function makeIconDisplay(details, name) {
       .map(
         detail => `
           <div class="icon">
-            <img src="${detail.iconUrl}" alt="${detail.title}" class="icon-logo">
+            <img src="${escapeHtml(detail.iconUrl)}" alt="${escapeHtml(detail.title)}" class="icon-logo">
           </div>`
       )
       .join('')
@@ -263,7 +326,7 @@ function makeTableDisplay(details, name) {
       .map(
         detail => `
           <div class="table">
-            <img src="${detail.iconUrl}" alt="${detail.title}" class="table-logo">
+            <img src="${escapeHtml(detail.iconUrl)}" alt="${escapeHtml(detail.title)}" class="table-logo">
           </div>`
       )
       .join('')
@@ -283,8 +346,8 @@ function makeDetailDisplay(details, name) {
       .map(
         detail => `
       <div class="detail">
-        <img src="${detail.iconUrl}" alt="${detail.title}" class="detail-logo">
-        <b>${detail?.title}</b>${detail?.status ? `&nbsp;-&nbsp;` + detail?.status : ''}${detail?.kind ? `&nbsp;-&nbsp;` + detail?.kind : ''}
+        <img src="${escapeHtml(detail.iconUrl)}" alt="${escapeHtml(detail.title)}" class="detail-logo">
+        <b>${escapeHtml(detail?.title)}</b>${detail?.status ? `&nbsp;-&nbsp;` + escapeHtml(detail.status) : ''}${detail?.kind ? `&nbsp;-&nbsp;` + escapeHtml(detail.kind) : ''}
       </div>`
       )
       .join('')
@@ -329,7 +392,7 @@ function makeLatestHtml(propertyLabel, propertyValue, propertyShow) {
     propertyValue !== null &&
     propertyValue !== undefined
   ) {
-    return `<p>${propertyLabel}: ${propertyValue}</p>`
+    return `<p>${propertyLabel}: ${escapeHtml(propertyValue)}</p>`
   }
   return ''
 }
@@ -344,6 +407,7 @@ module.exports = {
   cardFiles,
   generateCard,
   generateHtmlContent,
+  isAllowedImageUrl,
   selectHtmlDisplay,
   makeLatestHtml,
   hashHtml
